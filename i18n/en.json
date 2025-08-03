@@ -1,0 +1,8 @@
+{
+  "login": {
+    "welcomeMessage": "Submit your credentials to access the IoT platform",
+
+    "title": "Connexion",
+    "button": "Se connecter"
+  }
+}
