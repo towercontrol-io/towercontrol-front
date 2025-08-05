@@ -64,4 +64,5 @@ Select the following options:
 
 ```
 npm install @nuxtjs/i18n
+npm install @pinia/nuxt
 ```

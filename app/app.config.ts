@@ -1,4 +1,9 @@
 export default defineAppConfig({
+  toaster: {
+    position: 'top-left' as const,
+    expand: true,
+    duration: 8000
+  },
   ui: {
     card: {
       slots: {

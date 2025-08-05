@@ -1,6 +1,7 @@
 <script setup>
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig();
   const backgroundImage = config.public.BG_CENTERED;
+
 </script>
 
 <template>
@@ -15,5 +16,6 @@
             height: auto;">
           <slot />
         </div>
+        <ToolsToasterDisconnected />
   </div>
 </template>

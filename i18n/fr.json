@@ -1,9 +1,19 @@
 {
   "login": {
     "welcomeMessage": "Entrez vos identifiants pour accéder à la plateforme IoT",
+    "login": "Votre identifiant",
+    "password": "Votre mot de passe",
+    "connection": "Connexion",
+    "register": "Par encore de compte ? Inscrivez-vous ici",
+    "loading": "Chargement...",
+    "unavailable": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",
 
 
     "title": "Connexion",
     "button": "Se connecter"
+  },
+  "tools": {
+    "toasterDisconnectedTitle": "Backend indisponible",
+    "toasterDisconnectedMessage": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard."
   }
 }

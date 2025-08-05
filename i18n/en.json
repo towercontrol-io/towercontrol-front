@@ -1,8 +1,18 @@
 {
   "login": {
     "welcomeMessage": "Submit your credentials to access the IoT platform",
+    "login": "Your Login",
+    "password": "Your Password",
+    "connection": "Connection",
+    "register": "No account? Register here",
+    "loading": "Loading...",
+    "unavailable": "The backend is unavailable or too slow. Please try again later.",
 
     "title": "Connexion",
     "button": "Se connecter"
+  },
+  "tools": {
+    "toasterDisconnectedTitle": "Backend unavailable",
+    "toasterDisconnectedMessage": "The backend is unavailable or too slow. Please try again later."
   }
 }
