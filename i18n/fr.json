@@ -7,13 +7,51 @@
     "register": "Par encore de compte ? Inscrivez-vous ici",
     "loading": "Chargement...",
     "unavailable": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",
-
+    "lost_password": "Mot de passe oublié ?",
 
     "title": "Connexion",
-    "button": "Se connecter"
+    "button": "Se connecter",
+
+    "user-registration-received": "Demande d'inscription reçue, veuillez vérifier votre e-mail pour confirmer votre inscription",
+    "user-creation-created": "Création de l'utilisateur réussie",
+    "user-creation-account-self-creation-not-allowed": "La création automatique n'est pas autorisée",
+    "user-creation-missing-password": "Le mot de passe est obligatoire pour la création de compte",
+    "user-creation-password-rules-matching": "Le mot de passe ne respecte pas les règles",
+    "user-creation-terms-not-accepted": "Conditions générales non acceptées",
+    "user-creation-refused": "Création de l'utilisateur refusée",
+    "user-login-refused": "Identifiant ou mot de passe invalide",
+    "user-logout-refused": "Déconnexion échouée",
+    "user-signed-out": "Déconnexion réussie",
+    "user-profile-user-not-found": "Utilisateur non trouvé",
+    "user-profile-no-access": "L'accès au profil utilisateur est interdit",
+    "user-profile-change-failed": "Échec du changement de mot de passe de l'utilisateur",
+    "user-profile-password-not-valid": "Le mot de passe de l'utilisateur ne respecte pas les règles de formatage",
+    "user-profile-password-changed" : "Mot de passe de l'utilisateur changé",
+    "user-profile-key-not-valid": "La clé de réinitialisation du mot de passe de l'utilisateur n'est pas valide",
+    "user-profile-key-not-found": "La clé de réinitialisation du mot de passe de l'utilisateur n'a pas été trouvée ou a expiré",
+    "user-upgrade-missing-login" : "JWT malformé, identifiant manquant",
+    "user-upgrade-missing-role" : "JWT malformé, rôle manquant",
+    "user-upgrade-missing-user" : "JWT malformé, utilisateur manquant",
+    "user-profile-delete-done" : "Suppression de l'utilisateur réussie",
+    "user-profile-delete-failed" : "Échec de la suppression de l'utilisateur",
+    "user-upgrade-brute-force" : "Attaque par force brute détectée, veuillez patienter",
+    "user-upgrade-internal-2fa-code" : "Échec interne",
+    "user-profile-2fa-method-not-valid" : "Méthode 2FA non valide",
+    "user-profile-2fa-sms-not-supported" : "Méthode 2FA SMS non encore supportée",
+    "user-profile-condition-not-found" : "L'administrateur n'a pas configuré les conditions utilisateur",
+    "user-profile-eula-accepted" : "Les conditions d'utilisation ont été acceptées",
+    "user-session-2fa-code-missing" : "Le code de vérification 2FA est manquant",
+    "user-session-2fa-code-invalid" : "Le code de vérification 2FA est invalide",
+    "user-session-2fa-code-valid" : "Le code de vérification 2FA est valide",
+
+    "last" : "Dernier"
   },
   "tools": {
     "toasterDisconnectedTitle": "Backend indisponible",
     "toasterDisconnectedMessage": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard."
+  },
+  "common": {
+    "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
+    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
   }
 }

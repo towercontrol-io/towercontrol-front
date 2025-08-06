@@ -1,5 +1,5 @@
-import { ofetch } from 'ofetch';
-import type { UserConfigResponse } from '~/types';
+import type { UserConfigResponse, UserLoginBody, UserLoginResponse } from '~/types';
+import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
 const GET_TIMEOUT = 5000; // 5 seconds
@@ -13,6 +13,7 @@ export default defineNuxtPlugin(() => {
 
   // Set the routes
   const usersModuleConfigGet : string = '/users/1.0/config';
+  const usersModuleLoginPost: string = '/users/1.0/session/signin';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -20,12 +21,9 @@ export default defineNuxtPlugin(() => {
 
 
   // Client configuration for public API requests
-  const apiPublicClient = ofetch.create({
-    baseURL: config.public.BACKEND_API_BASE as string,
-    headers: {
+  const apiPublicHeaders =  {
       'Content-Type': 'application/json'
-    }
-  });
+ };
 
   const apiBackendUsers = {
 
@@ -51,10 +49,14 @@ export default defineNuxtPlugin(() => {
             const controller = new AbortController()
             const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT)
 
-            const response = await apiPublicClient(usersModuleConfigGet, {
-                signal: controller.signal,
-            })
-
+            const response = await $fetch<UserConfigResponse>(
+                config.public.BACKEND_API_BASE+usersModuleConfigGet, 
+                {
+                    method: 'GET',
+                    signal: controller.signal,
+                    headers: apiPublicHeaders
+                }
+            );
             clearTimeout(timeout)
 
             // Check the restponse code 200 expected
@@ -78,16 +80,50 @@ export default defineNuxtPlugin(() => {
             throw error
         }
 
-    }
+    },
 
-/*
-    getUserProfile: (id: string) => apiClient(`/users/${id}`),
-    updateUserProfile: (id: string, payload: any) =>
-      apiClient(`/users/${id}`, { method: 'PUT', body: payload }),
-    listArticles: () => apiClient('/articles')
-    */
-  }
-
+    /**
+     * Login function, the login and password are sent to the backend
+     * the response when a success is stored in the local starage to 
+     * maintain the jwt and also the user profile with the user id.
+     * 
+     * @param {string} login - The user login
+     * @param {string} password - The user password
+     */
+    postUserLogin: async (login: string, password: string): Promise<{ success?: UserLoginResponse; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT) // 20s timeout
+        let body: UserLoginBody = {
+            email: login,
+            password: password
+        };
+        try {
+            const response = await $fetch<UserLoginResponse>(
+                config.public.BACKEND_API_BASE+usersModuleLoginPost, 
+                {
+                    method: 'POST',
+                    body: body,
+                    signal: controller.signal,
+                    headers: apiPublicHeaders
+                }
+            );
+            clearTimeout(timeoutId)
+            appStore.backendUp = true;
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.backendUp = false;
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+ }
   return {
     provide: {
       apiBackendUsers

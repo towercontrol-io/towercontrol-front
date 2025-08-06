@@ -29,3 +29,21 @@ export interface UserConfigResponse {
    */
   eulaRequired: boolean
 }
+
+/**
+ * User Login Request
+ * Equivalent TypeScript interface for the Java class UserLoginBody
+ */
+export interface UserLoginBody {
+  /**
+   * Email login
+   * Example: "john.doe@foo.bar"
+   */
+  email: string;
+
+  /**
+   * User Password for login
+   * Example: "changeme"
+   */
+  password: string;
+}

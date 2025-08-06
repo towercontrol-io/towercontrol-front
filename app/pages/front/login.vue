@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { reactive, onMounted, onBeforeUnmount } from 'vue';
-    import type { UserConfigResponse } from '~/types';
+    import type { UserConfigResponse, UserLoginBody, UserLoginResponse } from '~/types';
+    import type { ActionResult } from '~/types';
 
 
     definePageMeta({layout: 'centered-form'});
@@ -37,6 +38,28 @@
         if (retryInterval) clearInterval(retryInterval);
     });
 
+    const loginErrorStr = reactive({
+        value : null as string | null
+    });
+
+    // -----
+    // Login function
+    async function onSubmitLogin() {
+        const result = ref<UserLoginResponse | null>(null)
+        const loginError = ref<ActionResult | { message: string } | null>(null)
+        result.value = null
+        loginError.value = null
+
+        const res = await $apiBackendUsers.postUserLogin(form.username, form.password)
+        if (res.success) {
+            result.value = res.success
+            loginErrorStr.value = null;
+        } else if (res.error) {
+            loginError.value = res.error
+            loginErrorStr.value = res.error.message;
+        }
+    }
+
 
     /*
     console.log("--------------------------");
@@ -52,7 +75,7 @@
         <template #header>
             <div class="flex flex-col items-center space-y-2">
                 <img :src="logoImage" alt="Service Logo" class="h-16 w-auto sm:h-20 md:h-24" />
-                <h2 class="text-xl font-semibold text-gray-700 text-center text-neutral" >
+                <h2 class="text-xl font-semibold text-center text-neutral" >
                     {{serviceName}} 
                 </h2>
             </div>
@@ -68,10 +91,6 @@
         </div>
 
         <div v-if="!pending && !error">
-                <h2 v-if="true || !pending && !error" class="text-lg text-gray-500">
-                    __  {{ userConfig?.selfRegistration }}__
-                </h2>
-
             <div>
                 <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
                     {{ t('login.welcomeMessage') }}
@@ -79,7 +98,7 @@
 
                 <UForm
                 :state="form"
-                @submit="onSubmit"
+                @submit="onSubmitLogin"
                 class="space-y-4"
                 >
                     <UFormGroup label="Login" name="username">
@@ -111,6 +130,7 @@
                     </UButton>
 
                     <UButton 
+                        v-if="userConfig?.selfRegistration"
                         type="submit" 
                         color="primary" variant="outline" 
                         block
@@ -119,59 +139,22 @@
                     >
                         {{ t('login.register') }}
                     </UButton>
-
                 </UForm>
+            </div>
+            <div class="w-full flex justify-end mt-2">
+                <span class="text-neutral" style="text-decoration: underline;">
+                    {{ $t('login.lost_password')}} 
+                </span>
             </div>
         </div>
 
+        <template #footer v-if="loginErrorStr.value!== null">
+            <div class="flex flex-col items-center space-y-2">
+                <h2 class="text-m font-semibold text-center text-error" >
+                    {{ $t("login."+loginErrorStr.value)}} 
+                </h2>
+            </div>
+        </template>
+
     </UCard>
-<!--
-            <b-card align="center" style="border-radius: 1.5rem;padding: 2rem;">
-              <b-card-img src="/static/front/logo.svg" 
-                          alt="logo" 
-                          style="width: 25%; margin: 20px 0px 20px 0px;" 
-                          top></b-card-img>
-              <b-card-text>
-                <h1 class="mb-2">{{ $config.consoleName }}</h1>
-              </b-card-text>
-              <b-card-text class="small">
-                <span style="color: rgb(56,162,255);">
-                  {{ $t('welcome_message') }}
-                </span>
-              </b-card-text>
-              <b-card-text class="small">
-                <b-icon v-if="(errorMessage.length > 0)" icon="x-circle" variant="danger"></b-icon>
-                <span v-if="(errorMessage.length > 0)" class="text-danger">
-                  {{ errorMessage }}
-                </span>
-              </b-card-text>
-              <form @submit.prevent="userLogin">
-                    <b-form-input v-model="login.username"
-                                  type="text" 
-                                  :placeholder="$t('username')"
-                                  class="mb-1"
-                                  ></b-form-input>
-                    <b-form-input v-model="login.password"
-                                  type="password" 
-                                  :placeholder="$t('password')"
-                                  class="mb-1"
-                                  ></b-form-input>
-                    <b-button block 
-                              variant="primary" 
-                              @click="userLogin()"
-                              class="mb-2">
-                              {{ $t('submit') }}</b-button>
-              </form> 
-              <b-button block 
-                        v-if="status.openForRegistration"
-                        variant="outline-primary"
-                        @click="redirectToSignup()"
-                        >{{ $t('signup_message') }}</b-button>
-              <b-card-text @click="redirectPassLost()" style="text-align:right;">
-                <span style="color: rgb(150,50,50);text-decoration: underline;">
-                    {{ $t('lost_password')}} 
-                </span>
-              </b-card-text>
-            </b-card>
-        -->
 </template>
