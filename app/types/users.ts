@@ -47,3 +47,59 @@ export interface UserLoginBody {
    */
   password: string;
 }
+
+/**
+ * User Login Response
+ * Equivalent TypeScript interface for the Java class UserLoginResponse
+ */
+export interface UserLoginResponse {
+  /**
+   * User Email
+   * Example: "john.doe@foo.bar"
+   */
+  email?: string;
+
+  /**
+   * User login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   */
+  login?: string;
+
+  /**
+   * JWT Token to be used for authentication
+   * You need to add "Bearer " before the token
+   */
+  jwtToken: string;
+
+  /**
+   * JWT with limited access for Token renewal
+   * Longer expiration time
+   */
+  jwtRenewalToken: string;
+
+  /**
+   * The password is expired, change required
+   * Roles restricted until changed
+   */
+  passwordExpired: boolean;
+
+  /**
+   * User condition has been changed, must accept new condition to gain access
+   */
+  conditionToValidate: boolean;
+
+  /**
+   * First authentication factor is ok, second FA required for full access
+   */
+  twoFARequired: boolean;
+
+  /**
+   * The 2FA expected code size, this helps the front-end to display the right input field
+   */
+  twoFASize: number;
+
+  /**
+   * The 2FA type, this helps the front-end to display the right information
+   */
+  twoFAType: string;
+}

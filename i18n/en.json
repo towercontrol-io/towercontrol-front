@@ -8,6 +8,10 @@
     "loading": "Loading...",
     "unavailable": "The backend is unavailable or too slow. Please try again later.",
     "lost_password": "Lost password?",
+    "twoFactorMessage-": "Enter your 2FA code to continue",
+    "twoFactorMessage-AUTHENTICATOR": "Enter your Authenticator code to continue",
+    "twoFactorMessage-SMS": "Enter your SMS code to continue",
+    "twoFactorMessage-EMAIL": "Enter your Email code to continue",
 
     "title": "Connexion",
     "button": "Se connecter",
@@ -52,6 +56,9 @@
   },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
-    "unknownError": "An unknown error occurred. Please try again later."
+    "unknownError": "An unknown error occurred. Please try again later.",
+    "goHome": "Go to Home",
+
+    "last": "Last"
   }
 }

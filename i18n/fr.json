@@ -8,6 +8,10 @@
     "loading": "Chargement...",
     "unavailable": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",
     "lost_password": "Mot de passe oublié ?",
+    "twoFactorMessage-": "Entrez votre code 2FA pour continuer",
+    "twoFactorMessage-AUTHENTICATOR": "Entrez votre code Authenticator pour continuer",
+    "twoFactorMessage-SMS": "Entrez votre code SMS pour continuer",
+    "twoFactorMessage-EMAIL": "Entrez votre code Email pour continuer",
 
     "title": "Connexion",
     "button": "Se connecter",
@@ -52,6 +56,9 @@
   },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
-    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
+    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
+    "goHome": "Retour à l'accueil",
+
+    "last": "Dernier"
   }
 }

@@ -23,7 +23,27 @@ export default defineNuxtPlugin(() => {
   // Client configuration for public API requests
   const apiPublicHeaders =  {
       'Content-Type': 'application/json'
- };
+  };
+
+
+  function getJWTEndDate(token: string): number | null {
+    try {
+        // Décoder le payload du JWT
+        const payload = JSON.parse(atob(token.split('.')[1]));
+
+        // Vérifier si le champ exp existe
+        if (!payload.exp) return null;
+
+        // Convertir exp (secondes) en millisecondes
+        const expirationMs = payload.exp * 1000;
+
+        // Soustraire 15 minutes (900000 ms)
+        return expirationMs - 15 * 60 * 1000;
+    } catch (error) {
+        console.error("Invalid JWT:", error);
+        return null;
+    }
+ }
 
   const apiBackendUsers = {
 
@@ -61,10 +81,10 @@ export default defineNuxtPlugin(() => {
 
             // Check the restponse code 200 expected
             if (!response) {
-                appStore.backendUp = false;
+                appStore.setBackendDown();
                 throw new Error(`Erreur on backend API`)
             } else {
-                appStore.backendUp = true;
+                appStore.setBackendUp();
             }
 
             // Update cache
@@ -76,7 +96,7 @@ export default defineNuxtPlugin(() => {
             return response;
         } catch (error: any) {
             // Timeout ou autre erreur → on met globalVariable à false
-            appStore.backendUp = false
+            appStore.setBackendDown();
             throw error
         }
 
@@ -108,12 +128,19 @@ export default defineNuxtPlugin(() => {
                 }
             );
             clearTimeout(timeoutId)
-            appStore.backendUp = true;
+            appStore.setBackendUp();
+            appStore.setBackendJWT(response.jwtToken);
+            appStore.setRefreshJWT(response.jwtRenewalToken);
+            appStore.setRenewJWTbefore(getJWTEndDate(response.jwtToken) || 0);
+            appStore.setUserEmail(response.email || null);
+            appStore.setUserLogin(response.login || null);
+            appStore.setUser2faSize(response.twoFASize || 0);
+            appStore.setUser2faType(response.twoFAType || '');
             return { success: response }
         } catch (err: any) {
             clearTimeout(timeoutId)
             if (err.name === 'AbortError') {
-                appStore.backendUp = false;
+                appStore.setBackendDown();
                 return { error: { message: 'common.backendTimeout' } }
             }
             // Try to parse error as ActionResult

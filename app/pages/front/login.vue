@@ -1,7 +1,8 @@
 <script setup lang="ts">
     import { reactive, onMounted, onBeforeUnmount } from 'vue';
-    import type { UserConfigResponse, UserLoginBody, UserLoginResponse } from '~/types';
+    import type { UserConfigResponse, UserLoginResponse } from '~/types';
     import type { ActionResult } from '~/types';
+    import { useRouter } from 'vue-router';
 
 
     definePageMeta({layout: 'centered-form'});
@@ -9,7 +10,7 @@
     const config = useRuntimeConfig()
     const logoImage : string = config.public.LOGO_MAIN as string;
     const serviceName : string = config.public.SERVICE_NAME as string;
-    const route = useRoute();
+    const router = useRouter();
 
     const form = reactive({
         username: '',
@@ -54,19 +55,28 @@
         if (res.success) {
             result.value = res.success
             loginErrorStr.value = null;
+
+            // The behavior of the application depends on the result of the login.
+            // We may ahve to change login, validate EULA or set a 2FA...
+            if (res.success.conditionToValidate) {
+                // Redirect to the eula validation page
+                router.push('/front/eula');
+            } else if (res.success.passwordExpired) {
+                // Redirect to the password expired page
+                router.push('/front/password-expired');
+            } else if (res.success.twoFARequired) {
+                // Redirect to the 2FA page
+                router.push('/front/login-two-factor');
+            } else {
+                // Login successful, redirect to the home page
+                router.push('/front/home');
+            }
+
         } else if (res.error) {
             loginError.value = res.error
             loginErrorStr.value = res.error.message;
         }
     }
-
-
-    /*
-    console.log("--------------------------");
-    console.log(userConfig.value);
-    console.log(userConfig.value?.selfRegistration);
-    console.log("--------------------------");
-    */
 
 </script>
 
