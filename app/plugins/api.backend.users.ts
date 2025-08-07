@@ -14,6 +14,7 @@ export default defineNuxtPlugin(() => {
   // Set the routes
   const usersModuleConfigGet : string = '/users/1.0/config';
   const usersModuleLoginPost: string = '/users/1.0/session/signin';
+  const usersModuleUpgradeGet: string = '/users/1.0/session/upgrade';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -25,6 +26,13 @@ export default defineNuxtPlugin(() => {
       'Content-Type': 'application/json'
   };
 
+  // Client configuration for session API requests
+  function apiSessionHeaders() : any  {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${appStore.getBackendJWT()}`
+    }
+  };
 
   function getJWTEndDate(token: string): number | null {
     try {
@@ -125,6 +133,51 @@ export default defineNuxtPlugin(() => {
                     body: body,
                     signal: controller.signal,
                     headers: apiPublicHeaders
+                }
+            );
+            clearTimeout(timeoutId)
+            appStore.setBackendUp();
+            appStore.setBackendJWT(response.jwtToken);
+            appStore.setRefreshJWT(response.jwtRenewalToken);
+            appStore.setRenewJWTbefore(getJWTEndDate(response.jwtToken) || 0);
+            appStore.setUserEmail(response.email || null);
+            appStore.setUserLogin(response.login || null);
+            appStore.setUser2faSize(response.twoFASize || 0);
+            appStore.setUser2faType(response.twoFAType || '');
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.setBackendDown();
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+
+     /**
+     * Upgrade Login function, after login / password verification, the user complete the login
+     * with a 2FA code or with a password change or eula validation. Upgrade login is called until
+     * the user is fully authenticated.
+     * 
+     * @param {string} twoFaCode - The user 2FA code
+     */
+    getUserSessionUpgrade: async (twoFaCode: string): Promise<{ success?: UserLoginResponse; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
+        const url : string = config.public.BACKEND_API_BASE+usersModuleUpgradeGet+((twoFaCode!=='')?`?secondFactor=${twoFaCode}`:'');
+        console.log(`GET ${url} with headers`, apiSessionHeaders());
+        try {
+            const response = await $fetch<UserLoginResponse>(
+                url,
+                {
+                    method: 'GET',
+                    signal: controller.signal,
+                    headers: apiSessionHeaders()
                 }
             );
             clearTimeout(timeoutId)

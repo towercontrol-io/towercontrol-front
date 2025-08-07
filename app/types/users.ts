@@ -94,6 +94,11 @@ export interface UserLoginResponse {
   twoFARequired: boolean;
 
   /**
+   * First and Second authentication factor is ok
+   */
+  twoFAValidated: boolean;
+
+  /**
    * The 2FA expected code size, this helps the front-end to display the right input field
    */
   twoFASize: number;

@@ -111,24 +111,20 @@
                 @submit="onSubmitLogin"
                 class="space-y-4"
                 >
-                    <UFormGroup label="Login" name="username">
-                        <UInput 
+                    <UInput 
                         v-model="form.username" 
                         :placeholder="t('login.login')" 
                         class="w-full"
                         style="margin-top:0.3rem;"
-                        />
-                    </UFormGroup>
+                    />
 
-                    <UFormGroup label="Password" name="password">
-                        <UInput
-                            class="w-full"
-                            v-model="form.password"
-                            type="password"
-                            :placeholder="t('login.password')" 
-                            style="margin-top:0.3rem;"
-                        />
-                    </UFormGroup>
+                    <UInput
+                        class="w-full"
+                        v-model="form.password"
+                        type="password"
+                        :placeholder="t('login.password')" 
+                        style="margin-top:0.3rem;"
+                    />
 
                     <UButton 
                         type="submit" 

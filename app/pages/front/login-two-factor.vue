@@ -23,21 +23,26 @@
         value : null as string | null
     });
 
+    // -----
+    // Redirect to login page if the user is not logged in
+    if (appStore.getBackendJWT() === null) {
+        router.push('/front/login');
+    }
 
     // -----
     // Login function
     async function onSubmit2Fa() {
         console.log('2FA Code:', value.value.join(''));
-        /*
+        
         const result = ref<UserLoginResponse | null>(null)
         const loginError = ref<ActionResult | { message: string } | null>(null)
         result.value = null
         loginError.value = null
 
-        const res = await $apiBackendUsers.postUserLogin(form.username, form.password)
+        const res = await $apiBackendUsers.getUserSessionUpgrade(value.value.join(''));
         if (res.success) {
             result.value = res.success
-            loginErrorStr.value = null;
+            errorStr.value = null;
 
             // The behavior of the application depends on the result of the login.
             // We may ahve to change login, validate EULA or set a 2FA...
@@ -47,19 +52,21 @@
             } else if (res.success.passwordExpired) {
                 // Redirect to the password expired page
                 router.push('/front/password-expired');
-            } else if (res.success.twoFARequired) {
-                // Redirect to the 2FA page
-                router.push('/front/login-two-factor');
+            } else if (!res.success.twoFAValidated) {
+                // The 2FA code was not valid
+                errorStr.value = 'twoFaCodeInvalid';
             } else {
                 // Login successful, redirect to the home page
                 router.push('/front/home');
             }
 
         } else if (res.error) {
-            loginError.value = res.error
-            loginErrorStr.value = res.error.message;
+            errorStr.value = res.error.message;
         }
-            */
+    }
+
+    async function clearErrorStr() {
+        errorStr.value = null;
     }
 
 </script>
@@ -72,7 +79,7 @@
                 <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
                     {{ t('login.twoFactorMessage-'+appStore.getUser2faType()) }}
                 </p>
-                <UPinInput v-model="value" :length="appStore.getUser2faSize()" otp size="xl" @complete="onSubmit2Fa"/>
+                <UPinInput v-model="value" :length="appStore.getUser2faSize()" otp size="xl" @complete="onSubmit2Fa" @change="clearErrorStr"/>
             </div>
         </div>
 

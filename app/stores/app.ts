@@ -25,8 +25,14 @@ export const applicationStore = defineStore('app', {
     setBackendJWT(token: string) {
       this.backendJWT = token;
     },
+    getBackendJWT(): string | null {
+      return this.backendJWT;
+    },
     setRefreshJWT(token: string) {
       this.refreshJWT = token;
+    },
+    getRefreshJWT(): string | null {
+      return this.refreshJWT;
     },
     setRenewJWTbefore(timestamp: number | null) {
        if (timestamp === null || timestamp <= 0) {

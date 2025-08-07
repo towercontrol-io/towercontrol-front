@@ -12,6 +12,7 @@
     "twoFactorMessage-AUTHENTICATOR": "Entrez votre code Authenticator pour continuer",
     "twoFactorMessage-SMS": "Entrez votre code SMS pour continuer",
     "twoFactorMessage-EMAIL": "Entrez votre code Email pour continuer",
+    "twoFaCodeInvalid": "Le code de vérification 2FA est invalide",
 
     "title": "Connexion",
     "button": "Se connecter",
