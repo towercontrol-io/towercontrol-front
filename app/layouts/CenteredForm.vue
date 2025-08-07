@@ -1,6 +1,20 @@
 <script setup>
   const config = useRuntimeConfig();
+  const router = useRouter();
+  const route = useRoute();
+  const appStore = applicationStore();
+
   const backgroundImage = config.public.BG_CENTERED;
+
+    // -----
+    // Redirect to login page if the user is not logged in for the private pages
+    if (
+        route.path.includes('/private/') 
+        && ( appStore.getBackendJWT() === null || appStore.isJWTExpired() )
+    ) {
+        router.push('/front/public/login');
+    }
+
 
 </script>
 

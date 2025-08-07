@@ -1,13 +1,12 @@
 <script setup lang="ts">
     import { reactive } from 'vue';
     import { applicationStore } from '~/stores/app';
-    import type { UserConfigResponse, UserLoginResponse } from '~/types';
+    import type { UserLoginResponse } from '~/types';
     import type { ActionResult } from '~/types';
     import { useRouter } from 'vue-router';
 
     definePageMeta({layout: 'centered-form'});
     const { t } = useI18n();
-    const config = useRuntimeConfig()
     const router = useRouter();
     const appStore = applicationStore();
 
@@ -24,16 +23,8 @@
     });
 
     // -----
-    // Redirect to login page if the user is not logged in
-    if (appStore.getBackendJWT() === null) {
-        router.push('/front/login');
-    }
-
-    // -----
     // Login function
     async function onSubmit2Fa() {
-        console.log('2FA Code:', value.value.join(''));
-        
         const result = ref<UserLoginResponse | null>(null)
         const loginError = ref<ActionResult | { message: string } | null>(null)
         result.value = null
@@ -48,16 +39,16 @@
             // We may ahve to change login, validate EULA or set a 2FA...
             if (res.success.conditionToValidate) {
                 // Redirect to the eula validation page
-                router.push('/front/eula');
+                router.push('/front/private/eula');
             } else if (res.success.passwordExpired) {
                 // Redirect to the password expired page
-                router.push('/front/password-expired');
+                router.push('/front/private/password-expired');
             } else if (!res.success.twoFAValidated) {
                 // The 2FA code was not valid
                 errorStr.value = 'twoFaCodeInvalid';
             } else {
                 // Login successful, redirect to the home page
-                router.push('/front/home');
+                router.push('/front/private/home');
             }
 
         } else if (res.error) {

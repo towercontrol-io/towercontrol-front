@@ -15,7 +15,7 @@
       : null;
 
     function goHome() {
-        router.push('/front/home')
+        router.push('/front/private/home')
     }
 </script>
 

@@ -108,3 +108,22 @@ export interface UserLoginResponse {
    */
   twoFAType: string;
 }
+
+/**
+ * User password change payload
+ */
+export interface UserPasswordChangeBody {
+  /**
+   * User new password  
+   * @example "changeme"  
+   * @required
+   */
+  password: string
+
+  /**
+   * User Password change authorization key (for the public endpoint)  
+   * @example "jhjfkhqsldjkfhsqljkdhfljsqdhfazuheufhazjkfnds"  
+   * @optional
+   */
+  changeKey?: string
+}

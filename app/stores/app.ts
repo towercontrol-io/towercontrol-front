@@ -48,6 +48,12 @@ export const applicationStore = defineStore('app', {
       const currentTime = (Date.now()+ 15 * 60 * 1000); // Current time + 15 minutes in milliseconds
       return currentTime >= this.renewJWTbefore;
     },
+    isJWTExpired(): boolean {
+      if (this.renewJWTbefore <= 0) {
+        return true;
+      }
+      return Date.now() >= this.renewJWTbefore;
+    },
     setUserEmail(email: string | null) {
       this.userEmail = email;
     },

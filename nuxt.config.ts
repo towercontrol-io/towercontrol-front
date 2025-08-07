@@ -14,6 +14,7 @@ export default defineNuxtConfig({
       LOGO_MAIN: '/front/logo.png',
       SERVICE_NAME: 'IoT Tower Control',
       BACKEND_API_BASE: 'http://localhost:8091',
+      EULA_LINK: 'https://foo.bar/eula',
     }
   },
   i18n: {

@@ -58,18 +58,18 @@
 
             // The behavior of the application depends on the result of the login.
             // We may ahve to change login, validate EULA or set a 2FA...
-            if (res.success.conditionToValidate) {
+            if (res.success.twoFARequired) {
+                // Redirect to the 2FA page
+                router.push('/front/private/login-two-factor');
+            } else if (userConfig.value?.eulaRequired &&res.success.conditionToValidate) {
                 // Redirect to the eula validation page
-                router.push('/front/eula');
+                router.push('/front/private/accept-eula');
             } else if (res.success.passwordExpired) {
                 // Redirect to the password expired page
-                router.push('/front/password-expired');
-            } else if (res.success.twoFARequired) {
-                // Redirect to the 2FA page
-                router.push('/front/login-two-factor');
+                router.push('/front/private/password-expired');
             } else {
                 // Login successful, redirect to the home page
-                router.push('/front/home');
+                router.push('/front/private/home');
             }
 
         } else if (res.error) {

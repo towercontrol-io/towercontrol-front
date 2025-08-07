@@ -4,7 +4,7 @@
 <script setup lang="ts">
   const router = useRouter()
   onMounted(() => {
-    router.replace('/front/login')
+    router.replace('/front/public/login')
   })
 </script>
 

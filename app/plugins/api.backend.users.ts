@@ -1,4 +1,4 @@
-import type { UserConfigResponse, UserLoginBody, UserLoginResponse } from '~/types';
+import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -15,6 +15,8 @@ export default defineNuxtPlugin(() => {
   const usersModuleConfigGet : string = '/users/1.0/config';
   const usersModuleLoginPost: string = '/users/1.0/session/signin';
   const usersModuleUpgradeGet: string = '/users/1.0/session/upgrade';
+  const usersModuleEulaPut: string = '/users/1.0/profile/eula';
+  const usersModulePasswordChangePut: string = '/users/1.0/profile/password/change';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -159,7 +161,7 @@ export default defineNuxtPlugin(() => {
         }
     },
 
-     /**
+    /**
      * Upgrade Login function, after login / password verification, the user complete the login
      * with a 2FA code or with a password change or eula validation. Upgrade login is called until
      * the user is fully authenticated.
@@ -170,7 +172,6 @@ export default defineNuxtPlugin(() => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
         const url : string = config.public.BACKEND_API_BASE+usersModuleUpgradeGet+((twoFaCode!=='')?`?secondFactor=${twoFaCode}`:'');
-        console.log(`GET ${url} with headers`, apiSessionHeaders());
         try {
             const response = await $fetch<UserLoginResponse>(
                 url,
@@ -203,7 +204,79 @@ export default defineNuxtPlugin(() => {
             return { error: { message: 'common.unknownError' } }
         }
     },
- }
+    /**
+     * Request the EULA validation, this is called when the user has to accept the EULA
+     * 
+     * @param none
+     */
+    putUserProfileEula: async (): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
+        const url : string = config.public.BACKEND_API_BASE+usersModuleEulaPut;
+        try {
+            const response = await $fetch<ActionResult>(
+                url,
+                {
+                    method: 'PUT',
+                    signal: controller.signal,
+                    headers: apiSessionHeaders()
+                }
+            );
+            clearTimeout(timeoutId)
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.setBackendDown();
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+    /**
+     * Change the user password, this is called when the user has to change the password
+     * after login or when the password is expired.
+     * 
+     * @param {string} newPassword - The new user password
+     */
+    putUserProfilePasswordChange: async (newPassword: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
+        const url : string = config.public.BACKEND_API_BASE+usersModulePasswordChangePut;
+        const body: UserPasswordChangeBody = {
+            password: newPassword,
+            changeKey: ''
+        };
+        try {
+            const response = await $fetch<ActionResult>(
+                url,
+                {
+                    method: 'PUT',
+                    body: body,
+                    signal: controller.signal,
+                    headers: apiSessionHeaders()
+                }
+            );
+            clearTimeout(timeoutId)
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.setBackendDown();
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+  };
   return {
     provide: {
       apiBackendUsers

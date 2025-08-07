@@ -5,7 +5,7 @@
     const props = defineProps<{ error: any }>();
     const router = useRouter();
     router.push({
-        path: '/front/error',
+        path: '/front/public/error',
         query: { error: encodeURIComponent(JSON.stringify(props.error)) }
         });
 </script>
