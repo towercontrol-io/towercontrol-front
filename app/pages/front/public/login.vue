@@ -61,7 +61,7 @@
             if (res.success.twoFARequired) {
                 // Redirect to the 2FA page
                 router.push('/front/private/login-two-factor');
-            } else if (userConfig.value?.eulaRequired &&res.success.conditionToValidate) {
+            } else if (userConfig.value?.eulaRequired && res.success.conditionToValidate) {
                 // Redirect to the eula validation page
                 router.push('/front/private/accept-eula');
             } else if (res.success.passwordExpired) {
@@ -76,6 +76,11 @@
             loginError.value = res.error
             loginErrorStr.value = res.error.message;
         }
+    }
+    // -----
+    // Manage the lost password
+    async function onPasswordLost() {
+        router.push('/front/public/password-lost');    
     }
 
 </script>
@@ -109,13 +114,12 @@
                 <UForm
                 :state="form"
                 @submit="onSubmitLogin"
-                class="space-y-4"
+                class="space-y-1"
                 >
                     <UInput 
                         v-model="form.username" 
                         :placeholder="t('login.login')" 
                         class="w-full"
-                        style="margin-top:0.3rem;"
                     />
 
                     <UInput
@@ -123,33 +127,31 @@
                         v-model="form.password"
                         type="password"
                         :placeholder="t('login.password')" 
-                        style="margin-top:0.3rem;"
                     />
 
                     <UButton 
                         type="submit" 
                         color="primary" 
                         block
-                        style="margin-top:0.3rem;margin-bottom:0.3rem;"
                     >
                         {{ t('login.connection') }}
                     </UButton>
-
-                    <UButton 
-                        v-if="userConfig?.selfRegistration"
-                        type="submit" 
-                        color="primary" variant="outline" 
-                        block
-                        style="margin-bottom:0rem;"
-                        @click="router.push('/front/register')"
-                    >
-                        {{ t('login.register') }}
-                    </UButton>
                 </UForm>
+                <UButton 
+                    v-if="userConfig?.selfRegistration"
+                    type="submit" 
+                    color="primary" variant="outline" 
+                    block
+                    style="margin-top:1rem;"
+                    @click="router.push('/front/public/register')"
+                    >
+                    {{ t('login.register') }}
+                </UButton>
+
             </div>
             <div class="w-full flex justify-end mt-2">
-                <span class="text-neutral" style="text-decoration: underline;">
-                    {{ $t('login.lost_password')}} 
+                <span class="text-neutral" style="text-decoration: underline;" @click="onPasswordLost">
+                    {{ t('login.lostPassword') }}
                 </span>
             </div>
         </div>
@@ -157,7 +159,7 @@
         <template #footer v-if="loginErrorStr.value!== null">
             <div class="flex flex-col items-center space-y-2">
                 <h2 class="text-m font-semibold text-center text-error" >
-                    {{ $t("login."+loginErrorStr.value)}} 
+                    {{ t("login."+loginErrorStr.value)}} 
                 </h2>
             </div>
         </template>

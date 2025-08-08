@@ -28,7 +28,38 @@ export interface UserConfigResponse {
    * Example: true
    */
   eulaRequired: boolean
+
+  /**
+   * Password minimum size
+   * Example: 8
+   */
+  passwordMinSize: number;
+
+  /**
+   * Password minimum number of upper case characters
+   * Example: 0
+   */
+  passwordMinUpperCase: number;
+
+  /**
+   * Password minimum number of lower case characters
+   * Example: 0
+   */
+  passwordMinLowerCase: number;
+
+  /**
+   * Password minimum number of digit characters
+   * Example: 0
+   */
+  passwordMinDigits: number;
+
+  /**
+   * Password minimum number of symbols characters
+   * Example: 0
+   */
+  passwordMinSymbols: number;
 }
+
 
 /**
  * User Login Request
@@ -126,4 +157,17 @@ export interface UserPasswordChangeBody {
    * @optional
    */
   changeKey?: string
+}
+
+/**
+ * User password lost request payload
+ */
+export interface UserPasswordLostBody {
+
+  /**
+   * User email to send the password reset link
+   * @example "john.doe@foo.bar"
+   */
+  email: string;
+
 }

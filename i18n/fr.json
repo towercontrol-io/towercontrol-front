@@ -23,6 +23,12 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "passwordSize": "Le mot de passe doit contenir au moins 8 caractères",
     "passwordChange": "Changer le mot de passe",
+    "passwordLostMessage" : "Entrez votre adresse e-mail pour recevoir un lien de réinitialisation de mot de passe",
+    "passwordLostEmail": "Adresse e-mail",
+    "passwordLostSubmit": "Envoyer",
+    "passwordLostMessageSent": "Un e-mail a été envoyé avec les instructions pour réinitialiser votre mot de passe, cet email n'est valide que pendant quelques minutes, si vous ne le trouvez pas, pensez à vérifier vos spams. Vous pouvez fermer cette page.",
+    "emailSize" : "L'adresse e-mail doit contenir au moins 4 caractères",
+    "emailInvalid" : "L'adresse e-mail n'est pas valide",
 
     "title": "Connexion",
     "button": "Se connecter",
@@ -63,12 +69,34 @@
   },
   "tools": {
     "toasterDisconnectedTitle": "Backend indisponible",
-    "toasterDisconnectedMessage": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard."
+    "toasterDisconnectedMessage": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",
+    "atLeast": "Au moins",
+    "character": "caractère",
+    "characters": "caractères",
+    "digit": "chiffre",
+    "digits": "chiffres",
+    "lowercase": "minuscule",
+    "lowercases": "minuscules",
+    "uppercase": "majuscule",
+    "uppercases": "majuscules",
+    "symbol": "symbole",
+    "symbols": "symboles",
+    "enterPassword": "Entrez un mot de passe",
+    "weakPassword": "Mot de passe faible",
+    "mediumPassword": "Mot de passe moyen",
+    "strongPassword": "Mot de passe fort",
+    "passwordRequirements" : "Exigences du mot de passe :",
+    "password": "Mot de passe",
+    "repeatPassword": "Répéter le mot de passe",
+    "passwordRepeated": "Les champs doivent correspondre",
+
+    "Last": "Dernier"
   },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
     "goHome": "Retour à l'accueil",
+    "loading": "Chargement...",
 
     "last": "Dernier"
   }

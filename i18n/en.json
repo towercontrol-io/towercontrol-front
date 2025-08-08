@@ -23,6 +23,12 @@
     "passwordMismatch": "Passwords do not match",
     "passwordSize": "Password must be at least 8 characters long",
     "passwordChange": "Change Password",
+    "passwordLostMessage" : "Enter your email address to receive a password reset link",
+    "passwordLostEmail": "Email Address",
+    "passwordLostSubmit": "Submit",
+    "passwordLostMessageSent": "An email has been sent with instructions to reset your password, this email is only valid for a few minutes, if you don't find it, please check your spam folder. You can close this page.",
+    "emailSize" : "Email address must be at least 4 characters long",
+    "emailInvalid" : "Email address is not valid",
 
     "title": "Connection",
     "button": "Log In",
@@ -63,12 +69,35 @@
   },
   "tools": {
     "toasterDisconnectedTitle": "Backend unavailable",
-    "toasterDisconnectedMessage": "The backend is unavailable or too slow. Please try again later."
+    "toasterDisconnectedMessage": "The backend is unavailable or too slow. Please try again later.",
+    "atLeast": "At least",
+    "character": "character",
+    "characters": "characters",
+    "digit": "digit",
+    "digits": "digits",
+    "lowercase": "lowercase",
+    "lowercases": "lowercases",
+    "uppercase": "uppercase",
+    "uppercases": "uppercases",
+    "symbol": "symbol",
+    "symbols": "symbols",
+    "enterPassword": "Enter a password",
+    "weakPassword": "Weak password",
+    "mediumPassword": "Medium password",
+    "strongPassword": "Strong password",
+    "passwordRequirements" : "Password requirements :",
+    "password": "Password",
+    "repeatPassword": "Repeat Password",
+    "passwordRepeated": "The fields must match",
+
+
+    "Last": "Last"
   },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
     "unknownError": "An unknown error occurred. Please try again later.",
     "goHome": "Go to Home",
+    "loading": "Loading...",
 
     "last": "Last"
   }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { reactive } from 'vue';
-    import type { FormError, FormSubmitEvent } from '@nuxt/ui'
+    import type { FormError } from '@nuxt/ui'
+    import type { InputPasswordFields } from '~/types/compInputPassword';
     import { applicationStore } from '~/stores/app';
     import type { UserLoginResponse } from '~/types';
     import type { ActionResult, UserConfigResponse } from '~/types';
@@ -9,10 +10,6 @@
     definePageMeta({layout: 'centered-form'});
     const { t } = useI18n();
     const router = useRouter();
-    const appStore = applicationStore();
-    const config = useRuntimeConfig()
-
-    const eulaLink : string = config.public.EULA_LINK as string;
 
     // -----
     // Load the user module configuration data to adapt the page to the configuration
@@ -27,20 +24,12 @@
     });
 
     const password = reactive({
-        password : '' as string,
-        repeat : '' as string,
-        disableButton : true as boolean
+        password: {
+            password: '',
+            confirmed: false,
+            valid: false
+        } as InputPasswordFields,
     });
-
-    // -----
-    // Validate the form
-    const validate = (state: any): FormError[] => {
-        const errors = [];
-        if (password.password.length < 8) errors.push({ name: 'password', message: $t('login.passwordSize') });
-        if (password.repeat !== password.password) errors.push({ name: 'repeat', message: $t('login.passwordMismatch') });
-        password.disableButton = errors.length > 0;
-        return errors
-    }
 
     // -----
     // Login function
@@ -50,7 +39,7 @@
         result.value = null
         loginError.value = null
 
-        const res = await $apiBackendUsers.putUserProfilePasswordChange(password.password);
+        const res = await $apiBackendUsers.putUserProfilePasswordChange(password.password.password);
         if (res.success) {
             const res = await $apiBackendUsers.getUserSessionUpgrade('');
             if (res.success) {
@@ -93,15 +82,19 @@
             </p>
         </template>
 
-        <UForm :validate="validate" :state="password" class="space-y-4" @submit="onChangePassword">
+        <UForm :state="password" class="space-y-4" @submit="onChangePassword">
+
+            <ToolsInputPassword v-model="password.password" />
+
+<!--
             <UFormField :label="$t('login.passwordExpirePass')" name="password" required>
                 <UInput v-model="password.password" type="password" class="w-full" />
             </UFormField>
             <UFormField :label="$t('login.passwordExpireRepeat')" name="repeat" required>
                 <UInput v-model="password.repeat" type="password" class="w-full" />
             </UFormField>
-
-            <UButton type="submit" :disabled="password.disableButton">
+        -->
+            <UButton type="submit" :disabled="!password.password.valid || !password.password.confirmed">
                 {{ t('login.passwordChange') }} 
             </UButton>
         </UForm>
