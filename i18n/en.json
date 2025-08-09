@@ -77,6 +77,14 @@
     "registerSubmit": "Register",
     "registerInvite": "Invitation code",
     "registeredMessage": "Your registration request has been received, please follow the next steps, you will soon be able to log in.",
+    "verificationKeyMissing": "The verification key is missing, invalid address.",
+    "creationMessage" : "To create your account, please create your password.",
+    "creationMessageCond" : "Please also accept the terms of use of the service. You can consult them ",
+    "eula": "Terms of use",
+    "creationAccount": "Create my account",
+    "here": "here",
+    "creationSuccessMessage": "Your account has been created.",
+    "creationSuccessRedirectMessage": "You will be shortly redirected to the login page.",
 
     "last" : "Last"
   },

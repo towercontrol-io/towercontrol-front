@@ -188,3 +188,28 @@ export interface UserAccountRegistrationBody {
    */
   registrationCode?: string;
 }
+
+/**
+ * User Self Creation request payload
+ */
+export interface UserAccountCreationBody {
+  /**
+   * Email for the account creation. In fact not used for self registration. Here for future usage.
+   */
+  email?: string;
+
+  /**
+   * User Password, used for the account creation
+   */
+  password: string;
+
+  /**
+   * User checked condition Validation, not mandatory on registration but will be requested later
+   */
+  conditionValidation?: boolean;
+
+  /**
+   * Validation ID received by user on registration link
+   */
+  validationID? : string;
+}

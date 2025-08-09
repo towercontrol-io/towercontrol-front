@@ -72,12 +72,21 @@
     "registerMessCode": "Si un code d'invitation vous a été fourni, veuillez le renseigner, sinon, laissez le champ vide.",
     "registerMessCodeMust": "Un code d'invitation vous a été fourni, veuillez le renseigner",
     "registerWithEmail" : "Un email vous sera envoyé pour confirmer votre adresse. Il a une validité limitée. Si vous ne le trouvez pas dans les 5 minutes, vérifiez vos spams.",
-    "registerAdminValid" : "Enfin, un administrateur validera votre inscription manuellement, vous recevrez un email de confirmation une fois votre compte activé.",
+    "registerAdminValid" : "Pour terminer, un administrateur validera votre inscription manuellement, vous recevrez un email de confirmation une fois votre compte activé.",
     "registerEmail": "Adresse e-mail",
     "registerSubmit": "S'inscrire",
     "registerInvite" : "Code d'invitation",
     "registerInviteRequired": "Un code d'invitation est requis pour l'inscription",
     "registeredMessage": "Votre demande d'inscription a été prise en compte, veuillez suivre les prochaines étapes, vous pourrez bientot vous connecter.",
+    "verificationKeyMissing": "La clé de vérification est manquante, adresse invalide.",
+    "creationMessage" : "Pour créer votre compte, veuillez créer votre mot de passe.",
+    "creationMessageCond" : "Veuillez aussi accepter les conditions d'utilisation du service, consultables ",
+    "eula": "Conditions d'utilisation",
+    "creationAccount": "Créer mon compte",
+    "here": "ici",
+    "creationSuccessMessage": "Votre compte a été créé.",
+    "creationSuccessRedirectMessage": "Vous allez être redirigé vers la page de connexion dans quelques secondes.",
+
 
     "last" : "Dernier"
   },

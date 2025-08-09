@@ -155,7 +155,7 @@
   </div>
 
   <div v-if="!pending && !error" class="space-y-2">
-    <UFormField :label="$t('tools.password')">
+    <UFormField :label="$t('tools.password')" required>
       <UInput
         v-model="model.password"
         :placeholder="$t('tools.password')"
@@ -180,7 +180,7 @@
         </template>
       </UInput>
     </UFormField>
-    <UFormField :label="$t('tools.repeatPassword')">
+    <UFormField :label="$t('tools.repeatPassword')" required>
       <UInput
         v-model="repeatPassword"
         :placeholder="$t('tools.repeatPassword')"
