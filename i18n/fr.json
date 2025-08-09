@@ -67,6 +67,20 @@
 
     "last" : "Dernier"
   },
+  "users" : {
+    "registerMessage": "Pour vous inscrire, veuillez fournir votre adresse e-mail.",
+    "registerMessCode": "Si un code d'invitation vous a été fourni, veuillez le renseigner, sinon, laissez le champ vide.",
+    "registerMessCodeMust": "Un code d'invitation vous a été fourni, veuillez le renseigner",
+    "registerWithEmail" : "Un email vous sera envoyé pour confirmer votre adresse. Il a une validité limitée. Si vous ne le trouvez pas dans les 5 minutes, vérifiez vos spams.",
+    "registerAdminValid" : "Enfin, un administrateur validera votre inscription manuellement, vous recevrez un email de confirmation une fois votre compte activé.",
+    "registerEmail": "Adresse e-mail",
+    "registerSubmit": "S'inscrire",
+    "registerInvite" : "Code d'invitation",
+    "registerInviteRequired": "Un code d'invitation est requis pour l'inscription",
+    "registeredMessage": "Votre demande d'inscription a été prise en compte, veuillez suivre les prochaines étapes, vous pourrez bientot vous connecter.",
+
+    "last" : "Dernier"
+  },
   "tools": {
     "toasterDisconnectedTitle": "Backend indisponible",
     "toasterDisconnectedMessage": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",

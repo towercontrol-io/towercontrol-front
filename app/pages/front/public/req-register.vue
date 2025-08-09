@@ -1,0 +1,174 @@
+<script setup lang="ts">
+    import { reactive } from 'vue';
+    import type { UserConfigResponse } from '~/types';
+    import type { FormError } from '@nuxt/ui'
+    import type { ActionResult } from '~/types';
+    import { useRouter } from 'vue-router';
+
+
+    definePageMeta({layout: 'centered-form'});
+    const { t } = useI18n();
+    const config = useRuntimeConfig()
+    const logoImage : string = config.public.LOGO_MAIN as string;
+    const serviceName : string = config.public.SERVICE_NAME as string;
+    const forcedInviteCode : string = config.public.FORCE_INVITE_CODE as string;
+    const disableInviteCode : boolean = config.public.DISABLE_INVITE_CODE as boolean;
+    const router = useRouter();
+
+    const register = reactive({
+        email: '' as string,
+        code: '' as string,
+        disableButton : true as boolean,
+        success: false as boolean,
+    });
+
+
+    // -----
+    // Load the useer module configuration data to adapt the page to the configuration
+    const { $apiBackendUsers } = useNuxtApp();
+    const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
+        () => `user-config-response`, 
+        () => $apiBackendUsers.getUserModuleConfig()
+    );
+
+    const errorStr = reactive({
+        value : null as string | null
+    });
+
+
+    if ( !userConfig.value?.selfRegistration ) {
+        router.push('/front/public/login');
+    }
+
+    // Override with force
+    if ( forcedInviteCode!=='' ) {
+        register.code = forcedInviteCode;
+    }
+
+    // -----
+    // Validate the form
+    const validate = (state: any): FormError[] => {
+        const errors = [];
+        if (!register.email || register.email.length < 4) errors.push({ name: 'email', message: $t('login.emailSize') });
+        if (register.email && !register.email.includes('@') ) errors.push({ name: 'email', message: $t('login.emailInvalid') });
+        if ( userConfig.value?.invitationCodeRequired && (!register.code || register.code.length < 4) ) {
+            errors.push({ name: 'code', message: $t('users.registerInviteRequired') });
+        }
+        register.disableButton = errors.length > 0;
+        return errors;
+    }
+
+    // -----
+    // Login function
+    async function onSubmitRegistration() {
+        
+
+        const result = ref<ActionResult | null>(null)
+        result.value = null
+        errorStr.value = null;
+
+        const res = await $apiBackendUsers.postUserRegistrationRequest(register.email, register.code );
+        if (res.success) {
+            register.success = true;
+            setTimeout(() => {
+                router.push('/front/public/login');
+            }, 15000); // go to login page after 15 seconds
+        } else if (res.error) {
+            errorStr.value = res.error.message;
+        }
+            
+    }
+
+</script>
+
+<template>
+    <UCard variant="outline" align="center" style="border-radius: 1.5rem;padding: 1rem;min-width:30rem;">
+        <template #header>
+            <div class="flex flex-col items-center space-y-2">
+                <img :src="logoImage" alt="Service Logo" class="h-16 w-auto sm:h-20 md:h-24" />
+                <h2 class="text-xl font-semibold text-center text-neutral" >
+                    {{serviceName}} 
+                </h2>
+            </div>
+        </template>
+
+        <div v-if="pending">
+            {{ t('login.loading') }}
+            <UProgress animation="swing" />
+        </div>
+
+        <div v-if="!pending && error">
+            {{ t('login.unavailable') }}
+        </div>
+
+        <div v-if="!pending && !error && !register.success">
+            <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
+                {{ t('users.registerMessage') }}
+                <span v-if="!disableInviteCode && !userConfig?.invitationCodeRequired">{{ t('users.registerMessCode') }}</span>
+                <span v-if="!disableInviteCode && userConfig?.invitationCodeRequired">{{ t('users.registerMessCodeMust') }}</span>
+                <span v-if="userConfig?.registrationLinkByEmail"><br/>{{ t('users.registerWithEmail') }}</span>
+                <span v-if="!userConfig?.autoValidation"><br/>{{ t('users.registerAdminValid') }}</span>
+            </p>
+
+            <UForm
+                :state="register"
+                :validate="validate"
+                @submit="onSubmitRegistration"
+                class="space-y-1"
+            >
+                <UFormField :label="$t('users.registerEmail')" name="email" required>
+                    <UInput 
+                        v-model="register.email" 
+                        :placeholder="t('users.registerEmail')" 
+                        class="w-full"
+                    />
+                </UFormField>
+
+                <UFormField v-if="!disableInviteCode && forcedInviteCode===''":label="$t('users.registerInvite')" name="code" :required="userConfig?.invitationCodeRequired">
+                    <UInput
+                        class="w-full"
+                        :v-model="register.code"
+                        :placeholder="t('users.registerInvite')" 
+                    />
+                </UFormField>
+
+                <UFormField v-if="!disableInviteCode && forcedInviteCode!==''":label="$t('users.registerInvite')" name="code" required>
+                    <UInput
+                        class="w-full"
+                        :v-model="register.code"
+                        :placeholder="t('users.registerInvite')" 
+                        disabled
+                        :value="forcedInviteCode"
+                    />
+                </UFormField>
+
+                <UButton 
+                        type="submit" 
+                        color="primary" 
+                        block
+                        style="margin-top:0.3rem;margin-bottom:0.3rem;"
+                        :disabled="register.disableButton"
+                    >
+                        {{ t('users.registerSubmit') }}
+                </UButton>
+            </UForm>
+        </div>
+
+        <div v-if="!pending && !error && register.success">
+            <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
+                {{ t('users.registeredMessage') }}
+                <span v-if="userConfig?.registrationLinkByEmail"><br/>{{ t('users.registerWithEmail') }}</span>
+                <span v-if="!userConfig?.autoValidation"><br/>{{ t('users.registerAdminValid') }}</span>
+            </p>
+        </div>
+    
+        <template #footer v-if="errorStr.value!== null">
+            <div class="flex flex-col items-center space-y-2">
+                <h2 class="text-m font-semibold text-center text-error" >
+                    {{ t("login."+errorStr.value)}} 
+                </h2>
+            </div>
+        </template>
+
+    </UCard>
+</template>

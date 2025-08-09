@@ -1,4 +1,4 @@
-import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody } from '~/types';
+import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -18,6 +18,7 @@ export default defineNuxtPlugin(() => {
   const usersModuleEulaPut: string = '/users/1.0/profile/eula';
   const usersModulePasswordChangePut: string = '/users/1.0/profile/password/change';
   const usersModulePasswordLostReqPost: string = '/users/1.0/profile/password/request';
+  const usersModuleRegisterReqPost: string = '/users/1.0/registration/register';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -288,6 +289,45 @@ export default defineNuxtPlugin(() => {
         const url : string = config.public.BACKEND_API_BASE+usersModulePasswordLostReqPost;
         const body: UserPasswordLostBody = {
             email: email
+        };
+        try {
+            const response = await $fetch<ActionResult>(
+                url,
+                {
+                    method: 'POST',
+                    body: body,
+                    signal: controller.signal,
+                    headers: apiPublicHeaders
+                }
+            );
+            clearTimeout(timeoutId)
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.setBackendDown();
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+    /**
+     * Request Registration, this is called when the user wants to register a new account
+     * 
+     * @param {string} email - The user email
+     * @param {string} code - The invitation code
+     */
+    postUserRegistrationRequest: async (email: string, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
+        const url : string = config.public.BACKEND_API_BASE+usersModuleRegisterReqPost;
+        const body: UserAccountRegistrationBody = {
+            email: email,
+            registrationCode: code,
         };
         try {
             const response = await $fetch<ActionResult>(

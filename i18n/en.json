@@ -67,6 +67,19 @@
 
     "last" : "Last"
   },
+  "users" : {
+    "registerMessage": "To register, please provide your email address.",
+    "registerMessCode": "If you have been given an invitation code, please enter it; otherwise, leave the field blank.",
+    "registerMessCodeMust": "You have been given an invitation code, please enter it.",
+    "registerWithEmail": "An email will be sent to you to confirm your address. It is valid for a limited time. If you do not find it within 5 minutes, please check your spam folder.",
+    "registerAdminValid": "Finally, an administrator will manually validate your registration. You will receive a confirmation email once your account is activated.",
+    "registerEmail": "Email address",
+    "registerSubmit": "Register",
+    "registerInvite": "Invitation code",
+    "registeredMessage": "Your registration request has been received, please follow the next steps, you will soon be able to log in.",
+
+    "last" : "Last"
+  },
   "tools": {
     "toasterDisconnectedTitle": "Backend unavailable",
     "toasterDisconnectedMessage": "The backend is unavailable or too slow. Please try again later.",

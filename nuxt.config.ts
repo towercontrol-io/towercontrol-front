@@ -13,8 +13,10 @@ export default defineNuxtConfig({
       BG_CENTERED: '/front/bg-centered-2.svg',
       LOGO_MAIN: '/front/logo.png',
       SERVICE_NAME: 'IoT Tower Control',
-      BACKEND_API_BASE: 'http://localhost:8091',
-      EULA_LINK: 'https://foo.bar/eula',
+      BACKEND_API_BASE: 'http://localhost:8091',  // Backend API base URL
+      EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA 
+      FORCE_INVITE_CODE : '',                     // If set, this code will be used for registration, this allows on backend to force application specific processing
+      DISABLE_INVITE_CODE: false,                  // If true, the invite code field will not be displayed on registration, FORCE_INVITE_CODE is applied but hidden
     }
   },
   i18n: {

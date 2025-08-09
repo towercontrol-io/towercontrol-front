@@ -171,3 +171,20 @@ export interface UserPasswordLostBody {
   email: string;
 
 }
+
+/**
+ * User registration request payload
+ */
+export interface UserAccountRegistrationBody {
+  /**
+   * Email for the account creation
+   * @example "john.doe@foo.bar"
+   */
+  email: string;
+
+  /**
+   * Invitation code, for system with invitation required
+   * @example "A7C67FB256221..."
+   */
+  registrationCode?: string;
+}

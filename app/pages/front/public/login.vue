@@ -143,7 +143,7 @@
                     color="primary" variant="outline" 
                     block
                     style="margin-top:1rem;"
-                    @click="router.push('/front/public/register')"
+                    @click="router.push('/front/public/req-register')"
                     >
                     {{ t('login.register') }}
                 </UButton>
