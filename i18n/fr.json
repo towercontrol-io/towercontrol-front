@@ -85,7 +85,10 @@
     "creationAccount": "Créer mon compte",
     "here": "ici",
     "creationSuccessMessage": "Votre compte a été créé.",
-    "creationSuccessRedirectMessage": "Vous allez être redirigé vers la page de connexion dans quelques secondes.",
+    "successRedirectMessage": "Vous allez être redirigé vers la page de connexion dans quelques secondes.",
+    "passwordChangeMessage": "Vous pouvez maintenant saisir un nouveau mot de passe.",
+    "passwordChange": "Changer mon mot de passe",
+    "passwordChangeSuccess": "Votre mot de passe a été modifié.",
 
 
     "last" : "Dernier"

@@ -1,5 +1,5 @@
 import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
-import type { UserAccountCreationBody } from '~/types';
+import type { UserAccountCreationBody, UserPasswordChangeBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -20,7 +20,8 @@ export default defineNuxtPlugin(() => {
   const usersModulePasswordChangePut: string = '/users/1.0/profile/password/change';
   const usersModulePasswordLostReqPost: string = '/users/1.0/profile/password/request';
   const usersModuleRegisterReqPost: string = '/users/1.0/registration/register';
-  const usersMuduleCreationReqPost: string = '/users/1.0/creation/create';
+  const usersModuleCreationReqPut: string = '/users/1.0/creation/create';
+  const usersModuleChangePassReqPost: string = '/users/1.0/profile/password/reset';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -368,7 +369,7 @@ export default defineNuxtPlugin(() => {
     postUserCreationRequest: async (password: string, condition: boolean, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersMuduleCreationReqPost;
+        const url : string = config.public.BACKEND_API_BASE+usersModuleCreationReqPut;
         const body: UserAccountCreationBody = {
             password: password,
             conditionValidation: condition,
@@ -399,6 +400,47 @@ export default defineNuxtPlugin(() => {
             return { error: { message: 'common.unknownError' } }
         }
     },
+    /**
+     * Account creation, this is called after receiving the email validation code.
+     * 
+     * @param {string} password - The user password
+     * @param {boolean} condition - true when the service usage conditions has been accepted
+     * @param {string} code - The invitation code
+     */
+    putUserPasswordResetRequest: async (password: string, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
+        const url : string = config.public.BACKEND_API_BASE+usersModuleChangePassReqPost;
+        const body: UserPasswordChangeBody = {
+            password: password,
+            changeKey: code
+        };
+        try {
+            const response = await $fetch<ActionResult>(
+                url,
+                {
+                    method: 'PUT',
+                    body: body,
+                    signal: controller.signal,
+                    headers: apiPublicHeaders
+                }
+            );
+            clearTimeout(timeoutId)
+            return { success: response }
+        } catch (err: any) {
+            clearTimeout(timeoutId)
+            if (err.name === 'AbortError') {
+                appStore.setBackendDown();
+                return { error: { message: 'common.backendTimeout' } }
+            }
+            // Try to parse error as ActionResult
+            if (err?.response?._data) {
+                return { error: err.response._data as ActionResult }
+            }
+            return { error: { message: 'common.unknownError' } }
+        }
+    },
+
   };
   return {
     provide: {

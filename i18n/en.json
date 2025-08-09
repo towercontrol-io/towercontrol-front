@@ -84,7 +84,10 @@
     "creationAccount": "Create my account",
     "here": "here",
     "creationSuccessMessage": "Your account has been created.",
-    "creationSuccessRedirectMessage": "You will be shortly redirected to the login page.",
+    "successRedirectMessage": "You will be shortly redirected to the login page.",
+    "passwordChangeMessage": "Please set a new password.",
+    "passwordChange": "Change my password",
+    "passwordChangeSuccess": "Your password has been changed successfully.",
 
     "last" : "Last"
   },

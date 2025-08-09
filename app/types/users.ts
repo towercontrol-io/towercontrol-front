@@ -213,3 +213,21 @@ export interface UserAccountCreationBody {
    */
   validationID? : string;
 }
+
+/**
+ * User Self Password reset
+ */
+export interface UserPasswordChangeBody {
+
+  /**
+   * User New Password
+   */
+  password: string;
+
+  /**
+   * User Password change authorization key (for the public endpoint)
+   */
+  changeKey?: string;
+
+}
+

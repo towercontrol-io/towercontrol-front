@@ -59,22 +59,21 @@
         
         //if (register.email.length < 4) errors.push({ name: 'email', message: $t('login.emailSize') });
         //if (!register.email.includes('@') ) errors.push({ name: 'email', message: $t('login.emailInvalid') });
-        register.disableButton = !(errors.length == 0 && register.conditions);
+        register.disableButton = !(errors.length == 0 );
         return errors;
     }
 
     // -----
     // Call backend
-    async function onSubmitRegistration() {
+    async function onSubmitPasswordChange() {
 
-        
         const result = ref<ActionResult | null>(null)
         result.value = null
         errorStr.value = null;
         if ( !verificationKey.value ) errorStr.value = "You must have a validation key;"
         else {
 
-            const res = await $apiBackendUsers.postUserCreationRequest(register.password.password, register.conditions, verificationKey.value );
+            const res = await $apiBackendUsers.putUserPasswordResetRequest(register.password.password, verificationKey.value );
             if (res.success) {
                 register.success = true;
                 setTimeout(() => {
@@ -111,52 +110,31 @@
 
         <div v-if="!pending && !error && !register.success">
             <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
-                {{ t('users.creationMessage') }}
-                <span v-if="userConfig?.eulaRequired" class="text-primary" style="font-weight: bold;">
-                    {{ t('users.creationMessageCond') }}
-                    <a :href="eulaLink" target="_blank" style="text-decoration: underline;">{{ t('users.here') }}</a>.
-                </span>
+                {{ t('users.passwordChangeMessage') }}
             </p>
 
             <UForm
                 :state="register"
                 :validate="validate"
-                @submit="onSubmitRegistration"
+                @submit="onSubmitPasswordChange"
                 class="space-y-1"
             >
-            <!--
-                <UFormField :label="$t('users.registerEmail')" name="email" required>
-                    <UInput 
-                        v-model="register.email" 
-                        :placeholder="t('login.login')" 
-                        class="w-full"
-                    />
-                </UFormField>
-            -->    
-                <UFormField :label="$t('users.eula')" name="eula" required style="margin-top:0.5rem;text-align:left;">
-                    <USwitch 
-                        required 
-                        v-model="register.conditions" 
-                        :label="t('login.eulaAcceptSwitch')"
-                    />
-                </UFormField>   
                 <ToolsInputPassword v-model="register.password" />
                 <UButton 
                         type="submit" 
                         color="primary" 
                         block
                         style="margin-top:0.3rem;margin-bottom:0.3rem;"
-                        :disabled="register.disableButton || !register.password.confirmed || !register.password.valid"
+                        :disabled="!register.password.confirmed || !register.password.valid"
                     >
-                        {{ t('users.creationAccount') }}
+                        {{ t('users.passwordChange') }}
                 </UButton>
             </UForm>
         </div>
 
         <div v-if="!pending && !error && register.success">
             <p class="text-sm text-primary text-center" style="margin-bottom:1rem;">
-                {{ t('users.creationSuccessMessage') }}
-                <span v-if="!userConfig?.autoValidation"><br/>{{ t('users.registerAdminValid') }}</span>
+                {{ t('users.passwordChangeSuccess') }}
                 {{ t('users.successRedirectMessage') }}
             </p>
         </div>
