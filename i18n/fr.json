@@ -7,7 +7,7 @@
     "register": "Par encore de compte ? Inscrivez-vous ici",
     "loading": "Chargement...",
     "unavailable": "Le backend est indisponible ou trop lent. Veuillez réessayer plus tard.",
-    "lost_password": "Mot de passe oublié ?",
+    "lostPassword": "Mot de passe oublié ?",
     "twoFactorMessage-": "Entrez votre code 2FA pour continuer",
     "twoFactorMessage-AUTHENTICATOR": "Entrez votre code Authenticator pour continuer",
     "twoFactorMessage-SMS": "Entrez votre code SMS pour continuer",
@@ -64,6 +64,9 @@
     "user-session-2fa-code-missing" : "Le code de vérification 2FA est manquant",
     "user-session-2fa-code-invalid" : "Le code de vérification 2FA est invalide",
     "user-session-2fa-code-valid" : "Le code de vérification 2FA est valide",
+    "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
+    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
+
 
     "last" : "Dernier"
   },
@@ -89,7 +92,6 @@
     "passwordChangeMessage": "Vous pouvez maintenant saisir un nouveau mot de passe.",
     "passwordChange": "Changer mon mot de passe",
     "passwordChangeSuccess": "Votre mot de passe a été modifié.",
-
 
     "last" : "Dernier"
   },

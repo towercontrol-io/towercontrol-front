@@ -215,19 +215,86 @@ export interface UserAccountCreationBody {
 }
 
 /**
- * User Self Password reset
+ * User ACL (Access Control List) for groups
+ * This interface defines the structure of user access control lists, which include group names, local names
  */
-export interface UserPasswordChangeBody {
+export interface UserAcl {
+  /**
+   * Group name
+   * Example: "mygroup"
+   */
+  group: string;
 
   /**
-   * User New Password
+   * Allows to change the name of the group locally
+   * Example: "my favorite group"
    */
-  password: string;
+  localName: string;
 
   /**
-   * User Password change authorization key (for the public endpoint)
+   * Roles for the group
+   * Example: [ "ROLE_DEVICE_READ" ]
    */
-  changeKey?: string;
-
+  roles: string[];
 }
+
+/**
+ * User Basic Profile (loaded on login)
+ */
+export interface UserBasicProfileResponse {
+  /**
+   * User Email
+   * Example: "john.doe@foo.bar"
+   */
+  email?: string;
+
+  /**
+   * User login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   */
+  login?: string;
+
+  /**
+   * First Name
+   * Example: "John"
+   */
+  firstName?: string;
+
+  /**
+   * Last Name
+   * Example: "Doe"
+   */
+  lastName?: string;
+
+  /**
+   * The password expiration date, in epoch ms
+   * Example: 172545052000
+   */
+  passwordExpirationMs: number;
+
+  /**
+   * User language
+   * Example: "en"
+   */
+  language: string;
+
+  /**
+   * Last communication seen, used for getting the pending one
+   * Example: 172545052000
+   */
+  lastComMessageSeen: number;
+
+  /**
+   * Roles list
+   * Example: [ "ROLE_DEVICE_READ", "ROLE_REGISTERED_USER", "ROLE_USER_ADMIN" ]
+   */
+  roles: string[];
+
+  /**
+   * Acls list
+   * Example: [ { group: "mygroup", roles: [ "ROLE_DEVICE_READ" ] }, ... ]
+   */
+  acls: UserAcl[];
+}
+
 

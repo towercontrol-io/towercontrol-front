@@ -7,7 +7,7 @@
     "register": "No account? Register here",
     "loading": "Loading...",
     "unavailable": "The backend is unavailable or too slow. Please try again later.",
-    "lost_password": "Lost password?",
+    "lostPassword": "Lost password?",
     "twoFactorMessage-": "Enter your 2FA code to continue",
     "twoFactorMessage-AUTHENTICATOR": "Enter your Authenticator code to continue",
     "twoFactorMessage-SMS": "Enter your SMS code to continue",
@@ -64,6 +64,9 @@
     "user-session-2fa-code-missing" : " 2FA verification code is missing",
     "user-session-2fa-code-invalid" : "2FA verification code is invalid",
     "user-session-2fa-code-valid" : "2FA verification code is valid",
+    "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
+    "unknownError": "An unknown error occurred. Please try again later.",
+
 
     "last" : "Last"
   },

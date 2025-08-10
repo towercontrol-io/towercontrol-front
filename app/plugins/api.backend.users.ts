@@ -1,14 +1,26 @@
 import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
-import type { UserAccountCreationBody, UserPasswordChangeBody } from '~/types';
+import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
 const GET_TIMEOUT = 5000; // 5 seconds
-const CACHE_TTL = 10 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
 let cache: { data: UserConfigResponse | null; timestamp: number } = {
   data: null,
   timestamp: 0
 }
+
+const PROFILE_CACHE_TTL = 60 * 60 * 1000; // 60 minutes in milliseconds
+let profileCache: { 
+    profile: UserBasicProfileResponse | null;
+    timestamp: number; 
+    forceRefresh: boolean;
+} = {
+    profile: null,
+    timestamp: 0,
+    forceRefresh: false
+};
+
 
 export default defineNuxtPlugin(() => {
 
@@ -22,6 +34,7 @@ export default defineNuxtPlugin(() => {
   const usersModuleRegisterReqPost: string = '/users/1.0/registration/register';
   const usersModuleCreationReqPut: string = '/users/1.0/creation/create';
   const usersModuleChangePassReqPost: string = '/users/1.0/profile/password/reset';
+  const usersModuleProdileBasicGet: string = '/users/1.0/profile/basic';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -58,9 +71,107 @@ export default defineNuxtPlugin(() => {
         console.error("Invalid JWT:", error);
         return null;
     }
- }
+  }
+  /**
+   * Generic Functon to call backend API with timeout and backend status management.
+   * 
+   * @param _method 
+   * @param url 
+   * @param body 
+   * @param public 
+   * @returns 
+   */
+  async function apiCallwithTimeout<T>(_method: any, url: string, body: any, isPublic: boolean): Promise<T> {
+    try {
+        // Gestion du timeout (5s)
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT)
+
+        const response = await $fetch<T>(
+                config.public.BACKEND_API_BASE+url, 
+                {
+                    method: _method,
+                    body: body,
+                    signal: controller.signal,
+                    headers: (isPublic) ? apiPublicHeaders : apiSessionHeaders()
+                }
+        );
+        clearTimeout(timeout)
+
+        // Check the restponse code 200 expected
+        if (!response) {
+            appStore.setBackendDown();
+            throw new Error(`Erreur on backend API`)
+        } else {
+            appStore.setBackendUp();
+            return response;
+        }
+    } catch (error: any) {
+        // Test Timeout situation
+        console.log('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        if (error.cause?.name === 'AbortError') {
+            appStore.setBackendDown();
+            error = {
+                status: 'UNKNOWN' as ACTION_RESULT,
+                status_code: 0,
+                message: 'backendTimeout' 
+            } as ActionResult;
+        }
+        // Try to match an ActionResult error (if not the case report server error)
+        else if (error?.response?._data) {
+            const actionResult = error.response._data as ActionResult;
+            if ( actionResult.status == undefined ) {
+                appStore.setBackendDown();
+                error = {
+                    status: 'UNKNOWN' as ACTION_RESULT,
+                    status_code: 0,
+                    message: 'unknownError' 
+                } as ActionResult;
+            } else {
+               error = actionResult;
+            }
+        } else {
+            // probably cors error
+            error = {
+                status: 'UNKNOWN' as ACTION_RESULT,
+                status_code: 0,
+                message: 'unknownError' 
+            } as ActionResult;
+        }
+        throw error
+    }
+  }
 
   const apiBackendUsers = {
+
+    /**
+     * Get the user profile, cache it until the refresh is forced or on every 60 minutes.
+     */
+    getUserProfile: async (): Promise<UserBasicProfileResponse> => {
+        const now = Date.now()
+
+        // check cache validity
+        if (profileCache.profile && now - profileCache.timestamp < CACHE_TTL && !profileCache.forceRefresh) {
+            return profileCache.profile
+        }
+
+        // Call API
+        try {
+            const response = await apiCallwithTimeout<UserBasicProfileResponse>(
+                'GET',
+                usersModuleProdileBasicGet,
+                null,
+                false
+            );
+            profileCache.profile = response;
+            profileCache.timestamp = now;
+            return response;
+        } catch (error : any) {
+            // in case of error, keep returning cached version
+            if ( profileCache.profile ) return profileCache.profile;
+            return error;
+        }
+    },
 
     /**
      * Get the user module configuration. Thi will be used to determine que UI behavior
@@ -74,50 +185,27 @@ export default defineNuxtPlugin(() => {
     getUserModuleConfig: async (): Promise<UserConfigResponse> => {
         const now = Date.now()
 
-        // Vérifie si le cache est valide
+        // Check cache validity
         if (cache.data && now - cache.timestamp < CACHE_TTL) {
             return cache.data
         }
 
+        // Call API
         try {
-            // Gestion du timeout (5s)
-            const controller = new AbortController()
-            const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT)
-
-            const response = await $fetch<UserConfigResponse>(
-                config.public.BACKEND_API_BASE+usersModuleConfigGet, 
-                {
-                    method: 'GET',
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<UserConfigResponse>(
+                'GET',
+                usersModuleConfigGet,
+                null,
+                true
             );
-            clearTimeout(timeout)
-
-            // Check the restponse code 200 expected
-            if (!response) {
-                appStore.setBackendDown();
-                throw new Error(`Erreur on backend API`)
-            } else {
-                appStore.setBackendUp();
-
-                response.eulaRequired = true;
-            }
-
-            // Update cache
-            cache = {
-                data: response,
-                timestamp: now,
-            }
-
+            cache.data = response;
+            cache.timestamp = now;
             return response;
-        } catch (error: any) {
-            // Timeout ou autre erreur → on met globalVariable à false
-            appStore.setBackendDown();
+        } catch (error : any) {
             throw error
         }
-
     },
+
 
     /**
      * Login function, the login and password are sent to the backend
@@ -128,23 +216,18 @@ export default defineNuxtPlugin(() => {
      * @param {string} password - The user password
      */
     postUserLogin: async (login: string, password: string): Promise<{ success?: UserLoginResponse; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT) // 20s timeout
         let body: UserLoginBody = {
             email: login,
             password: password
         };
+
         try {
-            const response = await $fetch<UserLoginResponse>(
-                config.public.BACKEND_API_BASE+usersModuleLoginPost, 
-                {
-                    method: 'POST',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<UserLoginResponse>(
+                'POST',
+                usersModuleLoginPost,
+                body,
+                true
             );
-            clearTimeout(timeoutId)
             appStore.setBackendUp();
             appStore.setBackendJWT(response.jwtToken);
             appStore.setRefreshJWT(response.jwtRenewalToken);
@@ -154,18 +237,10 @@ export default defineNuxtPlugin(() => {
             appStore.setUser2faSize(response.twoFASize || 0);
             appStore.setUser2faType(response.twoFAType || '');
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
+
     },
 
     /**
@@ -176,19 +251,14 @@ export default defineNuxtPlugin(() => {
      * @param {string} twoFaCode - The user 2FA code
      */
     getUserSessionUpgrade: async (twoFaCode: string): Promise<{ success?: UserLoginResponse; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModuleUpgradeGet+((twoFaCode!=='')?`?secondFactor=${twoFaCode}`:'');
+        const url : string = usersModuleUpgradeGet+((twoFaCode!=='')?`?secondFactor=${twoFaCode}`:'');
         try {
-            const response = await $fetch<UserLoginResponse>(
+            const response = await apiCallwithTimeout<UserLoginResponse>(
+                'GET',
                 url,
-                {
-                    method: 'GET',
-                    signal: controller.signal,
-                    headers: apiSessionHeaders()
-                }
+                null,
+                false
             );
-            clearTimeout(timeoutId)
             appStore.setBackendUp();
             appStore.setBackendJWT(response.jwtToken);
             appStore.setRefreshJWT(response.jwtRenewalToken);
@@ -198,17 +268,8 @@ export default defineNuxtPlugin(() => {
             appStore.setUser2faSize(response.twoFASize || 0);
             appStore.setUser2faType(response.twoFAType || '');
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
@@ -217,31 +278,16 @@ export default defineNuxtPlugin(() => {
      * @param none
      */
     putUserProfileEula: async (): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModuleEulaPut;
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'PUT',
-                    signal: controller.signal,
-                    headers: apiSessionHeaders()
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                usersModuleEulaPut,
+                null,
+                false
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
