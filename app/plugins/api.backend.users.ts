@@ -32,7 +32,7 @@ export default defineNuxtPlugin(() => {
   const usersModulePasswordChangePut: string = '/users/1.0/profile/password/change';
   const usersModulePasswordLostReqPost: string = '/users/1.0/profile/password/request';
   const usersModuleRegisterReqPost: string = '/users/1.0/registration/register';
-  const usersModuleCreationReqPut: string = '/users/1.0/creation/create';
+  const usersModuleCreationReqPost: string = '/users/1.0/creation/create';
   const usersModuleChangePassReqPost: string = '/users/1.0/profile/password/reset';
   const usersModuleProdileBasicGet: string = '/users/1.0/profile/basic';
 
@@ -297,36 +297,20 @@ export default defineNuxtPlugin(() => {
      * @param {string} newPassword - The new user password
      */
     putUserProfilePasswordChange: async (newPassword: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModulePasswordChangePut;
         const body: UserPasswordChangeBody = {
             password: newPassword,
             changeKey: ''
         };
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'PUT',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiSessionHeaders()
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                usersModulePasswordChangePut,
+                body,
+                false
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
@@ -335,35 +319,19 @@ export default defineNuxtPlugin(() => {
      * @param {string} email - The user email
      */
     postUserProfilePasswordLostReq: async (email: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModulePasswordLostReqPost;
         const body: UserPasswordLostBody = {
             email: email
         };
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'POST',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'POST',
+                usersModulePasswordLostReqPost,
+                body,
+                true
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
@@ -373,36 +341,20 @@ export default defineNuxtPlugin(() => {
      * @param {string} code - The invitation code
      */
     postUserRegistrationRequest: async (email: string, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModuleRegisterReqPost;
         const body: UserAccountRegistrationBody = {
             email: email,
             registrationCode: code,
         };
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'POST',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'POST',
+                usersModuleRegisterReqPost,
+                body,
+                true
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
@@ -413,37 +365,21 @@ export default defineNuxtPlugin(() => {
      * @param {string} code - The invitation code
      */
     postUserCreationRequest: async (password: string, condition: boolean, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModuleCreationReqPut;
         const body: UserAccountCreationBody = {
             password: password,
             conditionValidation: condition,
             validationID: code
         };
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'POST',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'POST',
+                usersModuleCreationReqPost,
+                body,
+                true
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
     /**
@@ -454,36 +390,20 @@ export default defineNuxtPlugin(() => {
      * @param {string} code - The invitation code
      */
     putUserPasswordResetRequest: async (password: string, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), GET_TIMEOUT); // 20s timeout
-        const url : string = config.public.BACKEND_API_BASE+usersModuleChangePassReqPost;
         const body: UserPasswordChangeBody = {
             password: password,
             changeKey: code
         };
         try {
-            const response = await $fetch<ActionResult>(
-                url,
-                {
-                    method: 'PUT',
-                    body: body,
-                    signal: controller.signal,
-                    headers: apiPublicHeaders
-                }
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                usersModuleChangePassReqPost,
+                body,
+                true
             );
-            clearTimeout(timeoutId)
             return { success: response }
-        } catch (err: any) {
-            clearTimeout(timeoutId)
-            if (err.name === 'AbortError') {
-                appStore.setBackendDown();
-                return { error: { message: 'common.backendTimeout' } }
-            }
-            // Try to parse error as ActionResult
-            if (err?.response?._data) {
-                return { error: err.response._data as ActionResult }
-            }
-            return { error: { message: 'common.unknownError' } }
+        } catch (error : any) {
+            return { error };
         }
     },
 
