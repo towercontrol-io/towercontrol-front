@@ -108,7 +108,7 @@ export default defineNuxtPlugin(() => {
         }
     } catch (error: any) {
         // Test Timeout situation
-        console.log('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        //console.log('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
         if (error.cause?.name === 'AbortError') {
             appStore.setBackendDown();
             error = {

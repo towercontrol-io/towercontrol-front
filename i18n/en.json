@@ -117,8 +117,26 @@
     "repeatPassword": "Repeat Password",
     "passwordRepeated": "The fields must match",
 
-
     "Last": "Last"
+  },
+  "menu": {
+    "home": "Home",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": "Profile",
+    "suport": "Support & Ticket",
+    "documentation": "Documentation",
+    "apiDocumentation": "API Documentation",
+    "searchGoTo" : "Go To",
+    "searchOther" : "Other links",
+    "theme": "Color Theme",
+    "thprimary": "Primary color",
+    "thneutral": "Neutral color",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+
+    "last" : "Last"
   },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",

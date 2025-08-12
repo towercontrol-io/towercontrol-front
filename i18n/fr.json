@@ -120,6 +120,25 @@
 
     "Last": "Dernier"
   },
+  "menu": {
+    "home": "Accueil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "suport": "Support & Ticket",
+    "documentation": "Documentation",
+    "apiDocumentation": "Documentation API",
+    "searchGoTo" : "Aller à",
+    "searchOther" : "Autres liens",
+    "theme": "Thème de couleurs",
+    "thprimary": "Couleur principale",
+    "thneutral": "Couleur neutre",
+    "appearance": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+
+    "last" : "Dernier"
+  },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",

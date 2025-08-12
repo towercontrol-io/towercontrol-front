@@ -57,12 +57,21 @@ Select the following options:
 - **Package manager**: npm
 - **Init git repository**: No
 - **Official Nuxt.js modules**: Yes
-   - **Nuxt.js modules**: @nuxt/icon, @nuxt/ui
+   - **Nuxt.js modules**: @nuxt/icon
 - **TypeScript**: Yes
 
 ## Install packages
 
 ```
-npm install @nuxtjs/i18n
-npm install @pinia/nuxt
+npm install @nuxtjs/i18n        # Internationalization support
+npm install @pinia/nuxt         # Pinia state/store management
+npm install @nuxt/ui-pro        # Nuxt UI Pro components
+```
+
+## Clean libs
+
+```
+rm -rf node_modules
+rm package-lock.json
+npm i
 ```

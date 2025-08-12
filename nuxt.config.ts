@@ -5,13 +5,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   ssr: false,
-  modules: ['@nuxt/ui','@nuxtjs/i18n','@pinia/nuxt'],
+  modules: ['@nuxt/ui-pro','@nuxtjs/i18n','@pinia/nuxt'],
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
       // Env Variables, uses NUXT_ prefix from ENV
       BG_CENTERED: '/front/bg-centered-2.svg',
       LOGO_MAIN: '/front/logo.png',
+      LOGO_HOME: '/front/logo.png',
+      AVATAR_DEFAULT: '/front/avatar.png',
       SERVICE_NAME: 'IoT Tower Control',
       BACKEND_API_BASE: 'http://localhost:8091',  // Backend API base URL
       EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA 
