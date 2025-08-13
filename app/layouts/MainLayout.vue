@@ -2,15 +2,16 @@
   import type { UserBasicProfileResponse } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
-  const { t } = useI18n();
+import { set } from '@nuxt/ui/runtime/utils/index.js';
+  const { t, setLocale } = useI18n();
   const router = useRouter();
   const route = useRoute();
   const appStore = applicationStore();
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig();
   const logoImage : string = config.public.LOGO_HOME as string;
   const avatarDefault : string = config.public.AVATAR_DEFAULT as string;
-  const colorMode = useColorMode()
-  const appConfig = useAppConfig()
+  const colorMode = useColorMode();
+  const appConfig = useAppConfig();
 
   const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
   const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
@@ -27,10 +28,21 @@
   // ----
   // Load the profile data (from cache most of the time, but auto-refresh that way)
   const { $apiBackendUsers } = useNuxtApp();
-  const { data : userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
-      () => `user-profile-response`, 
-      () => $apiBackendUsers.getUserProfile()
+  const { data: userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
+    () => `user-profile-response`,
+    () => $apiBackendUsers.getUserProfile()
   );
+
+  // ---
+  // Apply user Locale if set, or keep browser default locale
+  watch(userProfile, (profile) => {
+    if (profile?.language) {
+      switch (profile.language) {
+        case 'fr': setLocale('fr'); break;
+        case 'en': setLocale('en'); break;
+      }
+    }
+  }, { immediate: true });
 
 
   let getName = function () : string {
@@ -119,7 +131,7 @@
       { type: 'label', label: getName(), avatar: getAvatar()} 
     ],
     [
-      { label: `${t('menu.profile')}`, icon: 'i-lucide-user' },
+      { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
       { label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card' },
       { label: `${t('menu.settings')}`,icon: 'i-lucide-settings',to: '/settings'}
     ],
@@ -128,18 +140,12 @@
        [
         { label: `${t('menu.thprimary')}`, slot: 'chip', chip: appConfig.ui.colors.primary,content: { align: 'center', collisionPadding: 16},
           children: colors.map(color => ({ label: color, chip: color, slot: 'chip', checked: appConfig.ui.colors.primary === color, type: 'checkbox',
-              onSelect: (e) => {
-                e.preventDefault();
-                appConfig.ui.colors.primary = color;
-              }
+              onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.primary = color;}
           }))
         },
         { label: `${t('menu.thneutral')}`, slot: 'chip', chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral, content: { align: 'end', collisionPadding: 16 }, 
           children: neutrals.map(color => ({ label: color, chip: color === 'neutral' ? 'old-neutral' : color, slot: 'chip', type: 'checkbox', checked: appConfig.ui.colors.neutral === color,
-              onSelect: (e) => {
-                e.preventDefault();
-                appConfig.ui.colors.neutral = color;
-              }
+              onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.neutral = color;}
           }))
         }
        ]
@@ -252,7 +258,7 @@
     <UDashboardSearch :groups="groups" />
 
     <!-- The main page content, depends on the current route -->
-    <UDashboardPanel id="main">
+    <UDashboardPanel id="main" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <UDashboardNavbar :title=pageTitle :ui="{ right: 'gap-3' }">
           <template #leading>
@@ -274,16 +280,9 @@
             </UTooltip>
           </template>
         </UDashboardNavbar>
-        <!--
-        <UDashboardToolbar>
-          <template #left>
-             toolbar
-          </template>
-        </UDashboardToolbar>
-         -->
       </template>
       <template #body>
-        <slot />
+        <slot/>
       </template>
     </UDashboardPanel>
 

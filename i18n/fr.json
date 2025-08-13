@@ -139,6 +139,24 @@
 
     "last" : "Dernier"
   },
+  "profile": {
+    "tb_general": "Informations générales",
+    "tb_security": "Sécurité",
+    "tb_billing": "Données de facturation",
+    "gen_title": "Vos informations personnelles",
+    "gen_description" : "Ces informations nous aident à mieux personnaliser votre expérience",
+    "save": "Enregistrer les modifications",
+    "gen_email": "Votre adresse e-mail",
+    "gen_emailDesc": "Votre adresse e-mail ne peux être modifiée.",
+    "gen_firstName": "Votre prénom",
+    "gen_firstNameDesc": "Votre prénom est utilisé pour personnaliser les communications.",
+    "gen_lastName": "Votre nom de famille",
+    "gen_lastNameDesc": "Votre nom de famille est utilisé pour personnaliser les communications.",
+    "gen_language": "Langue",
+    "gen_languageDesc": "La langue de l'interface utilisateur.",
+
+    "last" : "Dernier"
+  },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
