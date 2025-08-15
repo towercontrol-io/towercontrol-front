@@ -1,5 +1,5 @@
 import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
-import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField } from '~/types';
+import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -35,6 +35,7 @@ export default defineNuxtPlugin(() => {
   const usersModuleCreationReqPost: string = '/users/1.0/creation/create';
   const usersModuleChangePassReqPost: string = '/users/1.0/profile/password/reset';
   const usersModuleProdileBasicGet: string = '/users/1.0/profile/basic';
+  const usersModuleProdileBasicPut: string = '/users/1.0/profile/basic';
   const usersModuleCustomFieldPut: string = '/users/1.0/profile/customfield';
 
   // Get dynmaic configuration
@@ -396,10 +397,9 @@ export default defineNuxtPlugin(() => {
         }
     },
     /**
-     * Account creation, this is called after receiving the email validation code.
+     * Change the user password, this is called when the user has to change the password
      * 
      * @param {string} password - The user password
-     * @param {boolean} condition - true when the service usage conditions has been accepted
      * @param {string} code - The invitation code
      */
     putUserPasswordResetRequest: async (password: string, code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
@@ -421,14 +421,15 @@ export default defineNuxtPlugin(() => {
     },
 
     /**
-     * Account creation, this is called after receiving the email validation code.
+     * Upsert one custom field for the user profile.
      * 
-     * @param {string} password - The user password
-     * @param {boolean} condition - true when the service usage conditions has been accepted
-     * @param {string} code - The invitation code
+     * @param {string} login - The user login (hash)
+     * @param {string} name - The custom field name
+     * @param {string} value - The custom field value
      */
-    putUserCustomFieldRequest: async (name: string, value: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+    putUserCustomFieldRequest: async (login: string, name: string, value: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
         const body: UserProfileCustomFieldBody = {
+            login: login,
             customFields: [
                 {
                     name: name,
@@ -440,6 +441,34 @@ export default defineNuxtPlugin(() => {
             const response = await apiCallwithTimeout<ActionResult>(
                 'PUT',
                 usersModuleCustomFieldPut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Account creation, this is called after receiving the email validation code.
+     * 
+     * @param {string} password - The user password
+     * @param {boolean} condition - true when the service usage conditions has been accepted
+     * @param {string} code - The invitation code
+     */
+    putUserProfileBasicRequest: async (login: string, firstname: string, lastname: string, language: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body: UserBasicProfileBody = {
+            login: login,
+            firstName: firstname,
+            lastName: lastname,
+            language: language,
+            customFields: []
+        };
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                usersModuleProdileBasicPut,
                 body,
                 false
             );

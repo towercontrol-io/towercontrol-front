@@ -155,6 +155,7 @@
     "gen_lastNameDesc": "Votre nom de famille est utilisé pour personnaliser les communications.",
     "gen_language": "Langue",
     "gen_languageDesc": "La langue de l'interface utilisateur.",
+    "error_notLoggedIn": "Vous n'êtes pas connecté, veuillez vous connecter pour accéder à votre profil.",
 
     "last" : "Dernier"
   },

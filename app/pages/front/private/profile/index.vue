@@ -3,10 +3,16 @@
     import { useRouter } from 'vue-router';
     import type { FormSubmitEvent } from '@nuxt/ui'
     import type { UserBasicProfileResponse } from '~/types';
+    import type { ActionResult } from '~/types';
 
     const { t, setLocale } = useI18n();
     const router = useRouter();
     const appStore = applicationStore();
+    const Error = useError();
+
+    const errorStr = reactive({
+        value : null as string | null
+    });
 
     const profile = reactive({
         firstName: undefined,
@@ -62,7 +68,26 @@
 
 
 async function onSubmit(event: FormSubmitEvent<any>) {
-  console.log(event.data)
+
+        const result = ref<ActionResult | null>(null)
+        result.value = null
+
+        if ( appStore.getUserLogin() == null ) {
+            errorStr.value = t('profile.error_notLoggedIn');
+            return;
+        }
+        const res = await $apiBackendUsers.putUserProfileBasicRequest(
+            appStore.getUserLogin() || '',
+            profile.firstName || '',
+            profile.lastName || '',
+            (profile.language == 'auto')?'': profile.language || ''
+        );
+        if (res.success) {
+            // @TODO : display a success message
+        } else if (res.error) {
+            errorStr.value = res.error.message;
+        }
+  
 }
 
 

@@ -321,10 +321,53 @@ export interface UserBasicProfileResponse {
 export interface UserProfileCustomFieldBody {
 
   /**
+   * User login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   */
+  login: string;
+
+  /**
    * Custom fields for the user profile
    */
   customFields: CustomField[];
 
+}
+
+export interface UserBasicProfileBody {
+  /** 
+   * User to be modified login (hash) 
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   * Required: No
+   */
+  login?: string
+
+  /** 
+   * First Name 
+   * Example: "John"
+   * Required: No
+   */
+  firstName?: string
+
+  /** 
+   * Last Name 
+   * Example: "Doe"
+   * Required: No
+   */
+  lastName?: string
+
+  /** 
+   * User language 
+   * Example: "en"
+   * Required: Yes
+   */
+  language: string
+
+  /** 
+   * List of profile custom fields decrypted 
+   * Example: [ { name : "basic_xxx", value : "xxxx" }, ... ]
+   * Required: No
+   */
+  customFields?: CustomField[]
 }
 
 

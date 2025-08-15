@@ -147,13 +147,14 @@
     "gen_description" : "This information helps us better personalize your experience.",
     "save": "Save changes",
     "gen_email": "Your email address",
-    "gen_emaiDesc": "Your email address cannot be changed.",
+    "gen_emailDesc": "Your email address cannot be changed.",
     "gen_firstName": "Your first name",
     "gen_firstNameDesc": "Your first name is used to personalize communications.",
     "gen_lastName": "Your last name",
     "gen_lastNameDesc": "Your last name is used to personalize communications.",
     "gen_language": "Language",
     "gen_languageDesc": "The language of the user interface.",
+    "error_notLoggedIn": "You are not logged in, please log in to access your profile.",
 
     "last" : "Last"
   },

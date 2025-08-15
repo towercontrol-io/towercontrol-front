@@ -68,7 +68,6 @@
         case 'en': setLocale('en'); break;
       }
     }
-    console.log('profile', profile);
     // set the color preferences
     if ( config.public.FORCE_APPEARANCE_MODE == '' && profile ) {
       let appearanceMode = $apiBackendUsers.getCustomField(profile, 'basic_uimode');
@@ -242,15 +241,21 @@
    */
 
   async function onPrimaryChange (color: string) {
-    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uicolor', color);
+    if ( appStore.getUserLogin() != null) {
+       const res = await $apiBackendUsers.putUserCustomFieldRequest(appStore.getUserLogin() || '', 'basic_uicolor', color);
+    }  
   };
 
   async function onNeutralChange (color: string) {
-    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uineutral', color);
+    if ( appStore.getUserLogin() != null) {
+       const res = await $apiBackendUsers.putUserCustomFieldRequest(appStore.getUserLogin() || '', 'basic_uineutral', color);
+    }
   };
 
   async function  onAppearanceChange (appearance: string) {
-    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uimode', appearance );
+    if ( appStore.getUserLogin() != null) {
+       const res = await $apiBackendUsers.putUserCustomFieldRequest(appStore.getUserLogin() || '', 'basic_uimode', appearance );
+    }
   };
 
 </script>
