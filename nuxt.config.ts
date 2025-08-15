@@ -18,7 +18,11 @@ export default defineNuxtConfig({
       BACKEND_API_BASE: 'http://localhost:8091',  // Backend API base URL
       EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA 
       FORCE_INVITE_CODE : '',                     // If set, this code will be used for registration, this allows on backend to force application specific processing
-      DISABLE_INVITE_CODE: false,                  // If true, the invite code field will not be displayed on registration, FORCE_INVITE_CODE is applied but hidden
+      DISABLE_INVITE_CODE: false,                 // If true, the invite code field will not be displayed on registration, FORCE_INVITE_CODE is applied but hidden
+      FORCE_COLOR_SCHEME: '',                     // If set, with a color scheme (primary,neutral) (see MainLayout.vue), this will force the color and remove the user ability to change it.
+      DEFAULT_COLOR_SCHEME: '',                   // Default color scheme if FORCE_COLOR_SCHEME is not set, the user will be allowed to change it.
+      FORCE_APPEARANCE_MODE: '',                  // If set, this will force the light/dark mode and remove the user ability to change it.
+      DEFAULT_APPEARANCE_MODE: '',                // Default light/dark mode if FORCE_LIGHT_MODE is not set, the user will be allowed to change it.
     }
   },
   i18n: {

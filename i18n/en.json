@@ -64,6 +64,7 @@
     "user-session-2fa-code-missing" : " 2FA verification code is missing",
     "user-session-2fa-code-invalid" : "2FA verification code is invalid",
     "user-session-2fa-code-valid" : "2FA verification code is valid",
+    "user-profile-customfields-upserted" : "User profile's custom fields have been updated",
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
     "unknownError": "An unknown error occurred. Please try again later.",
 

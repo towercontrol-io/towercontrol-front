@@ -3,6 +3,8 @@
   const router = useRouter();
   const route = useRoute();
   const appStore = applicationStore();
+  const appConfig = useAppConfig();
+  const colorMode = useColorMode();
 
   const backgroundImage = config.public.BG_CENTERED;
 
@@ -15,6 +17,29 @@
         router.push('/front/public/login');
     }
 
+    // -----
+    // Set the color scheme and appearance
+    const colorSchemeRaw =
+      config.public.FORCE_COLOR_SCHEME !== ''
+        ? config.public.FORCE_COLOR_SCHEME
+        : (config.public.DEFAULT_COLOR_SCHEME || '');
+
+    const forcedColors = colorSchemeRaw
+      .split(',')
+      .map(c => c.trim())
+      .filter(Boolean); // enlève les vides
+
+    if (forcedColors.length >= 1 && forcedColors[0] !== undefined) {
+      appConfig.ui.colors.primary = forcedColors[0];
+    }
+    if (forcedColors.length >= 2 && forcedColors[1] !== undefined) {
+      appConfig.ui.colors.neutral = forcedColors[1];
+    }
+    if ( config.public.FORCE_APPEARANCE_MODE !== '' ) {
+      colorMode.preference = config.public.FORCE_APPEARANCE_MODE;
+    } else if (config.public.DEFAULT_APPEARANCE_MODE !== '') {
+      colorMode.preference = config.public.DEFAULT_APPEARANCE_MODE;
+    }
 
 </script>
 

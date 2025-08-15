@@ -239,6 +239,22 @@ export interface UserAcl {
 }
 
 /**
+ * Custom field for user profile
+ */
+export interface CustomField {
+  /**
+   * Name of the custom fields
+   * Example: "customField1"
+   */
+  name: string;
+
+  /**
+   * Value of the custom field
+   * Example: "Custom Value"
+   */
+  value: string;
+}
+/**
  * User Basic Profile (loaded on login)
  */
 export interface UserBasicProfileResponse {
@@ -295,6 +311,20 @@ export interface UserBasicProfileResponse {
    * Example: [ { group: "mygroup", roles: [ "ROLE_DEVICE_READ" ] }, ... ]
    */
   acls: UserAcl[];
+
+  /**
+   * Custom fields for the user profile
+   */
+  customFields: CustomField[];
+}
+
+export interface UserProfileCustomFieldBody {
+
+  /**
+   * Custom fields for the user profile
+   */
+  customFields: CustomField[];
+
 }
 
 

@@ -1,5 +1,5 @@
 import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
-import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT } from '~/types';
+import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -35,6 +35,7 @@ export default defineNuxtPlugin(() => {
   const usersModuleCreationReqPost: string = '/users/1.0/creation/create';
   const usersModuleChangePassReqPost: string = '/users/1.0/profile/password/reset';
   const usersModuleProdileBasicGet: string = '/users/1.0/profile/basic';
+  const usersModuleCustomFieldPut: string = '/users/1.0/profile/customfield';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -171,6 +172,18 @@ export default defineNuxtPlugin(() => {
             if ( profileCache.profile ) return profileCache.profile;
             return error;
         }
+    },
+
+    getCustomField: (profile: UserBasicProfileResponse, name : string) : string | undefined => {
+        if ( profile && profile.customFields) {
+            for (let i = 0; i < profile.customFields.length; i++) {
+                const field = profile.customFields[i];
+                if (field && field.name === name) {
+                    return field.value;
+                }
+            }
+        }
+        return undefined;
     },
 
     /**
@@ -400,6 +413,35 @@ export default defineNuxtPlugin(() => {
                 usersModuleChangePassReqPost,
                 body,
                 true
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Account creation, this is called after receiving the email validation code.
+     * 
+     * @param {string} password - The user password
+     * @param {boolean} condition - true when the service usage conditions has been accepted
+     * @param {string} code - The invitation code
+     */
+    putUserCustomFieldRequest: async (name: string, value: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body: UserProfileCustomFieldBody = {
+            customFields: [
+                {
+                    name: name,
+                    value: value
+                }
+            ]
+        };
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                usersModuleCustomFieldPut,
+                body,
+                false
             );
             return { success: response }
         } catch (error : any) {

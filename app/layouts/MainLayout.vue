@@ -2,7 +2,7 @@
   import type { UserBasicProfileResponse } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
-import { set } from '@nuxt/ui/runtime/utils/index.js';
+
   const { t, setLocale } = useI18n();
   const router = useRouter();
   const route = useRoute();
@@ -15,6 +15,7 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
 
   const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
   const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
+
 
   // -----
   // Redirect to login page if the user is not logged in for the private pages
@@ -33,13 +34,56 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
     () => $apiBackendUsers.getUserProfile()
   );
 
+  // -----
+  // Set the color scheme and appearance
+  const colorSchemeRaw =
+    config.public.FORCE_COLOR_SCHEME !== ''
+      ? config.public.FORCE_COLOR_SCHEME
+      : (config.public.DEFAULT_COLOR_SCHEME || '');
+
+  const forcedColors = colorSchemeRaw
+    .split(',')
+    .map(c => c.trim())
+    .filter(Boolean); // enlève les vides
+
+  if (forcedColors.length >= 1 && forcedColors[0] !== undefined) {
+    appConfig.ui.colors.primary = forcedColors[0];
+  }
+  if (forcedColors.length >= 2 && forcedColors[1] !== undefined) {
+    appConfig.ui.colors.neutral = forcedColors[1];
+  }
+  if ( config.public.FORCE_APPEARANCE_MODE !== '' ) {
+    colorMode.preference = config.public.FORCE_APPEARANCE_MODE;
+  } else if (config.public.DEFAULT_APPEARANCE_MODE !== '') {
+    colorMode.preference = config.public.DEFAULT_APPEARANCE_MODE;
+  }
+
   // ---
-  // Apply user Locale if set, or keep browser default locale
+  // Apply user Locale if set and the color preferences, or keep browser default locale
   watch(userProfile, (profile) => {
+    // set the language
     if (profile?.language) {
       switch (profile.language) {
         case 'fr': setLocale('fr'); break;
         case 'en': setLocale('en'); break;
+      }
+    }
+    console.log('profile', profile);
+    // set the color preferences
+    if ( config.public.FORCE_APPEARANCE_MODE == '' && profile ) {
+      let appearanceMode = $apiBackendUsers.getCustomField(profile, 'basic_uimode');
+      if (appearanceMode) {
+        colorMode.preference = appearanceMode;
+      }
+    }
+    if ( config.public.FORCE_COLOR_SCHEME == ''  && profile ) {
+      let primary = $apiBackendUsers.getCustomField(profile, 'basic_uicolor');
+      if (primary) {
+        appConfig.ui.colors.primary = primary;
+      }
+      let neutral = $apiBackendUsers.getCustomField(profile, 'basic_uineutral');
+      if (neutral) {
+        appConfig.ui.colors.neutral = neutral;
       }
     }
   }, { immediate: true });
@@ -126,54 +170,88 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
   /**
    * User menu items
    */
-  const userMenuItems = computed<DropdownMenuItem[][]>(() => ([
-    [
-      { type: 'label', label: getName(), avatar: getAvatar()} 
-    ],
-    [
-      { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
-      { label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card' },
-      { label: `${t('menu.settings')}`,icon: 'i-lucide-settings',to: '/settings'}
-    ],
-    [
-      { label: `${t('menu.theme')}`, icon: 'i-lucide-palette', children: 
-       [
-        { label: `${t('menu.thprimary')}`, slot: 'chip', chip: appConfig.ui.colors.primary,content: { align: 'center', collisionPadding: 16},
-          children: colors.map(color => ({ label: color, chip: color, slot: 'chip', checked: appConfig.ui.colors.primary === color, type: 'checkbox',
-              onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.primary = color;}
-          }))
-        },
-        { label: `${t('menu.thneutral')}`, slot: 'chip', chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral, content: { align: 'end', collisionPadding: 16 }, 
-          children: neutrals.map(color => ({ label: color, chip: color === 'neutral' ? 'old-neutral' : color, slot: 'chip', type: 'checkbox', checked: appConfig.ui.colors.neutral === color,
-              onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.neutral = color;}
-          }))
-        }
-       ]
-      },
-      { label: `${t('menu.appearance')}`, icon: 'i-lucide-sun-moon',children: 
+  const userMenuItems = computed<DropdownMenuItem[][]>(() => {
+    
+    let items = [
+      [
+        { type: 'label', label: getName(), avatar: getAvatar()} 
+      ],
+      [
+        { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
+        { label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card' },
+        { label: `${t('menu.settings')}`,icon: 'i-lucide-settings',to: '/settings'}
+      ]
+    ] as DropdownMenuItem[][];
+
+    const themeItems = { 
+       label: `${t('menu.theme')}`, icon: 'i-lucide-palette', children: 
+          [
+            { label: `${t('menu.thprimary')}`, slot: 'chip', chip: appConfig.ui.colors.primary,content: { align: 'center', collisionPadding: 16},
+              children: colors.map(color => ({ label: color, chip: color, slot: 'chip', checked: appConfig.ui.colors.primary === color, type: 'checkbox',
+                  onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.primary = color; onPrimaryChange(color);}
+              }))
+            },
+            { label: `${t('menu.thneutral')}`, slot: 'chip', chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral, content: { align: 'end', collisionPadding: 16 }, 
+              children: neutrals.map(color => ({ label: color, chip: color === 'neutral' ? 'old-neutral' : color, slot: 'chip', type: 'checkbox', checked: appConfig.ui.colors.neutral === color,
+                  onSelect: (e) => { e.preventDefault(); appConfig.ui.colors.neutral = color; onNeutralChange(color);}
+              }))
+            }
+          ]
+    } as DropdownMenuItem;
+    const appearanceItems = { 
+      label: `${t('menu.appearance')}`, icon: 'i-lucide-sun-moon',children: 
         [
           { label: `${t('menu.light')}`, icon: 'i-lucide-sun', type: 'checkbox', checked: colorMode.value === 'light',
-            onSelect(e: Event) { e.preventDefault();colorMode.preference = 'light'; }
+            onSelect(e: Event) { e.preventDefault();colorMode.preference = 'light';onAppearanceChange('light'); },
           },
           { label: `${t('menu.dark')}`, icon: 'i-lucide-moon', type: 'checkbox', checked: colorMode.value === 'dark',
-            onUpdateChecked(checked: boolean) { if (checked) { colorMode.preference = 'dark' }},
+            onUpdateChecked(checked: boolean) { if (checked) { colorMode.preference = 'dark';onAppearanceChange('dark'); }},
             onSelect(e: Event) { e.preventDefault() }
           }
         ]
-      }
-    ],
-    [
-      { label: 'to remove',icon: 'i-lucide-layout-template',children: 
-       [ 
-          { label: 'Starter',to: 'https://ui-pro-starter.nuxt.dev/'}, 
-          { label: 'Landing',to: 'https://landing-template.nuxt.dev/'}
-       ] 
-      }
-    ],
-    [
-     { label: `${t('menu.logout')}`, icon: 'i-lucide-log-out', to: '/front/private/signout' }
-    ]
-  ]));
+    } as DropdownMenuItem;
+
+    const themeGroup: DropdownMenuItem[] = [];
+    if (config.public.FORCE_COLOR_SCHEME === '') {
+      themeGroup.push(themeItems);
+    }
+    if ( config.public.FORCE_APPEARANCE_MODE === '' ) {
+      themeGroup.push(appearanceItems);
+    }
+    if ( themeGroup.length > 0 ) {
+      items.push(themeGroup)
+    }
+    items.push(
+      [
+        { label: 'to remove',icon: 'i-lucide-layout-template',children: 
+        [ 
+            { label: 'Starter',to: 'https://ui-pro-starter.nuxt.dev/'}, 
+            { label: 'Landing',to: 'https://landing-template.nuxt.dev/'}
+        ] 
+        }
+      ],
+      [
+      { label: `${t('menu.logout')}`, icon: 'i-lucide-log-out', to: '/front/private/signout' }
+      ]
+   );
+  return items;
+});
+
+  /**
+   * Interface color management with persistence
+   */
+
+  async function onPrimaryChange (color: string) {
+    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uicolor', color);
+  };
+
+  async function onNeutralChange (color: string) {
+    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uineutral', color);
+  };
+
+  async function  onAppearanceChange (appearance: string) {
+    const res = await $apiBackendUsers.putUserCustomFieldRequest('basic_uimode', appearance );
+  };
 
 </script>
 
