@@ -65,6 +65,10 @@
     "user-session-2fa-code-invalid" : "Le code de vérification 2FA est invalide",
     "user-session-2fa-code-valid" : "Le code de vérification 2FA est valide",
     "user-profile-customfields-upserted" : "Les champs personnalisés du profil utilisateur ont été mis à jour",
+    "user-profile-login-invalid" : "L'identifiant de l'utilisateur n'est pas valide",
+    "user-profile-updated" : "Le profil de l'utilisateur a été mis à jour",
+    "user-profile-encryption-error" : "Erreur technique lors du chiffrement du profil utilisateur, modification non enregistrée",
+    "user-profile-language-invalid" : "La langue du profil utilisateur n'est pas valide",
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
 
@@ -126,6 +130,7 @@
     "settings": "Paramètres",
     "logout": "Déconnexion",
     "profile": "Profil",
+    "billing" : "Facturation",
     "suport": "Support & Ticket",
     "documentation": "Documentation",
     "apiDocumentation": "Documentation API",
@@ -137,6 +142,7 @@
     "appearance": "Apparence",
     "light": "Clair",
     "dark": "Sombre",
+    "searchBox": "Rechercher",
 
     "last" : "Dernier"
   },
@@ -156,6 +162,8 @@
     "gen_language": "Langue",
     "gen_languageDesc": "La langue de l'interface utilisateur.",
     "error_notLoggedIn": "Vous n'êtes pas connecté, veuillez vous connecter pour accéder à votre profil.",
+    "gen_saveSuccess": "Votre profil a été mis à jour avec succès.",
+    "gen_saveError": "Une erreur est survenue lors de la mise à jour de votre profil.",
 
     "last" : "Dernier"
   },

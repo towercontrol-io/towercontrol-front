@@ -149,11 +149,11 @@ export default defineNuxtPlugin(() => {
     /**
      * Get the user profile, cache it until the refresh is forced or on every 60 minutes.
      */
-    getUserProfile: async (): Promise<UserBasicProfileResponse> => {
+    getUserProfile: async (force : boolean = false): Promise<UserBasicProfileResponse> => {
         const now = Date.now()
 
         // check cache validity
-        if (profileCache.profile && now - profileCache.timestamp < CACHE_TTL && !profileCache.forceRefresh) {
+        if (profileCache.profile && now - profileCache.timestamp < CACHE_TTL && !profileCache.forceRefresh && !force) {
             return profileCache.profile
         }
 
@@ -167,6 +167,7 @@ export default defineNuxtPlugin(() => {
             );
             profileCache.profile = response;
             profileCache.timestamp = now;
+            profileCache.forceRefresh = false; // Reset force refresh flag
             return response;
         } catch (error : any) {
             // in case of error, keep returning cached version
@@ -444,6 +445,7 @@ export default defineNuxtPlugin(() => {
                 body,
                 false
             );
+            profileCache.forceRefresh = true; // Force profile cache refresh
             return { success: response }
         } catch (error : any) {
             return { error };
@@ -472,6 +474,7 @@ export default defineNuxtPlugin(() => {
                 body,
                 false
             );
+            profileCache.forceRefresh = true; // Force profile cache refresh
             return { success: response }
         } catch (error : any) {
             return { error };

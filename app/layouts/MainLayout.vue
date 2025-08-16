@@ -12,6 +12,7 @@
   const avatarDefault : string = config.public.AVATAR_DEFAULT as string;
   const colorMode = useColorMode();
   const appConfig = useAppConfig();
+  const nuxtApp = useNuxtApp();
 
   const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
   const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
@@ -87,6 +88,12 @@
     }
   }, { immediate: true });
 
+  // --- refresh profile on update
+  nuxtApp.hook('profile:refresh', async value => {
+      const p = await $apiBackendUsers.getUserProfile();
+      userProfile.value = p;
+  });
+
 
   let getName = function () : string {
     let name : string = 'John Doe';
@@ -95,7 +102,7 @@
           name = userProfile.value.firstName;
         }
         if ( userProfile.value.lastName ) {
-          name += (userProfile.value.firstName)?' ':'' + userProfile.value.lastName;
+          name += ((userProfile.value.firstName)?' ':'') + userProfile.value.lastName;
         }
     } else if ( userProfile.value && userProfile.value.email ) {
         name = userProfile.value.email;
@@ -135,14 +142,14 @@
   /**
    * Menu on the right side of the page, 2 menus, one for the top and one for the bottom.
    */
-  const rightMenu = [
+  const rightMenu = computed<NavigationMenuItem[][]>(() =>[
     [
       { label: `${t('menu.home')}`,icon: 'i-lucide-house',to: '/front/private/home',onSelect: () => {mainData.open = false}},
       { label: `${t('menu.inbox')}`,icon: 'i-lucide-inbox',to: '/inbox',badge: '4',onSelect: () => {mainData.open = false} },
       { label: `${t('menu.settings')}`,icon: 'i-lucide-settings', to: '/settings', defaultOpen: true,type: 'trigger',children: 
         [
-          { label: 'General',to: '/settings',exact: true,onSelect: () => {mainData.open = false } },
-          { label: 'Security',to: '/settings/security',onSelect: () => {mainData.open = false } },
+          { label: 'xxx',to: '/settings',exact: true,onSelect: () => {mainData.open = false } },
+          { label: 'xxx',to: '/settings/security',onSelect: () => {mainData.open = false } },
         ]
       }
     ], [
@@ -150,7 +157,7 @@
       { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: 'https://github.com/disk91/IoTowerControl-community/wiki',target: '_blank' },
       { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: '...',target: '_blank' },
     ]
-  ] satisfies NavigationMenuItem[][];
+  ]);
 
 
   /**
@@ -158,7 +165,7 @@
    * It's a list of the existing link like in the link id and a list on unlisted link that are accessible via this search.
    */
   const groups = computed(() => [
-    { id: 'links', label: `${t('menu.searchGoTo')}`, items: rightMenu.flat() },
+    { id: 'links', label: `${t('menu.searchGoTo')}`, items: rightMenu.value.flat() },
     { id: 'code', label: `${t('menu.searchOther')}`,
           items: [
             { id: 'source', label: 'View page source', icon: 'i-simple-icons-github',to: `https://github.com/nuxt-ui-pro/dashboard/blob/main/app/pages${route.path === '/' ? '/index' : route.path}.vue`,target: '_blank'}
@@ -284,7 +291,11 @@
 
       <!-- Main menu on the right of the page -->
       <template #default="{ collapsed }">
-        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+        <UDashboardSearchButton 
+           :collapsed="collapsed" 
+           :label="t('menu.searchBox')"
+           class="bg-transparent ring-default" 
+        />
 
         <UNavigationMenu
           :collapsed="collapsed"

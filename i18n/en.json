@@ -65,6 +65,10 @@
     "user-session-2fa-code-invalid" : "2FA verification code is invalid",
     "user-session-2fa-code-valid" : "2FA verification code is valid",
     "user-profile-customfields-upserted" : "User profile's custom fields have been updated",
+    "user-profile-login-invalid" : "User login is not valid",
+    "user-profile-updated" : "User profile has been updated",
+    "user-profile-encryption-error" : "Technical error during user profile encryption, modification nos saved",
+    "user-profile-language-invalid" : "User profile language is not valid",
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
     "unknownError": "An unknown error occurred. Please try again later.",
 
@@ -125,6 +129,7 @@
     "settings": "Settings",
     "logout": "Logout",
     "profile": "Profile",
+    "billing" : "Billing",
     "suport": "Support & Ticket",
     "documentation": "Documentation",
     "apiDocumentation": "API Documentation",
@@ -136,6 +141,7 @@
     "appearance": "Appearance",
     "light": "Light",
     "dark": "Dark",
+    "searchBox": "Search",
 
     "last" : "Last"
   },
@@ -155,6 +161,8 @@
     "gen_language": "Language",
     "gen_languageDesc": "The language of the user interface.",
     "error_notLoggedIn": "You are not logged in, please log in to access your profile.",
+    "gen_saveSuccess": "Your profile has been successfully updated.",
+    "gen_saveError": "An error occurred while updating your profile.",
 
     "last" : "Last"
   },

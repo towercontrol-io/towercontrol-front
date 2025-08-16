@@ -19,13 +19,13 @@
     /**
      * Toolbar tab menus
      */
-    const toolBarMenu = [
+    const toolBarMenu = computed<NavigationMenuItem[][]>(() => [
       [
         { label: `${t('profile.tb_general')}`, icon: 'i-lucide-user', to: '/front/private/profile', exact: true, onSelect: () => {profileData.open = false} },
         { label: `${t('profile.tb_billing')}`, icon: 'i-lucide-shopping-cart', to: '/front/private/profile/billing', onSelect: () => {profileData.open = false}  },
         { label: `${t('profile.tb_security')}`, icon: 'i-lucide-shield', to: '/front/private/profile/security', onSelect: () => {profileData.open = false}  }
       ]
-    ] satisfies NavigationMenuItem[][];
+    ]);
 
 </script> 
 

@@ -6,13 +6,14 @@
     import type { ActionResult } from '~/types';
 
     const { t, setLocale } = useI18n();
-    const router = useRouter();
     const appStore = applicationStore();
-    const Error = useError();
+    const nuxtApp = useNuxtApp();
 
     const errorStr = reactive({
         value : null as string | null
     });
+
+    const saveSuccess = ref(false);
 
     const profile = reactive({
         firstName: undefined,
@@ -35,7 +36,7 @@
   // ----
   // Load the profile data (from cache most of the time, but auto-refresh that way)
   const { $apiBackendUsers } = useNuxtApp();
-  const { data: userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
+  let { data: userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
     () => `user-profile-response`,
     () => $apiBackendUsers.getUserProfile()
   );
@@ -71,6 +72,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
         const result = ref<ActionResult | null>(null)
         result.value = null
+        errorStr.value = null;
 
         if ( appStore.getUserLogin() == null ) {
             errorStr.value = t('profile.error_notLoggedIn');
@@ -83,13 +85,21 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             (profile.language == 'auto')?'': profile.language || ''
         );
         if (res.success) {
-            // @TODO : display a success message
+            // Display a success message for 5 seconds
+            saveSuccess.value = true;
+            setTimeout(() => {
+                saveSuccess.value = false;
+            }, 5000); // hide success message after 5 seconds
+
+            // Refresh the profile data
+            const p = await $apiBackendUsers.getUserProfile();
+            userProfile.value = p;
+            await nuxtApp.callHook('profile:refresh', true);
+
         } else if (res.error) {
             errorStr.value = res.error.message;
         }
-  
 }
-
 
 
 </script>
@@ -171,6 +181,27 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
     </UPageCard>
   </UForm>
+    <UPageCard
+      v-if="saveSuccess"
+      :title="$t('profile.gen_saveSuccess')"
+      variant="outline"
+      orientation="horizontal"
+      highlight
+      highlight-color="success"
+      class="mb-4"
+    >
+    </UPageCard>
+    <UPageCard
+      v-if="errorStr.value!== null"
+      :title="$t('profile.gen_saveError')"
+      :description="$t('login.'+errorStr.value)"
+      variant="outline"
+      orientation="horizontal"
+      highlight
+      highlight-color="error"
+      class="mb-4"
+    >
+    </UPageCard>
 
 </template>
     
