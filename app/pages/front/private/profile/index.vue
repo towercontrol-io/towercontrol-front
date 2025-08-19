@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { applicationStore } from '~/stores/app';
-    import { useRouter } from 'vue-router';
     import type { FormSubmitEvent } from '@nuxt/ui'
     import type { UserBasicProfileResponse } from '~/types';
     import type { ActionResult } from '~/types';
@@ -68,7 +67,7 @@
   }
 
 
-async function onSubmit(event: FormSubmitEvent<any>) {
+  async function onSubmit(event: FormSubmitEvent<any>) {
 
         const result = ref<ActionResult | null>(null)
         result.value = null
@@ -185,7 +184,6 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       v-if="saveSuccess"
       :title="$t('profile.gen_saveSuccess')"
       variant="outline"
-      orientation="horizontal"
       highlight
       highlight-color="success"
       class="mb-4"
@@ -196,7 +194,6 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       :title="$t('profile.gen_saveError')"
       :description="$t('login.'+errorStr.value)"
       variant="outline"
-      orientation="horizontal"
       highlight
       highlight-color="error"
       class="mb-4"

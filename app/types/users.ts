@@ -58,7 +58,7 @@ export interface UserConfigResponse {
    * Example: 0
    */
   passwordMinSymbols: number;
-}
+};
 
 
 /**
@@ -77,7 +77,7 @@ export interface UserLoginBody {
    * Example: "changeme"
    */
   password: string;
-}
+};
 
 /**
  * User Login Response
@@ -138,7 +138,7 @@ export interface UserLoginResponse {
    * The 2FA type, this helps the front-end to display the right information
    */
   twoFAType: string;
-}
+};
 
 /**
  * User password change payload
@@ -157,7 +157,7 @@ export interface UserPasswordChangeBody {
    * @optional
    */
   changeKey?: string
-}
+};
 
 /**
  * User password lost request payload
@@ -170,7 +170,7 @@ export interface UserPasswordLostBody {
    */
   email: string;
 
-}
+};
 
 /**
  * User registration request payload
@@ -187,7 +187,7 @@ export interface UserAccountRegistrationBody {
    * @example "A7C67FB256221..."
    */
   registrationCode?: string;
-}
+};
 
 /**
  * User Self Creation request payload
@@ -212,7 +212,7 @@ export interface UserAccountCreationBody {
    * Validation ID received by user on registration link
    */
   validationID? : string;
-}
+};
 
 /**
  * User ACL (Access Control List) for groups
@@ -236,7 +236,7 @@ export interface UserAcl {
    * Example: [ "ROLE_DEVICE_READ" ]
    */
   roles: string[];
-}
+};
 
 /**
  * Custom field for user profile
@@ -253,7 +253,19 @@ export interface CustomField {
    * Example: "Custom Value"
    */
   value: string;
-}
+};
+
+
+/**
+ * Possible results of an action
+ */
+export enum TwoFATypes {
+  NONE = "NONE",                  // None (no 2FA)
+  EMAIL = "EMAIL",                // EMAIL
+  SMS = "SMS",                    // SMS
+  AUTHENTICATOR = "AUTHENTICATOR" // AUTHENTICATOR
+};
+
 /**
  * User Basic Profile (loaded on login)
  */
@@ -316,6 +328,12 @@ export interface UserBasicProfileResponse {
    * Custom fields for the user profile
    */
   customFields: CustomField[];
+
+  /**
+   * 2FA Type
+   * Example: "AUTHENTICATOR"
+   */
+  twoFAConfig: TwoFATypes;
 }
 
 export interface UserProfileCustomFieldBody {
@@ -331,7 +349,7 @@ export interface UserProfileCustomFieldBody {
    */
   customFields: CustomField[];
 
-}
+};
 
 export interface UserBasicProfileBody {
   /** 
@@ -339,35 +357,66 @@ export interface UserBasicProfileBody {
    * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
    * Required: No
    */
-  login?: string
+  login?: string;
 
   /** 
    * First Name 
    * Example: "John"
    * Required: No
    */
-  firstName?: string
+  firstName?: string;
 
   /** 
    * Last Name 
    * Example: "Doe"
    * Required: No
    */
-  lastName?: string
+  lastName?: string;
 
   /** 
    * User language 
    * Example: "en"
    * Required: Yes
    */
-  language: string
+  language: string;
 
   /** 
    * List of profile custom fields decrypted 
    * Example: [ { name : "basic_xxx", value : "xxxx" }, ... ]
    * Required: No
    */
-  customFields?: CustomField[]
+  customFields?: CustomField[];
+};
+
+/**
+ * User Two Factor Authentication Body
+ * Equivalent TypeScript interface for the Java class UserTwoFaBody
+ */
+export interface UserTwoFaBody {
+
+  /**
+   * Set the 2FA method to be used ('NONE', 'EMAIL', 'SMS', 'AUTHENTICATOR')
+   * Example: "AUTHENTICATOR"
+   */
+  twoFaType: TwoFATypes;
+
 }
 
+/**
+ * User Two Factor Authentication Response
+ * Equivalent TypeScript interface for the Java class UserTwoFaResponse
+ */
+export interface UserTwoFaResponse {
 
+  /**
+   * Set the 2FA method to be used ('NONE', 'EMAIL', 'SMS', 'AUTHENTICATOR')
+   * Example: "AUTHENTICATOR"
+   */
+  twoFaType: TwoFATypes;
+
+  /**
+   * Two Factor secret, used to generate the 2FA code (authenticator app only)
+   * Example: "otpauth://totp/{servicename}:{username}?secret={secret}&issuer={servicename}"
+   */
+  secret?: string;
+};

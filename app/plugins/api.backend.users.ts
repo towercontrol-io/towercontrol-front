@@ -1,5 +1,6 @@
-import type { UserConfigResponse, UserLoginBody, UserLoginResponse, UserPasswordChangeBody, UserPasswordLostBody, UserAccountRegistrationBody } from '~/types';
+import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
+import type { UserTwoFaBody, UserTwoFaResponse } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -37,6 +38,9 @@ export default defineNuxtPlugin(() => {
   const usersModuleProdileBasicGet: string = '/users/1.0/profile/basic';
   const usersModuleProdileBasicPut: string = '/users/1.0/profile/basic';
   const usersModuleCustomFieldPut: string = '/users/1.0/profile/customfield';
+  const usersModuleChange2FAPut: string = '/users/1.0/profile/2fa';
+  const usersModuleVerify2FAGet: string = '/users/1.0/session/2fa';
+  const userModuleSignoutGet: string = '/users/1.0/session/signout';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -453,7 +457,7 @@ export default defineNuxtPlugin(() => {
     },
 
     /**
-     * Account creation, this is called after receiving the email validation code.
+     * Update the user basic profile with the first & last name, langage...
      * 
      * @param {string} password - The user password
      * @param {boolean} condition - true when the service usage conditions has been accepted
@@ -481,6 +485,69 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Change the 2FA configuration, this is called when the user wants to change the 2FA configuration
+     * 
+     * @param {TwoFATypes} 2FA type - The user 2FA type
+     */
+    putUserProfile2FaChangeRequest: async (type: TwoFATypes): Promise<{ success?: UserTwoFaResponse; error?: ActionResult | { message: string } }> => {
+        const body: UserTwoFaBody = {
+            twoFaType: type
+        };
+        try {
+            const response = await apiCallwithTimeout<UserTwoFaResponse>(
+                'PUT',
+                usersModuleChange2FAPut,
+                body,
+                false
+            );
+            profileCache.forceRefresh = true; // Force profile cache refresh
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Test a 2FA code for verification, this is called when the user wants to verify the 2FA code
+     * 
+     * @param {2faCode} 2FA code to be verified
+     */
+    getUserProfile2FaVerificationRequest: async (code: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'GET',
+                usersModuleVerify2FAGet+'?secondFactor='+encodeURIComponent(code),
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * User Session Signout, this is called when the user wants to sign out - this close all the open sessions
+     * 
+     */
+    userModuleSignoutGet: async (): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'GET',
+                userModuleSignoutGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    
+    
   };
   return {
     provide: {

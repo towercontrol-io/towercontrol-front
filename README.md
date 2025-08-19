@@ -66,6 +66,7 @@ Select the following options:
 npm install @nuxtjs/i18n        # Internationalization support
 npm install @pinia/nuxt         # Pinia state/store management
 npm install @nuxt/ui-pro        # Nuxt UI Pro components
+npm install qrcode.vue         # QR Code generation component
 ```
 
 ## Clean libs

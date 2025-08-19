@@ -10,6 +10,7 @@
   const config = useRuntimeConfig();
   const logoImage : string = config.public.LOGO_HOME as string;
   const avatarDefault : string = config.public.AVATAR_DEFAULT as string;
+  const billingEnabled : boolean = config.public.ENABLE_BILLING_FEATURES as boolean;
   const colorMode = useColorMode();
   const appConfig = useAppConfig();
   const nuxtApp = useNuxtApp();
@@ -184,10 +185,13 @@
       ],
       [
         { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
-        { label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card' },
         { label: `${t('menu.settings')}`,icon: 'i-lucide-settings',to: '/settings'}
       ]
     ] as DropdownMenuItem[][];
+
+    if ( billingEnabled ) {
+      items[1].push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
+    }
 
     const themeItems = { 
        label: `${t('menu.theme')}`, icon: 'i-lucide-palette', children: 
@@ -365,7 +369,6 @@
                 color="neutral"
                 variant="ghost"
                 square
-                
               >
                 <UChip color="error" inset>
                   <UIcon name="i-lucide-bell" class="size-5 shrink-0" />

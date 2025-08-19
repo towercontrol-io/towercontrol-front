@@ -23,6 +23,11 @@ export default defineNuxtConfig({
       DEFAULT_COLOR_SCHEME: '',                   // Default color scheme if FORCE_COLOR_SCHEME is not set, the user will be allowed to change it.
       FORCE_APPEARANCE_MODE: '',                  // If set, this will force the light/dark mode and remove the user ability to change it.
       DEFAULT_APPEARANCE_MODE: '',                // Default light/dark mode if FORCE_LIGHT_MODE is not set, the user will be allowed to change it.
+      ENABLE_2FA: true,                           // If true, the 2FA will be enabled and the user will be able to configure it
+      ENABLE_2FA_AUTHENTICATOR: true,             // If true, the Authenticator 2FA will be enabled
+      ENABLE_2FA_EMAIL: false,                    // If true, the Email 2FA will be enabled
+      ENABLE_2FA_SMS: false,                      // If true, the SMS 2FA will be enabled
+      ENABLE_BILLING_FEATURES: false,             // If true, the billing features will be enabled (pro version)
     }
   },
   i18n: {

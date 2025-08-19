@@ -143,6 +143,7 @@
     "light": "Clair",
     "dark": "Sombre",
     "searchBox": "Rechercher",
+    "signout": "Déconnexion",
 
     "last" : "Dernier"
   },
@@ -164,6 +165,24 @@
     "error_notLoggedIn": "Vous n'êtes pas connecté, veuillez vous connecter pour accéder à votre profil.",
     "gen_saveSuccess": "Votre profil a été mis à jour avec succès.",
     "gen_saveError": "Une erreur est survenue lors de la mise à jour de votre profil.",
+    "sec_title": "Paramètres de sécurité de l'utilisateur",
+    "sec_description": "Gérez vos paramètres de sécurité, y compris les changements de mot de passe et l'authentification à deux facteurs.",
+    "sec_savePassword": "Remplacer le mot de passe",
+    "sec_savePassSuccess": "Votre mot de passe a été modifié avec succès.",
+    "sec_saveSuccess": "Enregistrement de vos paramètres.",
+    "sec_2faDesc": "Configurez l'authentification à deux facteurs pour renforcer la sécurité de votre compte.",
+    "sec_2faEnable": "Activer l'authentification à deux facteurs",
+    "sec_2fa_authentictor": "Google Authenticator",
+    "sec_2fa_email": "Email",
+    "sec_2fa_sms": "SMS",
+    "sec_2fa_apply": "Appliquer les changements",
+    "sec_change2FASuccess": "Vos paramètres d'authentification à deux facteurs ont été mis à jour avec succès. Attention, il est preferable de vérifier la configuration avant de quitter cette session, sans quoi vous pourriez ne plus être en mesure de vous connecter.",
+    "sec_2fa_verify": "Pour utiliser l'authentication à deux facteurs, vous devez scanner ce QR code avec votre application Google Authenticator et nous vous conseillons de vérifier un premier code. Si vous ne pouvez pas effectuer ceci, il est préférable de désactive la double authentification ou choisir un mode tel que l'email.",
+    "sec_2fa_verifyinput" : "Entrez le code de vérification généré par votre application d'authentification.",
+    "sec_verify2FASuccess" : "La vérification de l'authentification à deux facteurs a réussi. Vous pouvez maintenant utiliser votre compte avec la double authentification activée.",
+    "sec_verify2FAFailed" : "La vérification de l'authentification à deux facteurs a échoué. Veuillez réessayer et en cas d'echec, désactiver la double authentification.",
+    "signout": "Un problème est survenu lors de la déconnexion, veuillez réessayer.",
+    "signoutError" : "La session n'a pas pu être fermée et les token n'ont pas été supprimés, veuillez réessayer.",
 
     "last" : "Dernier"
   },
