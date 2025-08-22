@@ -462,12 +462,16 @@ export default defineNuxtPlugin(() => {
      * @param {string} password - The user password
      * @param {boolean} condition - true when the service usage conditions has been accepted
      * @param {string} code - The invitation code
+     * @param {string} mobile - e164 mobile number
+     * @param {string} countryCode - The user country code, used for phone number formating
      */
-    putUserProfileBasicRequest: async (login: string, firstname: string, lastname: string, language: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+    putUserProfileBasicRequest: async (login: string, firstname: string, lastname: string, mobile: string, countryCode: string, language: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
         const body: UserBasicProfileBody = {
             login: login,
             firstName: firstname,
             lastName: lastname,
+            mobileNumber: mobile,
+            isoCountryCode: countryCode,
             language: language,
             customFields: []
         };

@@ -58,6 +58,12 @@ export interface UserConfigResponse {
    * Example: 0
    */
   passwordMinSymbols: number;
+
+  /**
+   * Account deletion, purgatory delay in hours (0 means immediate deletion)
+   * Example: 24
+   */
+  deletionPurgatoryDelayHours : number;
 };
 
 
@@ -295,6 +301,18 @@ export interface UserBasicProfileResponse {
   lastName?: string;
 
   /**
+   * Phone Number (mobile for SMS 2FA)
+   * Example: "+33601020304"
+   */
+  mobileNumber?: string;
+
+  /**
+   * Iso country code (used for the phone number)
+   * Example : "FR"
+   */
+  isoCountryCode?: string;
+
+  /**
    * The password expiration date, in epoch ms
    * Example: 172545052000
    */
@@ -372,6 +390,18 @@ export interface UserBasicProfileBody {
    * Required: No
    */
   lastName?: string;
+
+  /**
+   * Phone Number (mobile for SMS 2FA)
+   * Example: "+33601020304"
+   */
+  mobileNumber?: string;
+
+    /**
+   * Iso country code (used for the phone number)
+   * Example : "FR"
+   */
+  isoCountryCode?: string;
 
   /** 
    * User language 

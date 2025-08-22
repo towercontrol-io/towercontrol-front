@@ -11,6 +11,10 @@
   const logoImage : string = config.public.LOGO_HOME as string;
   const avatarDefault : string = config.public.AVATAR_DEFAULT as string;
   const billingEnabled : boolean = config.public.ENABLE_BILLING_FEATURES as boolean;
+  const ticketsEnabled : boolean = config.public.ENABLE_TICKETING_FEATURES as boolean;
+  const supportLink : string = config.public.SUPPORT_LINK as string;
+  const documentationLink : string = config.public.DOCUMENTATION_LINK as string;
+  const apiDocumentationLink : string = config.public.APIDOC_LINK as string;
   const colorMode = useColorMode();
   const appConfig = useAppConfig();
   const nuxtApp = useNuxtApp();
@@ -143,22 +147,50 @@
   /**
    * Menu on the right side of the page, 2 menus, one for the top and one for the bottom.
    */
-  const rightMenu = computed<NavigationMenuItem[][]>(() =>[
-    [
-      { label: `${t('menu.home')}`,icon: 'i-lucide-house',to: '/front/private/home',onSelect: () => {mainData.open = false}},
-      { label: `${t('menu.inbox')}`,icon: 'i-lucide-inbox',to: '/inbox',badge: '4',onSelect: () => {mainData.open = false} },
-      { label: `${t('menu.settings')}`,icon: 'i-lucide-settings', to: '/settings', defaultOpen: true,type: 'trigger',children: 
-        [
-          { label: 'xxx',to: '/settings',exact: true,onSelect: () => {mainData.open = false } },
-          { label: 'xxx',to: '/settings/security',onSelect: () => {mainData.open = false } },
-        ]
+  const dynRightMenu = computed<NavigationMenuItem[]>( () => {
+    const items: NavigationMenuItem[] = [];
+    if ( ticketsEnabled ) {
+      if ( supportLink && supportLink !== '' ) {
+        // use external support link
+        items.push({ label: `${t('menu.suport')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
+      } else {
+        // use internal ticketing system
+        items.push({ label: `${t('menu.suport')}`, to: '/front/private/tickets', icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
       }
-    ], [
-      { label: `${t('menu.suport')}`, to: '/front/private/tickets', icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },
-      { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: 'https://github.com/disk91/IoTowerControl-community/wiki',target: '_blank' },
-      { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: '...',target: '_blank' },
-    ]
-  ]);
+    }
+    if ( documentationLink && documentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: documentationLink, target: '_blank' }
+      );
+    }
+    if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink, target: '_blank' },
+      );
+    }
+    return items;
+  });
+
+
+  const rightMenu = computed<NavigationMenuItem[][]>(() => {
+    const items : NavigationMenuItem[][] = [
+      [
+        { label: `${t('menu.home')}`,icon: 'i-lucide-house',to: '/front/private/home',onSelect: () => {mainData.open = false}},
+        { label: `${t('menu.inbox')}`,icon: 'i-lucide-inbox',to: '/inbox',badge: '4',onSelect: () => {mainData.open = false} },
+        { label: `${t('menu.settings')}`,icon: 'i-lucide-settings', to: '/settings', defaultOpen: true,type: 'trigger',children: 
+          [
+            { label: 'xxx',to: '/settings',exact: true,onSelect: () => {mainData.open = false } },
+            { label: 'xxx',to: '/settings/security',onSelect: () => {mainData.open = false } },
+          ]
+        }
+      ]
+    ];
+    items.push(dynRightMenu.value);
+    return items;
+  });
+
+  console.log('rightMenu', rightMenu.value.flat());
+
 
 
   /**
@@ -185,7 +217,7 @@
       ],
       [
         { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
-        { label: `${t('menu.settings')}`,icon: 'i-lucide-settings',to: '/settings'}
+        { label: `${t('menu.apikeys')}`,icon: 'i-lucide-key-round',to: '/front/private/apikeys'}
       ]
     ] as DropdownMenuItem[][];
 
@@ -232,6 +264,7 @@
       items.push(themeGroup)
     }
     items.push(
+      /*
       [
         { label: 'to remove',icon: 'i-lucide-layout-template',children: 
         [ 
@@ -240,6 +273,7 @@
         ] 
         }
       ],
+      */
       [
       { label: `${t('menu.logout')}`, icon: 'i-lucide-log-out', to: '/front/private/signout' }
       ]

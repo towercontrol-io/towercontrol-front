@@ -10,6 +10,7 @@
     const appStore = applicationStore();
     const config = useRuntimeConfig();
     const billingEnabled : boolean = config.public.ENABLE_BILLING_FEATURES as boolean;
+    const dangerEnabled : boolean = config.public.ENABLE_DANGER_FEATURES as boolean;
 
 
     // ----
@@ -25,8 +26,9 @@
     const toolBarMenu = computed<NavigationMenuItem[][]>(() => [
       [
         { label: `${t('profile.tb_general')}`, icon: 'i-lucide-user', to: '/front/private/profile', exact: true, onSelect: () => {profileData.open = false} },
-        { label: `${t('profile.tb_security')}`, icon: 'i-lucide-shield', to: '/front/private/profile/security', onSelect: () => {profileData.open = false}  },
-        { label: `${t('profile.tb_billing')}`, icon: 'i-lucide-shopping-cart', to: '/front/private/profile/billing', onSelect: () => {profileData.open = false}, disabled: !billingEnabled  }
+        { label: `${t('profile.tb_security')}`, icon: 'i-lucide-shield-user', to: '/front/private/profile/security', onSelect: () => {profileData.open = false}  },
+        { label: `${t('profile.tb_billing')}`, icon: 'i-lucide-shopping-cart', to: '/front/private/profile/billing', onSelect: () => {profileData.open = false}, disabled: !billingEnabled  },
+        { label: `${t('profile.tb_zdanger')}`, icon: 'i-lucide-skull', to: '/front/private/profile/danger', onSelect: () => {profileData.open = false}, disabled: !dangerEnabled  }
       ]
     ]);
 

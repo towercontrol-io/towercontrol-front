@@ -16,7 +16,10 @@ export default defineNuxtConfig({
       AVATAR_DEFAULT: '/front/avatar.png',
       SERVICE_NAME: 'IoT Tower Control',
       BACKEND_API_BASE: 'http://localhost:8091',  // Backend API base URL
-      EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA 
+      EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA
+      DOCUMENTATION_LINK: 'https://github.com/disk91/IoTowerControl-community/wiki', // Link to External documentation ( displayes when set )
+      SUPPORT_LINK: '',                           // Link to External support / '' internal when enable
+      APIDOC_LINK: '',                            // Link to External API documentation (displayed when set)
       FORCE_INVITE_CODE : '',                     // If set, this code will be used for registration, this allows on backend to force application specific processing
       DISABLE_INVITE_CODE: false,                 // If true, the invite code field will not be displayed on registration, FORCE_INVITE_CODE is applied but hidden
       FORCE_COLOR_SCHEME: '',                     // If set, with a color scheme (primary,neutral) (see MainLayout.vue), this will force the color and remove the user ability to change it.
@@ -28,6 +31,9 @@ export default defineNuxtConfig({
       ENABLE_2FA_EMAIL: false,                    // If true, the Email 2FA will be enabled
       ENABLE_2FA_SMS: false,                      // If true, the SMS 2FA will be enabled
       ENABLE_BILLING_FEATURES: false,             // If true, the billing features will be enabled (pro version)
+      ENABLE_TICKETING_FEATURES: false,           // If true, the ticketing features will be enabled (pro version)
+      ENABLE_DANGER_FEATURES: true,               // If true, the user-danger features will be enabled 
+      ENABLE_DANGER_DELETE_ACCOUNT: true,         // If true, the user will be able immediately delete his account
     }
   },
   i18n: {

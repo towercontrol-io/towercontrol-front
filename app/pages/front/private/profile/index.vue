@@ -2,7 +2,7 @@
     import { applicationStore } from '~/stores/app';
     import type { FormSubmitEvent } from '@nuxt/ui'
     import type { UserBasicProfileResponse } from '~/types';
-    import type { ActionResult } from '~/types';
+    import type { ActionResult, PhoneNumberInputState } from '~/types';
 
     const { t, setLocale } = useI18n();
     const appStore = applicationStore();
@@ -14,16 +14,30 @@
 
     const saveSuccess = ref(false);
 
+    const stateMobileNumber = ref({
+        countryCode: undefined,
+        isValid: false,
+        isPossible: false,
+        countryCallingCode: undefined,
+        nationalNumber: undefined,
+        e164: undefined,
+        phoneNumber: undefined,
+    } as PhoneNumberInputState );
+
     const profile = reactive({
         firstName: undefined,
         lastName: undefined,
         email: undefined,
         language: undefined,
+        mobileNumber: undefined,
+        countryCode: undefined,
     }) as {
         firstName: string | undefined;
         lastName: string | undefined;
         email: string | undefined;
         language: string | undefined;
+        mobileNumber: string | undefined;
+        countryCode: string | undefined;
     };
 
     const locales = ref([
@@ -48,6 +62,7 @@
       profile.lastName = _profile.lastName;
       profile.email = _profile.email;
       profile.language = _profile.language || 'auto';
+      profile.mobileNumber = _profile.mobileNumber;
     }
   }, { immediate: true });
 
@@ -73,6 +88,21 @@
         result.value = null
         errorStr.value = null;
 
+
+        if ( stateMobileNumber.value.isValid ) {
+            profile.mobileNumber = stateMobileNumber.value.e164;
+            profile.countryCode = stateMobileNumber.value.countryCode;
+        } else {
+            profile.mobileNumber = undefined;
+            profile.countryCode = undefined;
+        }
+        if ( !stateMobileNumber.value.isValid && ( stateMobileNumber.value.nationalNumber && stateMobileNumber.value.nationalNumber !== '') ) {
+            // Invalid phone number, return an error
+            errorStr.value = t('profile.gen_invalidPhoneNumber');
+            return;
+        }
+
+
         if ( appStore.getUserLogin() == null ) {
             errorStr.value = t('profile.error_notLoggedIn');
             return;
@@ -81,6 +111,8 @@
             appStore.getUserLogin() || '',
             profile.firstName || '',
             profile.lastName || '',
+            profile.mobileNumber || '',
+            profile.countryCode || '',
             (profile.language == 'auto')?'': profile.language || ''
         );
         if (res.success) {
@@ -96,7 +128,7 @@
             await nuxtApp.callHook('profile:refresh', true);
 
         } else if (res.error) {
-            errorStr.value = res.error.message;
+            errorStr.value = t('login.'+res.error.message);
         }
 }
 
@@ -135,7 +167,7 @@
         <UInput
           v-model="profile.email"
           type="email"
-          disabled class="w-48"
+          disabled class="w-70"
         />
       </UFormField>
       <USeparator />
@@ -149,7 +181,7 @@
       >
         <UInput
           v-model="profile.firstName"
-          autocomplete="off" class="w-48"
+          autocomplete="off" class="w-70"
         />
       </UFormField>
 
@@ -163,8 +195,18 @@
       >
         <UInput
           v-model="profile.lastName"
-          autocomplete="off" class="w-48"
+          autocomplete="off" class="w-70"
         />
+      </UFormField>
+      <USeparator />
+
+      <UFormField
+        name="mobileNumber"
+        :label="$t('profile.gen_mobileNumber')"
+        :description="$t('profile.gen_mobileNumberDesc')"
+        class="flex max-sm:flex-col justify-between items-start gap-4"
+      >
+        <ToolsPhoneNumberInput class="w-70" v-model="stateMobileNumber" :e164="userProfile?.mobileNumber" :isoCountry="userProfile?.isoCountryCode" />
       </UFormField>
       <USeparator />
 
@@ -175,7 +217,7 @@
         :description="$t('profile.gen_languageDesc')"
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
-       <USelectMenu v-model="profile.language" value-key="id" :items="locales" class="w-48" @change="applyLocale"/>
+       <USelectMenu v-model="profile.language" value-key="id" :items="locales" class="w-70" @change="applyLocale"/>
       </UFormField>
 
     </UPageCard>
@@ -192,7 +234,7 @@
     <UPageCard
       v-if="errorStr.value!== null"
       :title="$t('profile.gen_saveError')"
-      :description="$t('login.'+errorStr.value)"
+      :description="errorStr.value"
       variant="outline"
       highlight
       highlight-color="error"
