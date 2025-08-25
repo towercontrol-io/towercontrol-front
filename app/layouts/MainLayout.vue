@@ -171,11 +171,20 @@
     return items;
   });
 
+  const dynTopRightMenu = computed<NavigationMenuItem[]>( () => {
+    const topItems: NavigationMenuItem[] = [];
+    topItems.push({ label: `${t('menu.home')}`,icon: 'i-lucide-house',to: '/front/private/home',onSelect: () => {mainData.open = false}});  
+    if ( appStore.isUserAdmin() ) {
+      topItems.push({ label: `${t('menu.userAdmin')}`,icon: 'i-lucide-user-round-cog',to: '/front/private/users',onSelect: () => {mainData.open = false}});  
+    }
+    return topItems;
+  });
 
   const rightMenu = computed<NavigationMenuItem[][]>(() => {
+    /*
     const items : NavigationMenuItem[][] = [
       [
-        { label: `${t('menu.home')}`,icon: 'i-lucide-house',to: '/front/private/home',onSelect: () => {mainData.open = false}},
+        
         { label: `${t('menu.inbox')}`,icon: 'i-lucide-inbox',to: '/inbox',badge: '4',onSelect: () => {mainData.open = false} },
         { label: `${t('menu.settings')}`,icon: 'i-lucide-settings', to: '/settings', defaultOpen: true,type: 'trigger',children: 
           [
@@ -184,12 +193,12 @@
           ]
         }
       ]
-    ];
+    ];*/
+    const items : NavigationMenuItem[][] = [];
+    items.push(dynTopRightMenu.value);
     items.push(dynRightMenu.value);
     return items;
   });
-
-  console.log('rightMenu', rightMenu.value.flat());
 
 
 

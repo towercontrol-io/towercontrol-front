@@ -450,3 +450,75 @@ export interface UserTwoFaResponse {
    */
   secret?: string;
 };
+
+/**
+ * User List Element Response
+ * Equivalent TypeScript interface for the Java class UserListElementResponse
+ */
+export interface UserListElementResponse {
+  /**
+   * User login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   */
+  login: string;
+
+  /**
+   * User email
+   * Example: "john.doe@foo.bar"
+   */
+  email: string;
+
+  /**
+   * Last login date (timestamp in ms)
+   * Example: 1697056894000
+   */
+  lastLogin: number;
+
+  /**
+   * Number of login for that user
+   * Example: 10
+   */
+  countLogin: number;
+
+  /**
+   * Registration date (timestamp in ms)
+   * Example: 1697056894000
+   */
+  registrationDate: number;
+
+  /**
+   * Deletion date (timestamp in ms)
+   * Example: 1697056894000
+   */
+  deletionDate: number;
+
+  /**
+   * User is active
+   * Example: true
+   */
+  isActive: boolean;
+
+  /**
+   * User is locked
+   * Example: true
+   */
+  isLocked: boolean;
+
+  /**
+   * User password is expired
+   * Example: true
+   */
+  isPasswordExpired: boolean;
+
+  /**
+   * User is an API account
+   * Example: true
+   */
+  isApiAccount: boolean;
+
+  /**
+   * User 2 Factor Authentication mode (NONE, EMAIL, SMS, AUTHENTICATOR)
+   * Example: "AUTHENTICATOR"
+   */
+  twoFa: TwoFATypes;
+};

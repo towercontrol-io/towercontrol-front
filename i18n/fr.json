@@ -127,6 +127,7 @@
   },
   "menu": {
     "home": "Accueil",
+    "userAdmin": "Gestion des utilisateurs",
     "settings": "Paramètres",
     "apikeys": "Clés d'API",
     "logout": "Déconnexion",
@@ -198,8 +199,29 @@
     "danger_deletion" : "Suppression définitive",
     "danger_deletionDelayDays" : "Délai avant suppression définitive: {days} jour(s)",
     "danger_deletionDelayHours" : "Délai avant suppression définitive: {hours} heure(s)",
+    "danger_loginRef": "Veuillez conserver cet identifiant qui sera le seul moyen de vous identifier par la suite: {login}",
 
     "last" : "Dernier"
+  },
+  "useradm" : {
+    "general" :"Gestion des utilisateurs",
+    "create" : "Créer un utilisateur",
+    "modify" : "Modifier un utilisateur",
+    "purgatoryTitle": "Utilisateurs en attente de suppression",
+    "purgatoryDesc": "Liste des utilisateurs désactivés, vous pouvez les restaurer ou les supprimer définitivement.",
+
+    "last" : "Dernier"
+  },
+  "Purgatory" : {
+    "email": "Email",
+    "login": "Identifiant",
+    "days": "jours",
+    "dayLeft": "Jours restants",
+    "restore" : "Restaurer",
+    "purge" : "Supprimer",
+    "noResults": "Aucun utilisateur en attente de suppression",
+
+    "last": "Dernier"
   },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",

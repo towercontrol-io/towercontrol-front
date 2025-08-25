@@ -11,6 +11,7 @@ export const applicationStore = defineStore('app', {
     userLogin: null as string | null,
     user2faSize: 0 as number,
     user2faType: '' as string,
+    userAdmin: false as boolean | null,
   }),
   actions: {
     setBackendDown() {
@@ -78,5 +79,11 @@ export const applicationStore = defineStore('app', {
     getUser2faType(): string {
       return this.user2faType;
     },
+    setUserAdmin(isAdmin: boolean) {
+      this.userAdmin = isAdmin;
+    },
+    isUserAdmin(): boolean | null {
+      return this.userAdmin;
+    }
   },
  });

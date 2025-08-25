@@ -24,6 +24,22 @@
 
     const deletionDays : number = userConfig && userConfig.value && userConfig.value?.deletionPurgatoryDelayHours > 0 ? Math.ceil(userConfig.value?.deletionPurgatoryDelayHours / 24) : 0;
 
+    const onDeactivation = () => {
+        $apiBackendUsers.deleteUserLogicalRequest()
+           .then( (res) => {
+            if (res.success) {
+                // Signout the user
+                appStore.setBackendJWT(''); // Clear the JWT token from the store
+                appStore.setRefreshJWT(''); // Clear the refresh token from the store
+                router.push('/front/public/login');
+            } else if (res.error) {
+                // Should not happen, but...
+            }
+        }).catch( (err) => {
+            // Should not happen, but...
+        });
+    };
+
 </script>
 
 <template>
@@ -48,11 +64,15 @@
       <span v-if="deletionDays == 0"> 
         {{ $t('profile.danger_deletionDelayHours', { hours: userConfig.deletionPurgatoryDelayHours })}} 
       </span>
+      <span>
+        {{ $t('profile.danger_loginRef', { login: appStore.getUserLogin() })}} 
+      </span>
       <UButton
         :label="$t('profile.danger_deactivation')"
         color="error"
         type="submit"
         class="w-fit lg:ms-auto"
+        @click="onDeactivation()"
       />
     </UPageCard>
 

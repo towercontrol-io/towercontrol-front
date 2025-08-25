@@ -126,6 +126,7 @@
   },
   "menu": {
     "home": "Home",
+    "userAdmin": "User Management",
     "settings": "Settings",
     "apikeys": "API Keys",
     "logout": "Logout",
@@ -197,8 +198,29 @@
     "danger_deletion" : "Permanent deletion",
     "danger_deletionDelayDays" : "Time before permanent deletion: {days} days",
     "danger_deletionDelayHours" : "Time before permanent deletion: {hours} hours",
+    "danger_loginRef": "Please keep this identifier, which will be the only way to identify you later: {login}",
 
     "last" : "Last"
+  },
+  "useradm" : {
+    "general": "User Management",
+    "create": "Create User",
+    "modify": "Edit User",
+    "purgatoryTitle": "Users Pending Deletion",
+    "purgatoryDesc": "List of disabled users, you can restore or permanently delete them.",
+
+    "last": "Last"
+  },
+  "Purgatory" : {
+    "email": "Email",
+    "login": "Login",
+    "days": "days",
+    "dayLeft": "Days left",
+    "restore" : "Restore",
+    "purge" : "Delete",
+    "noResults": "No users pending deletion",
+
+    "last": "Last"
   },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",

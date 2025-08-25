@@ -1,6 +1,6 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
-import type { UserTwoFaBody, UserTwoFaResponse } from '~/types';
+import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -41,6 +41,8 @@ export default defineNuxtPlugin(() => {
   const usersModuleChange2FAPut: string = '/users/1.0/profile/2fa';
   const usersModuleVerify2FAGet: string = '/users/1.0/session/2fa';
   const userModuleSignoutGet: string = '/users/1.0/session/signout';
+  const userModuleAdminPurgatoryGet: string = '/users/1.0/admin/purgatory';
+  const userModuleDeleteUserDelete: string = '/users/1.0/profile/';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -76,6 +78,22 @@ export default defineNuxtPlugin(() => {
     } catch (error) {
         console.error("Invalid JWT:", error);
         return null;
+    }
+  }
+
+    function getJWTRole(token : string, role: string): boolean {
+    try {
+        // Décoder le payload du JWT
+        const payload = JSON.parse(atob(token.split('.')[1]));
+
+        // Vérifier si le champ roles existe
+        if (!payload.roles) return false;
+
+        const roles : string[] = payload.roles;
+        return roles.includes(role);
+    } catch (error) {
+        console.error("Invalid JWT:", error);
+        return false;
     }
   }
   /**
@@ -251,6 +269,10 @@ export default defineNuxtPlugin(() => {
             appStore.setBackendJWT(response.jwtToken);
             appStore.setRefreshJWT(response.jwtRenewalToken);
             appStore.setRenewJWTbefore(getJWTEndDate(response.jwtToken) || 0);
+            appStore.setUserAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_USER_ADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
@@ -549,8 +571,48 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Logical deletion of the user account, the data will be offuscated until the permanent deletetion, depending
+     * on the backend configuration the user will be in a purgatory state for a given time before being definitively deleted.
+     * 
+     */
+    deleteUserLogicalRequest: async (): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                userModuleDeleteUserDelete,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
 
-    
+
+
+    // =============================================================================
+    // Admin functions
+    // =============================================================================
+
+    /**
+     * List the user in the purgatory, this is to restore user or delete them definitively
+     */
+    userModulePurgatoryList: async (): Promise<{ success?: UserListElementResponse[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<UserListElementResponse[]>(
+                'GET',
+                userModuleAdminPurgatoryGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
     
   };
   return {
