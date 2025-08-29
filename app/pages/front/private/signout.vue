@@ -19,8 +19,8 @@
         errorStr.value = undefined;
         const res = $apiBackendUsers.userModuleSignoutGet().then((res) => {
             if (res.success) {
-                appStore.setBackendJWT(''); // Clear the JWT token from the store
-                appStore.setRefreshJWT(''); // Clear the refresh token from the store
+                appStore.clearStore(); // Clear the store
+                $apiBackendUsers.clearCache(); // Clear the user cache
                 router.push('/front/public/login');
             } else if (res.error) {
                 errorStr.value = t('login.' + res.error.message);

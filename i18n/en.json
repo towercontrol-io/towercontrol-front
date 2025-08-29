@@ -208,6 +208,9 @@
     "modify": "Edit User",
     "purgatoryTitle": "Users Pending Deletion",
     "purgatoryDesc": "List of disabled users, you can restore or permanently delete them.",
+    "errorTitle": "An error occurred",
+    "searchTitle": "Quick actions on users.",
+    "searchDesc": "Allows you to search for a user to perform actions such as account closure, 2FA reset ... The search requires at least 3 characters and does not cover the entire email or users whose personal data is obfuscated.",
 
     "last": "Last"
   },
@@ -219,6 +222,26 @@
     "restore" : "Restore",
     "purge" : "Delete",
     "noResults": "No users pending deletion",
+    "errorTitle": "An error occurred",
+    "purgeConfirm": "Delete",
+    "purgeConfirmDesc" : "Are you sure you want to permanently delete the user? This action is irreversible.",
+    "protected": "Hidden",
+    "unknown": "Unknown",
+
+    "last": "Last"
+  },
+  "SearchUser": {
+    "searchPlaceholder": "Search by email or login",
+    "email": "Email",
+    "login": "Login",
+    "protected": "Hidden",
+    "unknown": "Unknown",
+    "lastLogin": "Last Login",
+    "active" : "Active",
+    "locked" : "Locked",
+    "2fa" : "2FA",
+    "noResults": "No user found",
+    "errorTitle": "An error occurred",
 
     "last": "Last"
   },

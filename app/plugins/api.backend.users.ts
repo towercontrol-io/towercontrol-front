@@ -1,8 +1,9 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
-import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse } from '~/types';
+import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserRestoreBody, UserPurgeBody, UserSearchBody, UserStateSwitchBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
+import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
 
 const GET_TIMEOUT = 5000; // 5 seconds
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
@@ -43,6 +44,13 @@ export default defineNuxtPlugin(() => {
   const userModuleSignoutGet: string = '/users/1.0/session/signout';
   const userModuleAdminPurgatoryGet: string = '/users/1.0/admin/purgatory';
   const userModuleDeleteUserDelete: string = '/users/1.0/profile/';
+  const userModuleAdminRestorePut: string = '/users/1.0/admin/restore';
+  const userModuleAdminPurgeDelete: string = '/users/1.0/admin/purge';
+  const userModuleAdminSearchPost: string = '/users/1.0/admin/search';
+  const userModuleAdminSearchGet: string = '/users/1.0/admin/search';
+  const userModuleAdminActivePut: string = '/users/1.0/admin/active';
+  const userModuleAdminLockPut: string = '/users/1.0/admin/lock';
+  const userModuleAdmin2FAPut: string = '/users/1.0/admin/2fa/disable';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -167,6 +175,13 @@ export default defineNuxtPlugin(() => {
   }
 
   const apiBackendUsers = {
+    clearCache: () => {
+      profileCache.profile = null;
+      profileCache.timestamp = 0;
+      profileCache.forceRefresh = false;
+      cache.data = null;
+      cache.timestamp = 0;
+    },
 
     /**
      * Get the user profile, cache it until the refresh is forced or on every 60 minutes.
@@ -304,6 +319,10 @@ export default defineNuxtPlugin(() => {
             appStore.setBackendJWT(response.jwtToken);
             appStore.setRefreshJWT(response.jwtRenewalToken);
             appStore.setRenewJWTbefore(getJWTEndDate(response.jwtToken) || 0);
+            appStore.setUserAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_USER_ADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
@@ -613,7 +632,146 @@ export default defineNuxtPlugin(() => {
         }
     },
 
-    
+    /**
+     * Restore a user from the purgatory, this is to restore user to previous state
+     */
+    userModulePurgatoryRestore: async (login: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body: UserRestoreBody = {
+            login: login
+        };
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleAdminRestorePut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Purge a user from the purgatory, this is to delete user definitively
+     */
+    userModulePurgatoryPurge: async (login: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body: UserPurgeBody = {
+            login: login
+        };
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                userModuleAdminPurgeDelete,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Search user by email, helped by the search keys.
+     */
+    userModuleSearchByEmail: async (email:string): Promise<{ success?: UserListElementResponse[]; error?: ActionResult | { message: string } }> => {
+        const body: UserSearchBody = {
+            search: email
+        };
+        try {
+            const response = await apiCallwithTimeout<UserListElementResponse[]>(
+                'POST',
+                userModuleAdminSearchPost,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Search last connected users
+     */
+    userModuleSearchLastConnected: async (): Promise<{ success?: UserListElementResponse[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<UserListElementResponse[]>(
+                'GET',
+                userModuleAdminSearchGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * active state change for a user
+     */
+    userModuleSwitchActiveState: async (login:string, state: boolean): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body : UserStateSwitchBody = {
+            login: login,
+            state : state
+        };  
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleAdminActivePut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Lock state change for a user
+     */
+    userModuleSwitchLockState: async (login:string, state: boolean): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body : UserStateSwitchBody = {
+            login: login,
+            state : state
+        };  
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleAdminLockPut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Disable 2FA for a user
+     */
+    userModuleDisable2FaState: async (login:string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body : UserStateSwitchBody = {
+            login: login,
+            state : false
+        };  
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleAdmin2FAPut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
   };
   return {
     provide: {

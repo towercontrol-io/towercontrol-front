@@ -522,3 +522,60 @@ export interface UserListElementResponse {
    */
   twoFa: TwoFATypes;
 };
+
+/**
+ * User Restore Body
+ * Equivalent TypeScript interface for the Java class UserRestoreBody
+ */
+export interface UserRestoreBody {
+  /**
+   * The user login (hash) to be restored for purgatory
+   * Example: "E5C35687AF..."
+   */
+  login: string;
+};
+
+/**
+ * User Purge Body
+ * Equivalent TypeScript interface for the Java class UserPurgeBody
+ */
+export interface UserPurgeBody {
+  /**
+   * The user login (hash) to be purged from the system
+   * Example: "E5C35687AF..."
+   */
+  login: string;
+};
+
+/**
+ * User Search Body
+ * Equivalent TypeScript interface for the Java class UserSearchBody
+ */
+export interface UserSearchBody {
+  /**
+   * The user email (hash) to be searched or the user login (hash)
+   * Example: "john.doe@foo.bar" or "E5C35687AF..."
+   */
+  search: string;
+};
+
+/**
+ * User State Switch Body
+ * Equivalent TypeScript interface for the Java class UserStateSwitchBody
+ */
+export interface UserStateSwitchBody {
+  /**
+   * The user login (hash) to be restored for purgatory
+   * Example: "E5C35687AF..."
+   */
+  login: string;
+
+  /**
+   * The expected state true / false
+   * Example: true
+   */
+  state: boolean;
+}
+
+
+

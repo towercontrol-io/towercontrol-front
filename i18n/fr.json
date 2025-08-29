@@ -209,6 +209,8 @@
     "modify" : "Modifier un utilisateur",
     "purgatoryTitle": "Utilisateurs en attente de suppression",
     "purgatoryDesc": "Liste des utilisateurs désactivés, vous pouvez les restaurer ou les supprimer définitivement.",
+    "searchTitle": "Actions rapides sur les utilisateurs.",
+    "searchDesc": "Permet de rechercher un utilisateur pour effectuer des actions telles que la cloture du compte, le reset 2FA ... La recherche demande au moins 3 caractères et ne couvre pas tout l'email ni les utilisateurs pour qui les données personnelles sont offusquées.",
 
     "last" : "Dernier"
   },
@@ -220,6 +222,27 @@
     "restore" : "Restaurer",
     "purge" : "Supprimer",
     "noResults": "Aucun utilisateur en attente de suppression",
+    "errorTitle": "Une erreur est survenue",
+    "purgeConfirm": "Supprimer",
+    "purgeConfirmDesc" : "Êtes-vous certain de vouloir supprimer définitivement l'utilisateur ? Cette action est irréversible.",
+    "protected": "Offusqué",
+    "unknown": "Inconnu",
+
+
+    "last": "Dernier"
+  },
+  "SearchUser": {
+    "searchPlaceholder": "Recherche par email ou identifiant",
+    "email": "Email",
+    "login": "Identifiant",
+    "protected": "Hidden",
+    "unknown": "Unknown",
+    "lastLogin": "Dernière connexion",
+    "active" : "Actif",
+    "locked" : "Verrouillé",
+    "2fa" : "2FA",
+    "noResults": "Aucun utilisateur trouvé",
+    "errorTitle": "Une erreur est survenue",
 
     "last": "Dernier"
   },

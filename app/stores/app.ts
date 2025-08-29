@@ -14,6 +14,17 @@ export const applicationStore = defineStore('app', {
     userAdmin: false as boolean | null,
   }),
   actions: {
+    clearStore() {
+      this.backendUp = true;
+      this.backendJWT = null;
+      this.refreshJWT = null;
+      this.renewJWTbefore = 0;
+      this.userEmail = null;
+      this.userLogin = null;
+      this.user2faSize = 0;
+      this.user2faType = '';
+      this.userAdmin = false;
+    },
     setBackendDown() {
       this.backendUp = false;
     },
