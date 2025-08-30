@@ -4,8 +4,9 @@
 
     const { t, locale } = useI18n();
     const { $apiBackendUsers } = useNuxtApp();
-    const UBadge = resolveComponent('UBadge')
+    const nuxtApp = useNuxtApp();
     const UTooltip = resolveComponent('UTooltip')
+    const UButton = resolveComponent('UButton')
     const USwitch = resolveComponent('USwitch')
 
     type UserLine = {
@@ -17,6 +18,7 @@
         locked: boolean;
         isPasswordExpired: boolean;
         isTwoFaEnabled: boolean;
+        deleted: boolean;
     }
 
     const pageCtx = reactive({
@@ -27,9 +29,19 @@
 
         searchInput: null as string | null,
         lastSearch: null as string | null,
+        confirmationLayer: false as boolean,
+        pendingAction: 'None' as 'None' | 'Ban' | 'Delete',
+        loginOnAction: null as string | null
     });
 
     const loc :string = locale.value ?? (typeof navigator !== 'undefined' ? navigator.language : 'en-US');
+
+    /** 
+     * Event management - refresh the User list when another component modify the users
+     */
+    nuxtApp.hook('usermng:refresh', async () => {
+        onSearchChange(true);
+    });
 
     /**
      * Manage the user input and decide to call the search API
@@ -80,6 +92,7 @@
                                 locked: line.locked,
                                 isPasswordExpired: line.passwordExpired,
                                 isTwoFaEnabled: (line.twoFa != TwoFATypes.NONE),
+                                deleted: (line.deletionDate > 0),
                             } as UserLine;
                         });
                     } else if (res.error) {
@@ -116,6 +129,7 @@
                         locked: line.locked,
                         isPasswordExpired: line.passwordExpired,
                         isTwoFaEnabled: (line.twoFa != TwoFATypes.NONE),
+                        deleted: (line.deletionDate > 0),
                     } as UserLine;
                 });
 
@@ -133,31 +147,51 @@
     });
 
     /**
-     * Call the API to purge a user from the purgatory
-     * @param values 
-     *//*
-    const onPurge = (values: any) => {
-        pageCtx.purgeConfirmLayer = true;
-        pageCtx.loginToPurge = values.login;
+     * Call the API to delete a user and move it to purgatory
+     * @param values
+     */
+    const onDelete = (values: any) => {
+        pageCtx.confirmationLayer = true;
+        pageCtx.pendingAction = 'Delete';
+        pageCtx.loginOnAction = values.login;
+        pageCtx.searchError = null;
+    }
+    const onBan = (values: any) => {
+        pageCtx.confirmationLayer = true;
+        pageCtx.pendingAction = 'Ban';
+        pageCtx.loginOnAction = values.login;
+        pageCtx.searchError = null;
     }
 
-    const onConfirmPurge = () => {
-        pageCtx.purgeConfirmLayer = false;
-        pageCtx.purgatoryError = null;
-        if ( !pageCtx.loginToPurge ) return;
+    const onActionConfirmed = () => {
+        pageCtx.confirmationLayer = false;
+        pageCtx.searchError = null;
+        if ( !pageCtx.loginOnAction ) return;
         
-        $apiBackendUsers.userModulePurgatoryPurge(pageCtx.loginToPurge).then((res) => {
-            if (res.success) {
-                loadPurgatoryList();
-            } else if (res.error) {
-                pageCtx.purgatoryError = t('login.'+res.error.message);
-            }
-        }).catch((err) => {
-            pageCtx.purgatoryError = t('common.unknownError');
-        });
-        pageCtx.loginToPurge = null;
-    }
-*/
+        if ( pageCtx.pendingAction === 'Ban' ) {
+            pageCtx.searchError = t('common.notYetImplemented');
+        } else if ( pageCtx.pendingAction === 'Delete' ) {
+            $apiBackendUsers.userModuleAdminDelete(pageCtx.loginOnAction).then((res) => {
+                if (res.success) {
+                    nuxtApp.callHook('usermng:refresh', true);
+                } else if (res.error) {
+                    pageCtx.searchError = t('login.'+res.error.message);
+                }
+            }).catch((err) => {
+                pageCtx.searchError = t('common.unknownError');
+            });
+        }
+        pageCtx.loginOnAction = null;
+        pageCtx.pendingAction = 'None';
+    };
+
+    const onActionCancel = () => {
+        pageCtx.confirmationLayer = false;
+        pageCtx.pendingAction = 'None';
+        pageCtx.loginOnAction = null;
+    };
+
+    
     /**
      * Change the active status of a user
      */
@@ -244,15 +278,19 @@
         },
         { accessorKey: 'lastLogin', header: t("SearchUser.lastLogin"),
           cell: ({ row }) => {
-            return new Date(row.getValue('lastLogin') as number).toLocaleString(loc, {
-                year: '2-digit',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
+            if ( row.getValue('deleted') == true ) {
+                return t("SearchUser.deleted");
+            } else {
+                return new Date(row.getValue('lastLogin') as number).toLocaleString(loc, {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
             }
+          }
         },
         { accessorKey: 'active', header: t("SearchUser.active"),
           cell: ({ row }) => {
@@ -296,10 +334,31 @@
                  }, () => { return ''; }
             )
           }        
+        },
+        { accessorKey: 'ban', header: t("SearchUser.ban"), 
+          cell: ({ row }) => {
+            return h(UButton, { class: 'capitalize', size: 'xs', variant: 'soft', color: 'error', onClick: () => onBan(row.original)}, () =>
+                t('SearchUser.ban')
+            )
+          }        
+        },
+        { accessorKey: 'delete', header: t("SearchUser.delete"), 
+          cell: ({ row }) => {
+            return h(UButton, { class: 'capitalize', size: 'xs', variant: 'soft', color: 'error', onClick: () => onDelete(row.original)}, () =>
+                t('SearchUser.delete')
+            )
+          }        
+        },
+        { accessorKey: 'deleted', header: "NA", enableHiding: true,
+          cell: ({ row }) => {
+            return ('NA')
+          }        
         }
+
     ];
 
     const columnVisibility = ref({
+        deleted: false
     })
 
 </script>
@@ -335,15 +394,22 @@
     />
 
     <!-- Overlay to cover block -->
-      <div v-if="pageCtx.purgeConfirmLayer"
+      <div v-if="pageCtx.confirmationLayer"
         class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
       >
-          <div class="mb-2 text-sm">
-            {{ t('Purgatory.purgeConfirmDesc') }}
-          </div>
-          <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="">
-            {{ t('Purgatory.purgeConfirm') }}
-          </UButton>
+        <div class="flex flex-col items-center gap-4">
+            <div class="mb-2 text-sm text-center">
+                {{ t('SearchUser.actionConfirmDesc') }}
+            </div>
+            <div class="flex gap-4">
+                <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="onActionConfirmed()">
+                    {{ t('SearchUser.actionConfirm') }}
+                </UButton>
+                <UButton icon="i-lucide-circle-x" variant="soft" color="primary" @click="onActionCancel()">
+                    {{ t('SearchUser.actionCancel') }}
+                </UButton>
+            </div>
+        </div>
       </div>
   </div>
 

@@ -1,6 +1,6 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
-import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserRestoreBody, UserPurgeBody, UserSearchBody, UserStateSwitchBody } from '~/types';
+import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
@@ -51,6 +51,7 @@ export default defineNuxtPlugin(() => {
   const userModuleAdminActivePut: string = '/users/1.0/admin/active';
   const userModuleAdminLockPut: string = '/users/1.0/admin/lock';
   const userModuleAdmin2FAPut: string = '/users/1.0/admin/2fa/disable';
+  const userModuleAdminDelDelete: string = '/users/1.0/admin/delete';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -636,7 +637,7 @@ export default defineNuxtPlugin(() => {
      * Restore a user from the purgatory, this is to restore user to previous state
      */
     userModulePurgatoryRestore: async (login: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const body: UserRestoreBody = {
+        const body: UserIdentificationBody = {
             login: login
         };
         try {
@@ -656,13 +657,33 @@ export default defineNuxtPlugin(() => {
      * Purge a user from the purgatory, this is to delete user definitively
      */
     userModulePurgatoryPurge: async (login: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-        const body: UserPurgeBody = {
+        const body: UserIdentificationBody = {
             login: login
         };
         try {
             const response = await apiCallwithTimeout<ActionResult>(
                 'DELETE',
                 userModuleAdminPurgeDelete,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Delete a user and move it to purgatory when active or delete it forever
+     */
+    userModuleAdminDelete: async (login: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        const body: UserIdentificationBody = {
+            login: login
+        };
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                userModuleAdminDelDelete,
                 body,
                 false
             );

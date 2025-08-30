@@ -224,6 +224,7 @@
     "noResults": "No users pending deletion",
     "errorTitle": "An error occurred",
     "purgeConfirm": "Delete",
+    "purgeCancel": "Cancel",
     "purgeConfirmDesc" : "Are you sure you want to permanently delete the user? This action is irreversible.",
     "protected": "Hidden",
     "unknown": "Unknown",
@@ -242,6 +243,13 @@
     "2fa" : "2FA",
     "noResults": "No user found",
     "errorTitle": "An error occurred",
+    "ban": "Ban",
+    "delete": "Delete",
+    "actionConfirmDesc": "Are you sure you want to perform this action that will have a destructive effect on the user's data?",
+    "actionConfirm": "Confirm Action",
+    "actionCancel": "Cancel Action",
+    "deleted": "Pending deletion",
+
 
     "last": "Last"
   },
@@ -250,6 +258,8 @@
     "unknownError": "An unknown error occurred. Please try again later.",
     "goHome": "Go to Home",
     "loading": "Loading...",
+    "notYetImplemented": "Feature not yet implemented",
+
 
     "last": "Last"
   }

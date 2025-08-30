@@ -4,7 +4,7 @@
 
     const { t } = useI18n();
     const { $apiBackendUsers } = useNuxtApp();
-    const UBadge = resolveComponent('UBadge')
+    const nuxtApp = useNuxtApp();
     const UTooltip = resolveComponent('UTooltip')
     const UButton = resolveComponent('UButton')
 
@@ -24,6 +24,15 @@
         loginToPurge: null as string | null,
     });
 
+    /** 
+     * Event management - refresh the User list when another component modify the users
+     */
+    nuxtApp.hook('usermng:refresh', async () => {
+        console.log('User management refresh hook received on Purgatory');
+        loadPurgatoryList();
+    });
+
+
     /**
      * Call the API to restore a user from the purgatory
      * @param values 
@@ -33,7 +42,7 @@
         pageCtx.purgatoryError = null;
         $apiBackendUsers.userModulePurgatoryRestore(values.login).then((res) => {
             if (res.success) {
-                loadPurgatoryList();
+                nuxtApp.callHook('usermng:refresh', true);
             } else if (res.error) {
                 pageCtx.purgatoryError = t('login.'+res.error.message);
             }
@@ -59,13 +68,18 @@
         
         $apiBackendUsers.userModulePurgatoryPurge(pageCtx.loginToPurge).then((res) => {
             if (res.success) {
-                loadPurgatoryList();
+                nuxtApp.callHook('usermng:refresh', true);
             } else if (res.error) {
                 pageCtx.purgatoryError = t('login.'+res.error.message);
             }
         }).catch((err) => {
             pageCtx.purgatoryError = t('common.unknownError');
         });
+        pageCtx.loginToPurge = null;
+    }
+
+    const onCancelPurge = () => {
+        pageCtx.purgeConfirmLayer = false;
         pageCtx.loginToPurge = null;
     }
 
@@ -111,7 +125,7 @@
     ];
 
     const columnVisibility = ref({
-       email: false // cachée au départ
+       email: false // hide this tehcnical column
     })
 
     /**
@@ -175,12 +189,19 @@
       <div v-if="pageCtx.purgeConfirmLayer"
         class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
       >
-          <div class="mb-2 text-sm">
-            {{ t('Purgatory.purgeConfirmDesc') }}
-          </div>
-          <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="onConfirmPurge()">
-            {{ t('Purgatory.purgeConfirm') }}
-          </UButton>
+        <div class="flex flex-col items-center gap-4">
+            <div class="mb-2 text-sm text-center">
+                 {{ t('Purgatory.purgeConfirmDesc') }}
+            </div>
+            <div class="flex gap-4">
+                <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="onConfirmPurge()">
+                    {{ t('Purgatory.purgeConfirm') }}
+                </UButton>
+                <UButton icon="i-lucide-circle-x" variant="soft" color="primary" @click="onCancelPurge()">
+                    {{ t('Purgatory.purgeCancel') }}
+                </UButton>
+            </div>
+        </div>
       </div>
   </div>
 

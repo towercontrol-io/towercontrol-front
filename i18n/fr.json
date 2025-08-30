@@ -225,6 +225,7 @@
     "errorTitle": "Une erreur est survenue",
     "purgeConfirm": "Supprimer",
     "purgeConfirmDesc" : "Êtes-vous certain de vouloir supprimer définitivement l'utilisateur ? Cette action est irréversible.",
+    "purgeCancel": "Annuler",
     "protected": "Offusqué",
     "unknown": "Inconnu",
 
@@ -243,6 +244,12 @@
     "2fa" : "2FA",
     "noResults": "Aucun utilisateur trouvé",
     "errorTitle": "Une erreur est survenue",
+    "ban": "Bannir",
+    "delete": "Supprimer",
+    "actionConfirmDesc": "Êtes-vous sûr de vouloir effectuer cette action qui aura un effet desctruteur sur les données de l'utilisateur ?",
+    "actionConfirm": "Confirmer l'action",
+    "actionCancel": "Annuler l'action",
+    "deleted": "Attente suppression",
 
     "last": "Dernier"
   },
@@ -251,6 +258,7 @@
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
     "goHome": "Retour à l'accueil",
     "loading": "Chargement...",
+    "notYetImplemented": "Fonctionnalité non encore implémentée",
 
     "last": "Dernier"
   }

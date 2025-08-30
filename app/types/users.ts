@@ -524,24 +524,12 @@ export interface UserListElementResponse {
 };
 
 /**
- * User Restore Body
- * Equivalent TypeScript interface for the Java class UserRestoreBody
+ * User Identification Body
+ * Equivalent TypeScript interface for the Java class UserIdentificationBody
  */
-export interface UserRestoreBody {
+export interface UserIdentificationBody {
   /**
-   * The user login (hash) to be restored for purgatory
-   * Example: "E5C35687AF..."
-   */
-  login: string;
-};
-
-/**
- * User Purge Body
- * Equivalent TypeScript interface for the Java class UserPurgeBody
- */
-export interface UserPurgeBody {
-  /**
-   * The user login (hash) to be purged from the system
+   * The user login (hash) to be identified
    * Example: "E5C35687AF..."
    */
   login: string;
