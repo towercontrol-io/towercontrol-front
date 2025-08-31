@@ -40,81 +40,19 @@
      * Event management - refresh the User list when another component modify the users
      */
     nuxtApp.hook("usermng:refresh" as any, async () => {
-        onSearchChange(true);
+        loadLastRegisteredList();
     });
 
-    /**
-     * Manage the user input and decide to call the search API
-     * For the email, currenltly only search if more than 3 characters are entered
-     * and only the @ character will make an interest to search more as only the
-     * 3 char on start and after @ will be used for the search.
-     * When the input is just HEXCHAR, it is a user Login and can go to a different search
-     * 
-     */
-    const onSearchChange = (force : boolean = false) => {
-
-        if ( ! pageCtx.searchInput || pageCtx.searchInput.trim().length === 0 ) {
-            loadLastConnectedList();
-            return;
-        }
-
-        // With @ the previous result can be not matching until we have enough char
-        if ( pageCtx.lastSearch?.includes('@') !== pageCtx.searchInput.includes('@') ) {
-            pageCtx.tableLines = [];
-        }
-
-        if ( pageCtx.searchInput && pageCtx.searchInput.length > 2 ) {
-            //  enough char to search
-            if (   ( !pageCtx.lastSearch && pageCtx.searchInput.length > 2 )
-                || ( pageCtx.lastSearch && pageCtx.searchInput.substring(0,3) !== pageCtx.lastSearch?.substring(0,3) )
-                || ( pageCtx.searchInput.includes('@') && pageCtx.searchInput.split('@')[1].length === 3)  
-                || force
-            ) {
-                // new search
-                pageCtx.lastSearch = pageCtx.searchInput;
-
-                pageCtx.searchLoading = true;
-                pageCtx.searchError = null;
-
-                pageCtx.tableLines = [];
-                $apiBackendUsers.userModuleSearchByEmail(pageCtx.searchInput).then((res) => {
-                    pageCtx.searchLoading = false;
-                    if (res.success) {
-                        pageCtx.searchList = res.success;                        
-                        pageCtx.tableLines = pageCtx.searchList.map( (line : any) => {
-                            // Here some magic, the entry isActive is transformed into 'active'...
-                            return {
-                                email: line.email,
-                                login: line.login,
-                                lastLogin: line.lastLogin,
-                                registrationDate: line.registrationDate,
-                                active: line.active,
-                                locked: line.locked,
-                                isPasswordExpired: line.passwordExpired,
-                                isTwoFaEnabled: (line.twoFa != TwoFATypes.NONE),
-                                deleted: (line.deletionDate > 0),
-                            } as UserLine;
-                        });
-                    } else if (res.error) {
-                        pageCtx.searchError = t('login.'+res.error.message);
-                    }
-                }).catch((err) => {
-                    pageCtx.searchLoading = false;
-                    pageCtx.searchError = t('common.unknownError');
-                });
-            }
-        }
-    };
-
+    
 
     /**
-     * Load the last connected list from the API
+     * Load the last registered list from the API
      */
-    const loadLastConnectedList = () => {
+    const loadLastRegisteredList = () => {
         pageCtx.searchLoading = true;
         pageCtx.tableLines = [];
 
-        $apiBackendUsers.userModuleSearchLastConnected().then((res) => {
+        $apiBackendUsers.userModuleSearchLastRegistered().then((res) => {
             pageCtx.searchLoading = false;
             if (res.success) {
                 pageCtx.searchList = res.success;
@@ -141,9 +79,8 @@
         });
     }
     
-
     onMounted(() => {
-        loadLastConnectedList();    
+        loadLastRegisteredList();    
     });
 
     /**
@@ -200,7 +137,7 @@
         pageCtx.searchError = null;
         $apiBackendUsers.userModuleSwitchActiveState(values.login, newStatus).then((res) => {
             if (res.success) {
-                onSearchChange();
+                nuxtApp.callHook("usermng:refresh" as any);
             } else if (res.error) {
                 pageCtx.searchError = t('login.'+res.error.message);
             }
@@ -208,91 +145,56 @@
             pageCtx.searchError = t('common.unknownError');
         });
     }
-
-    /**
-     * Change the lock status of a user
-     */
-
-    const onLockChange = (values : any, newStatus: boolean) => {
-        pageCtx.searchError = null;
-        $apiBackendUsers.userModuleSwitchLockState(values.login, newStatus).then((res) => {
-            if (res.success) {
-                onSearchChange();
-            } else if (res.error) {
-                pageCtx.searchError = t('login.'+res.error.message);
-            }
-        }).catch((err) => {
-            pageCtx.searchError = t('common.unknownError');
-        });
-    }
-
-    /**
-     * Disable the second factor authentication status of a user
-     */
-
-    const on2FADisable = (values : any, newStatus: boolean) => {
-        pageCtx.searchError = null;
-        if ( newStatus ) return; // only when disabling
-        $apiBackendUsers.userModuleDisable2FaState(values.login).then((res) => {
-            if (res.success) {
-                onSearchChange();
-            } else if (res.error) {
-                pageCtx.searchError = t('login.'+res.error.message);
-            }
-        }).catch((err) => {
-            pageCtx.searchError = t('common.unknownError');
-        });
-    }
+   
 
     /**
      * Table definition
      */
     const tableDef: TableColumn<UserLine>[] = [
-        { accessorKey: 'login',header: t("SearchUser.login"),
+
+        { accessorKey: 'registrationDate', header: t("RecentReg.registrationDate"),
           cell: ({ row }) => {
-            const toolText : string =`${row.getValue('login')}`;
-            const cellText : string = (( row.getValue('login') ? 
-                                (row.getValue('login') as string).substring(0, 10) + '...'
-                                : t(("SearchUser.unknown")) ));
-            return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
-                               () => h('span',cellText)
-                   );
-          }
-        },
-        { accessorKey: 'email',header: t("SearchUser.email"),
-          cell: ({ row }) => {
-            let email = row.getValue('email') as string;
-            if ( !email || email.trim() === '' ) {
-                email = t("SearchUser.unknown");
-            } else if ( email ==='encrypted' ) {
-                email = t("SearchUser.protected");
-            }
-            const toolText : string =`${email}`;
-            const cellText : string = (( row.getValue('email') ? 
-                                (email as string).substring(0, 15) + (email.length > 15 ? '...' : '')
-                                : t(("SearchUser.unknown")) ));
-            return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
-                               () => h('span',cellText)
-                   );
-          }
-        },
-        { accessorKey: 'lastLogin', header: t("SearchUser.lastLogin"),
-          cell: ({ row }) => {
-            if ( row.getValue('deleted') == true ) {
-                return t("SearchUser.deleted");
-            } else {
-                return new Date(row.getValue('lastLogin') as number).toLocaleString(loc, {
+            return new Date(row.getValue('registrationDate') as number).toLocaleString(loc, {
                     year: '2-digit',
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false
-                });
-            }
+            });
           }
         },
-        { accessorKey: 'active', header: t("SearchUser.active"),
+        { accessorKey: 'login',header: t("RecentReg.login"),
+          cell: ({ row }) => {
+            const toolText : string =`${row.getValue('email')} (${row.getValue('login')})`;
+            let cellText : string = (row.getValue('login') as string).substring(0, 15) + '...';
+            let email = row.getValue('email') as string;
+            if ( email && email.trim() !== '' && email !== 'encrypted' ) {
+                cellText = (row.getValue('email') as string).substring(0, 15) + '...';
+            }
+            return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
+                               () => h('span',cellText)
+                   );
+          }
+        },
+        { accessorKey: 'email',header: t("RecentReg.email"), enableHiding : true,
+          cell: ({ row }) => {
+            let email = row.getValue('email') as string;
+            if ( !email || email.trim() === '' ) {
+                email = t("RecentReg.unknown");
+            } else if ( email ==='encrypted' ) {
+                email = t("RecentReg.protected");
+            }
+            const toolText : string =`${email}`;
+            const cellText : string = (( row.getValue('email') ? 
+                                (email as string).substring(0, 15) + (email.length > 15 ? '...' : '')
+                                : t(("RecentReg.unknown")) ));
+            return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
+                               () => h('span',cellText)
+                   );
+          }
+        },
+        { accessorKey: 'active', header: t("RecentReg.active"),
           cell: ({ row }) => {
             return h(USwitch, 
                  { 
@@ -306,48 +208,19 @@
             )
           }       
         },
-        { accessorKey: 'locked', header: t("SearchUser.locked"),
+        { accessorKey: 'ban', header: t("RecentReg.ban"), 
           cell: ({ row }) => {
-            return h(USwitch, 
-                 { 
-                    modelValue: row.getValue('locked') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
-                    'onUpdate:modelValue': (val: boolean) => {
-                        row.original.locked = val
-                        onLockChange(row.original, val);
-                    } 
-                 }, () => { return ''; }
+            return h(UButton, { class: 'capitalize', size: 'xs', variant: 'soft', color: 'error', onClick: () => onBan(row.original)}, () =>
+                t('RecentReg.ban')
             )
           }        
         },
-        { accessorKey: 'isTwoFaEnabled', header: t("SearchUser.2fa"), 
-          cell: ({ row }) => {
-            return h(USwitch, 
-                 { 
-                    modelValue: row.getValue('isTwoFaEnabled') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
-                    disabled: !(row.getValue('isTwoFaEnabled') as boolean), // can only disable
-                    'onUpdate:modelValue': (val: boolean) => {
-                        row.original.isTwoFaEnabled = val
-                        on2FADisable(row.original, val);
-                    } 
-                 }, () => { return ''; }
-            )
-          }        
-        },
-        { accessorKey: 'ban', header: t("SearchUser.ban"), 
-          cell: ({ row }) => {
-            return h(UButton, { class: 'capitalize', size: 'xs', variant: 'soft', color: 'error', disabled : row.getValue('deleted'), onClick: () => onBan(row.original)}, () =>
-                t('SearchUser.ban')
-            )
-          }        
-        },
-        { accessorKey: 'delete', header: t("SearchUser.delete"), 
+        { accessorKey: 'delete', header: t("RecentReg.delete"), 
           cell: ({ row }) => {
             return h(UButton, { class: 'capitalize', size: 'xs', variant: 'soft', color: 'error', disabled : row.getValue('deleted'), onClick: () => onDelete(row.original)}, () =>
-                t('SearchUser.delete')
-            )
-          }        
+                t('RecentReg.delete')
+            );
+          }
         },
         { accessorKey: 'deleted', header: "NA", enableHiding: true,
           cell: ({ row }) => {
@@ -358,36 +231,28 @@
     ];
 
     const columnVisibility = ref({
-        deleted: false
-    })
-
+        deleted: false,
+        email: false
+    });
 </script>
 
 <template>
 
     <div class="relative">
-    <UInput
-      v-model="pageCtx.searchInput"
-      :placeholder="t('SearchUser.searchPlaceholder')"
-      clearable
-      class="mb-4 w-1/4"
-      @update:model-value="onSearchChange()"
-    />
-
     <UTable 
        :loading="pageCtx.searchLoading" 
        loading-color="primary" 
        loading-animation="carousel" 
        :data="pageCtx.tableLines" 
        :columns="tableDef"
-       :empty="$t('SearchUser.noResults')"
+       :empty="$t('RecentReg.noResults')"
        v-model:column-visibility="columnVisibility"
        sticky
-       class="flex-1 text-xs"
+       class="flex-1 text-xs h-55"
     />
 
     <UPageCard v-if="pageCtx.searchError"
-      :title="$t('SearchUser.errorTitle')"
+      :title="$t('RecentReg.errorTitle')"
       :description="pageCtx.searchError"
       variant="subtle"
       highlight
@@ -400,14 +265,14 @@
       >
         <div class="flex flex-col items-center gap-4">
             <div class="mb-2 text-sm text-center">
-                {{ t('SearchUser.actionConfirmDesc') }}
+                {{ t('RecentReg.actionConfirmDesc') }}
             </div>
             <div class="flex gap-4">
                 <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="onActionConfirmed()">
-                    {{ t('SearchUser.actionConfirm') }}
+                    {{ t('RecentReg.actionConfirm') }}
                 </UButton>
                 <UButton icon="i-lucide-circle-x" variant="soft" color="primary" @click="onActionCancel()">
-                    {{ t('SearchUser.actionCancel') }}
+                    {{ t('RecentReg.actionCancel') }}
                 </UButton>
             </div>
         </div>

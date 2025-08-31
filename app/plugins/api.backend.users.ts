@@ -52,6 +52,7 @@ export default defineNuxtPlugin(() => {
   const userModuleAdminLockPut: string = '/users/1.0/admin/lock';
   const userModuleAdmin2FAPut: string = '/users/1.0/admin/2fa/disable';
   const userModuleAdminDelDelete: string = '/users/1.0/admin/delete';
+  const userModuleAdminRegistrationGet: string = '/users/1.0/admin/registered';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -729,7 +730,23 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
-
+    /**
+     * Search last registered users
+     */
+    userModuleSearchLastRegistered: async (): Promise<{ success?: UserListElementResponse[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<UserListElementResponse[]>(
+                'GET',
+                userModuleAdminRegistrationGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+    
     /**
      * active state change for a user
      */

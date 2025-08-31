@@ -16,7 +16,7 @@
       :description="$t('useradm.lastRegisterDesc')"
       variant="subtle"
     >
-        last registered users
+        <UsersAdminRecentRegistration />
     </UPageCard>
     <UPageCard
       :title="$t('useradm.searchTitle')"

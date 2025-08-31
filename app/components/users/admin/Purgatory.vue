@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { TableColumn } from '@nuxt/ui'
-    import type { ActionResult, UserListElementResponse, UserRestoreBody } from '~/types';
+    import type { ActionResult, UserListElementResponse } from '~/types';
 
     const { t } = useI18n();
     const { $apiBackendUsers } = useNuxtApp();
@@ -27,8 +27,7 @@
     /** 
      * Event management - refresh the User list when another component modify the users
      */
-    nuxtApp.hook('usermng:refresh', async () => {
-        console.log('User management refresh hook received on Purgatory');
+    nuxtApp.hook("usermng:refresh" as any, async () => {
         loadPurgatoryList();
     });
 
@@ -42,7 +41,7 @@
         pageCtx.purgatoryError = null;
         $apiBackendUsers.userModulePurgatoryRestore(values.login).then((res) => {
             if (res.success) {
-                nuxtApp.callHook('usermng:refresh', true);
+                nuxtApp.callHook("usermng:refresh" as any);
             } else if (res.error) {
                 pageCtx.purgatoryError = t('login.'+res.error.message);
             }
@@ -68,7 +67,7 @@
         
         $apiBackendUsers.userModulePurgatoryPurge(pageCtx.loginToPurge).then((res) => {
             if (res.success) {
-                nuxtApp.callHook('usermng:refresh', true);
+                nuxtApp.callHook("usermng:refresh" as any);
             } else if (res.error) {
                 pageCtx.purgatoryError = t('login.'+res.error.message);
             }
@@ -174,7 +173,8 @@
        :columns="tableDef"
        :empty="$t('Purgatory.noResults')"
        v-model:column-visibility="columnVisibility"
-       class="flex-1 text-xs"
+       sticky
+       class="flex-1 text-xs h-55"
     />
 
     <UPageCard v-if="pageCtx.purgatoryError"

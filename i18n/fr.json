@@ -211,6 +211,8 @@
     "purgatoryDesc": "Liste des utilisateurs désactivés, vous pouvez les restaurer ou les supprimer définitivement.",
     "searchTitle": "Actions rapides sur les utilisateurs.",
     "searchDesc": "Permet de rechercher un utilisateur pour effectuer des actions telles que la cloture du compte, le reset 2FA ... La recherche demande au moins 3 caractères et ne couvre pas tout l'email ni les utilisateurs pour qui les données personnelles sont offusquées.",
+    "lastRegisterTitle": "Utilisateurs récemment enregistrés",
+    "lastRegisterDesc": "Liste des utilisateurs qui se sont récemment inscrits.",
 
     "last" : "Dernier"
   },
@@ -250,6 +252,23 @@
     "actionConfirm": "Confirmer l'action",
     "actionCancel": "Annuler l'action",
     "deleted": "Attente suppression",
+
+    "last": "Dernier"
+  },
+  "RecentReg" : {
+    "email": "Email",
+    "login": "Identifiant",
+    "protected": "Hidden",
+    "unknown": "Unknown",
+    "active" : "Actif",
+    "noResults": "Aucun utilisateur trouvé",
+    "errorTitle": "Une erreur est survenue",
+    "ban": "Bannir",
+    "delete": "Supprimer",
+    "actionConfirmDesc": "Êtes-vous sûr de vouloir effectuer cette action qui aura un effet desctruteur sur les données de l'utilisateur ?",
+    "actionConfirm": "Confirmer l'action",
+    "actionCancel": "Annuler l'action",
+    "registrationDate": "Inscription",
 
     "last": "Dernier"
   },

@@ -211,6 +211,8 @@
     "errorTitle": "An error occurred",
     "searchTitle": "Quick actions on users.",
     "searchDesc": "Allows you to search for a user to perform actions such as account closure, 2FA reset ... The search requires at least 3 characters and does not cover the entire email or users whose personal data is obfuscated.",
+    "lastRegisterTitle": "Recently Registered Users",
+    "lastRegisterDesc": "List of users who have registered recently.",
 
     "last": "Last"
   },
@@ -250,6 +252,23 @@
     "actionCancel": "Cancel Action",
     "deleted": "Pending deletion",
 
+
+    "last": "Last"
+  },
+  "RecentReg" : {
+    "email": "Email",
+    "login": "Login",
+    "protected": "Hidden",
+    "unknown": "Unknown",
+    "active" : "Active",
+    "noResults": "No user found",
+    "errorTitle": "An error occurred",
+    "ban": "Ban",
+    "delete": "Delete",
+    "actionConfirmDesc": "Are you sure you want to perform this action that will have a destructive effect on the user's data?",
+    "actionConfirm": "Confirm Action",
+    "actionCancel": "Cancel Action",
+    "registrationDate": "Registration",
 
     "last": "Last"
   },
