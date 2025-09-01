@@ -68,6 +68,7 @@ npm install @pinia/nuxt         # Pinia state/store management
 npm install @nuxt/ui-pro        # Nuxt UI Pro components
 npm install qrcode.vue          # QR Code generation component
 npm install apexcharts --save   # charts
+npm install vue3-apexcharts
 ```
 
 ## Clean libs
