@@ -9,6 +9,10 @@
     const UButton = resolveComponent('UButton')
     const USwitch = resolveComponent('USwitch')
 
+    const props = defineProps({ 
+       displayed: { type: Number, required: false, default: 10 },
+    });
+
     type UserLine = {
         email: string;
         login: string;
@@ -80,7 +84,7 @@
                 $apiBackendUsers.userModuleSearchByEmail(pageCtx.searchInput).then((res) => {
                     pageCtx.searchLoading = false;
                     if (res.success) {
-                        pageCtx.searchList = res.success;                        
+                        pageCtx.searchList = res.success.slice(0, props.displayed);
                         pageCtx.tableLines = pageCtx.searchList.map( (line : any) => {
                             // Here some magic, the entry isActive is transformed into 'active'...
                             return {
@@ -117,7 +121,7 @@
         $apiBackendUsers.userModuleSearchLastConnected().then((res) => {
             pageCtx.searchLoading = false;
             if (res.success) {
-                pageCtx.searchList = res.success;
+                pageCtx.searchList = res.success.slice(0, props.displayed);
                 pageCtx.tableLines = pageCtx.searchList.map( (line : any) => {
                     // Here some magic, the entry isActive is transformed into 'active'...
                     return {
@@ -244,6 +248,11 @@
         });
     }
 
+    const onIdClick = (value : any) => {
+        nuxtApp.callHook("usermng:clickId" as any,value.login);
+    }
+
+
     /**
      * Table definition
      */
@@ -255,7 +264,10 @@
                                 (row.getValue('login') as string).substring(0, 10) + '...'
                                 : t(("SearchUser.unknown")) ));
             return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
-                               () => h('span',cellText)
+                    () => h('span', {
+                        onClick: () => onIdClick(row.original),
+                        style: 'cursor:pointer'
+                    }, cellText)
                    );
           }
         },

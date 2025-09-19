@@ -82,6 +82,10 @@
         pageCtx.loginToPurge = null;
     }
 
+    const onIdClick = (value : any) => {
+        nuxtApp.callHook("usermng:clickId" as any,value.login);
+    }
+
     /**
      * Table definition
      */
@@ -93,8 +97,11 @@
                                 (row.getValue('login') as string).substring(0, 10) + '...'
                                 : t(("Purgatory.unknown")) ));
             return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
-                               () => h('span',cellText)
-                   );
+                () => h('span', {
+                    onClick: () => onIdClick(row.original),
+                    style: 'cursor:pointer'
+                }, cellText)
+            );
           }
         },
         { accessorKey: 'dayLeft', header: t("Purgatory.dayLeft"),

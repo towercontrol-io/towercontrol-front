@@ -1,6 +1,20 @@
 <script setup lang="ts">
-    const { t } = useI18n();
-   
+    import { onActivated, onDeactivated } from 'vue';
+    const { t } = useI18n();   
+    const nuxtApp = useNuxtApp();
+
+    let hookFn: any = (login: string) => {
+        navigateTo(`users/update?login=${encodeURIComponent(login)}`);
+    };
+
+    onMounted(() => {
+      nuxtApp.hook("usermng:clickId" as any, hookFn);
+    });
+
+    onUnmounted(() => {
+      nuxtApp.hooks.removeHook("usermng:clickId" as any, hookFn);
+    });
+
 </script>
 <template>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -24,7 +38,7 @@
       variant="subtle"
       class="lg:col-span-2"
     >
-        <UsersAdminSearch />
+        <UsersAdminSearch :displayed="30"/>
     </UPageCard>
     </div>
 </template>

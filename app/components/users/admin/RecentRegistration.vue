@@ -173,7 +173,10 @@
                 cellText = (row.getValue('email') as string).substring(0, 15) + '...';
             }
             return h(UTooltip, { text: toolText , arrow: true, delayDuration: 100 }, 
-                               () => h('span',cellText)
+                    () => h('span', {
+                        onClick: () => onIdClick(row.original),
+                        style: 'cursor:pointer'
+                    }, cellText)
                    );
           }
         },
@@ -234,6 +237,11 @@
         deleted: false,
         email: false
     });
+
+    const onIdClick = (value : any) => {
+        nuxtApp.callHook("usermng:clickId" as any,value.login);
+    }
+
 </script>
 
 <template>

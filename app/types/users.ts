@@ -565,5 +565,24 @@ export interface UserStateSwitchBody {
   state: boolean;
 }
 
+export interface UserAccessibleRolesResponse {
+  /**
+   * Name of the role
+   * Example: "ROLE_USER_ADMIN"
+   */
+  name: string;
+
+  /**
+   * Description slug for i18n
+   * Example: "role-user-admin"
+   */
+  description: string;
+
+  /**
+   * Description english string
+   * Example: "user administrator"
+   */
+  enDescription: string;
+}
 
 

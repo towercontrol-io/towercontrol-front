@@ -213,6 +213,8 @@
     "searchDesc": "Permet de rechercher un utilisateur pour effectuer des actions telles que la cloture du compte, le reset 2FA ... La recherche demande au moins 3 caractères et ne couvre pas tout l'email ni les utilisateurs pour qui les données personnelles sont offusquées.",
     "lastRegisterTitle": "Utilisateurs récemment enregistrés",
     "lastRegisterDesc": "Liste des utilisateurs qui se sont récemment inscrits.",
+    "updateUserTitle": "Edition d'un utilisateur",
+    "updateUserDesc": "Modification de la configuration d'un utilisateur et de ses droits associés.",
 
     "last" : "Dernier"
   },

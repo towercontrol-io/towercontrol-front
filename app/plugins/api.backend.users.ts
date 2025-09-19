@@ -1,6 +1,6 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
-import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody } from '~/types';
+import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody, UserAccessibleRolesResponse } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
@@ -53,6 +53,7 @@ export default defineNuxtPlugin(() => {
   const userModuleAdmin2FAPut: string = '/users/1.0/admin/2fa/disable';
   const userModuleAdminDelDelete: string = '/users/1.0/admin/delete';
   const userModuleAdminRegistrationGet: string = '/users/1.0/admin/registered';
+  const userModuleAffectableRolesGet: string = '/users/1.0/roles';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -802,6 +803,24 @@ export default defineNuxtPlugin(() => {
                 'PUT',
                 userModuleAdmin2FAPut,
                 body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    /**
+     * Search last registered users
+     */
+    userModuleAffectableRoles: async (): Promise<{ success?: UserAccessibleRolesResponse[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<UserAccessibleRolesResponse[]>(
+                'GET',
+                userModuleAffectableRolesGet,
+                undefined,
                 false
             );
             return { success: response }
