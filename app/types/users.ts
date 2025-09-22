@@ -586,3 +586,208 @@ export interface UserAccessibleRolesResponse {
 }
 
 
+export interface UserUpdateBody {
+  /**
+   * User to be modified login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   */
+  login: string;
+
+  /**
+   * To indicate if the roles structure is to be considered
+   * Example: true
+   */
+  considerRoles: boolean;
+
+  /**
+   * List of affectable roles
+   * Example: [ "ROLE_GROUP_LADMIN", "ROLE_DEVICE_READ" ]
+   */
+  roles?: string[];
+
+  /**
+   * To indicate if the group list is to be considered
+   * Example: true
+   */
+  considerGroups: boolean;
+
+  /**
+   * List of owned groups (shortId)
+   * Example: [ "XdfhYII", "Jy6FSHB" ]
+   */
+  groups?: string[];
+
+  /**
+   * To indicate if the ACL list is to be considered
+   * Example: true
+   */
+  considerACLs: boolean;
+
+  /**
+   * List of acls
+   */
+  acls?: UserAcl[];
+}
+
+export interface UserUpdateBodyRequest {
+  /**
+   * User to be modified login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   * Required
+   */
+  login: string;
+
+  /**
+   * To indicate if the roles structure is to be considered
+   * Example: true
+   * Required
+   */
+  considerRoles: boolean;
+
+  /**
+   * To indicate if the group list is to be considered
+   * Example: true
+   * Required
+   */
+  considerGroups: boolean;
+
+  /**
+   * To indicate if the ACL list is to be considered
+   * Example: true
+   * Required
+   */
+  considerACLs: boolean;
+}
+
+export interface RoleItf {
+  /**
+   * Role name, required for modifications
+   * Example: "ROLE_USER_ADMIN"
+   */
+  name: string;
+
+  /**
+   * Role description used for i18n
+   * Example: "role-user-admin-desc"
+   */
+  description?: string;
+
+  /**
+   * Role description in english
+   * Example: "User administrator"
+   */
+  enDescription?: string;
+
+  /**
+   * False for technical roles not assignable by user.
+   * Example: true
+   */
+  assignable?: boolean;
+}
+
+export interface GroupAttribute {
+  /**
+   * Type of attribute for search, it must start by the module name
+   * Example: "billing"
+   */
+  type: string;
+
+  /**
+   * Associated parameters, content depends on type
+   */
+  params: GroupAttributeParam[];
+}
+
+export interface GroupAttributeParam {
+  /**
+   * Name of the parameter
+   * Example: "account"
+   */
+  key: string;
+
+  /**
+   * Associated values
+   * Example: [ "1234", "abcd" ]
+   */
+  values: string[];
+}
+
+export interface GroupItf {
+  /**
+   * Group shortId, required for modifications
+   * Example: "XyJl1djk"
+   */
+  shortId: string;
+
+  /**
+   * Group name
+   * Example: "My Favorite Group"
+   */
+  name?: string;
+
+  /**
+   * Group description
+   * Example: "User administrator"
+   */
+  description?: string;
+
+  /**
+   * Group attributes
+   * Example: [{ name: "type", value: "admin" }]
+   */
+  attributes?: GroupAttribute[];
+}
+
+/**
+ * User Update Body Response
+ * Equivalent TypeScript interface for the Java class UserUpdateBodyResponse
+ */
+export interface UserUpdateBodyResponse {
+  /**
+   * User to be modified login (hash)
+   * Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+   * Required
+   */
+  login: string;
+
+  /**
+   * To indicate if the roles structure is to be considered
+   * Example: true
+   * Required
+   */
+  considerRoles: boolean;
+
+  /**
+   * List of affectable roles
+   * Example: [ { name: "ROLE_USER_ADMIN", description: "role-user-admin-desc", enDescription: "User administrator" } ]
+   * Optional
+   */
+  roles?: RoleItf[];
+
+  /**
+   * To indicate if the group list is to be considered
+   * Example: true
+   * Required
+   */
+  considerGroups: boolean;
+
+  /**
+   * List of owned groups (shortId)
+   * Example: [ { shortId: "XdfhYII", name: "My Favorite Group" } ]
+   * Optional
+   */
+  groups?: GroupItf[];
+
+  /**
+   * To indicate if the ACL list is to be considered
+   * Example: true
+   * Required
+   */
+  considerACLs: boolean;
+
+  /**
+   * List of acls
+   * Optional
+   */
+  acls?: UserAcl[];
+}

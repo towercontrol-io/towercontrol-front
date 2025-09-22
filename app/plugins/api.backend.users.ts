@@ -1,6 +1,7 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
 import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody, UserAccessibleRolesResponse } from '~/types';
+import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
@@ -54,6 +55,8 @@ export default defineNuxtPlugin(() => {
   const userModuleAdminDelDelete: string = '/users/1.0/admin/delete';
   const userModuleAdminRegistrationGet: string = '/users/1.0/admin/registered';
   const userModuleAffectableRolesGet: string = '/users/1.0/roles';
+  const userModuleRolesAndRightsPost: string = '/users/1.0/profile/'
+  const userModuleRolesAndRightsPut: string = '/users/1.0/profile/'
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -828,6 +831,47 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+    /**
+     * Get the User Rights & Roles
+     */
+    userModuleGetRightAndRoles: async (login:string,roles:boolean,groups:boolean,acls:boolean): Promise<{ success?: UserUpdateBodyResponse; error?: ActionResult | { message: string } }> => {
+        const body : UserUpdateBodyRequest = {
+            login: login,
+            considerRoles : roles,
+            considerGroups : groups,
+            considerACLs : acls
+        };  
+        try {
+            const response = await apiCallwithTimeout<UserUpdateBodyResponse>(
+                'POST',
+                userModuleRolesAndRightsPost,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Update the User Rights & Roles
+     */
+    userModuleUpdateRightAndRoles: async (body:UserUpdateBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleRolesAndRightsPut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+    
 
   };
   return {

@@ -153,6 +153,7 @@
     "tb_general": "Informations générales",
     "tb_security": "Sécurité",
     "tb_billing": "Données de facturation",
+    "tb_rights": "Droits et rôles",
     "tb_zdanger": "Zone dangereuse",
     "gen_title": "Vos informations personnelles",
     "gen_description" : "Ces informations nous aident à mieux personnaliser votre expérience",
@@ -200,6 +201,12 @@
     "danger_deletionDelayDays" : "Délai avant suppression définitive: {days} jour(s)",
     "danger_deletionDelayHours" : "Délai avant suppression définitive: {hours} heure(s)",
     "danger_loginRef": "Veuillez conserver cet identifiant qui sera le seul moyen de vous identifier par la suite: {login}",
+    "rights_title": "Vos rôles et droits",
+    "rights_description": "Cette section affiche les rôles et droits qui vous ont été attribués par les administrateurs de la plateforme.",
+    "rights_roleTitle": "Rôles attribués",
+    "rights_roleDesc": "Les rôles désignent les opérations auxquelles vous avez accès",
+    "rights_groupTitle": "Groupes attribués",
+    "rights_groupDesc": "Les groupes désignent les ensembles d'objets auxquels vous avez accès",
 
     "last" : "Dernier"
   },
@@ -271,6 +278,34 @@
     "actionConfirm": "Confirmer l'action",
     "actionCancel": "Annuler l'action",
     "registrationDate": "Inscription",
+
+    "last": "Dernier"
+  },
+  "groups" : {
+    "groups-default-group" : "Mes appareils",
+    "groups-default-group-description" : "Groupe privé, non partageable",
+    "owner" : "Propriétaire: ",
+    "delegation" : "Délégation via ACL: ",
+
+    "last": "Dernier"
+  },
+  "role" : {
+    "role-god-admin-desc": "Super administrateur",
+    "role-user-admin-desc": "Administrateur des utilisateurs",
+    "role-group-admin-desc": "Administrateur des groupes",
+    "role-group-ladmin-desc": "Administrateur local des groupes",
+    "role-device-admin-desc": "Administrateur des appareils",
+    "role-device-read-desc": "Lecteur des appareils",
+    "role-device-write-desc": "Écrivain des appareils",
+    "role-device-config-desc": "Configurateur des appareils",
+    "role-device-alerting-desc": "Receveur d'alertes des appareils",
+    "role-backend-capture-desc": "Membre autorisé à capturer le backend",
+    "role-pending-user-desc": "Utilisateur ayant demandé à s'enregistrer",
+    "role-registered-user-desc": "Utilisateur enregistré",
+    "role-login-1fa-desc": "Utilisateur connecté avec 1 facteur d'authentification",
+    "role-login-2fa-desc": "Utilisateur connecté avec 2 facteurs d'authentification",
+    "role-login-complete-desc": "Utilisateur connecté avec authentification complète",
+    "role-login-api-desc" : "Demande d'un compte API",
 
     "last": "Dernier"
   },
