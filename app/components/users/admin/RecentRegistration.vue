@@ -202,7 +202,7 @@
             return h(USwitch, 
                  { 
                     modelValue: row.getValue('active') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
+                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'neutral',
                     'onUpdate:modelValue': (val: boolean) => {
                         row.original.active = val
                         onActiveChange(row.original, val);

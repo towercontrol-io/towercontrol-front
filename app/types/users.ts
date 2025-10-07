@@ -64,6 +64,13 @@ export interface UserConfigResponse {
    * Example: 24
    */
   deletionPurgatoryDelayHours : number;
+
+  /**
+   * User can create a sub group under the virtual group
+   * Example: true
+   * Required
+   */
+  subGroupUnderVirtualAllowed: boolean;
 };
 
 

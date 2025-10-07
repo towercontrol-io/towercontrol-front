@@ -146,6 +146,8 @@
     "dark": "Sombre",
     "searchBox": "Rechercher",
     "signout": "Déconnexion",
+    "groupCreation": "Création d'un groupe",
+    "groupConfiguration": "Configuration d'un groupe",
 
     "last" : "Dernier"
   },
@@ -222,6 +224,12 @@
     "lastRegisterDesc": "Liste des utilisateurs qui se sont récemment inscrits.",
     "updateUserTitle": "Edition d'un utilisateur",
     "updateUserDesc": "Modification de la configuration d'un utilisateur et de ses droits associés.",
+    "updateUserRolesTitle": "Rôles de l'utilisateur",
+    "updateUserRolesDesc": "Modification des rôles attribués à l'utilisateur.",
+    "updateUserGroupTitle": "Groupes Attribués à l'utilisateur",
+    "updateUserGroupDesc": "Modification des groupes attribués à l'utilisateur.",
+    "updateUserAclsTitle": "Groupes externes de l'utilisateur",
+    "updateUserAclsDesc": "Modification des ACLs attribuées à l'utilisateur.",
 
     "last" : "Dernier"
   },
@@ -281,6 +289,15 @@
 
     "last": "Dernier"
   },
+  "RolesForm" : {
+    "roleName": "Nom du rôle",
+    "roleDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyRoleChange": "Appliquer les modifications",
+
+    "last": "Dernier"
+  },
   "groups" : {
     "groups-default-group" : "Mes appareils",
     "groups-default-group-description" : "Groupe privé, non partageable",
@@ -315,6 +332,9 @@
     "goHome": "Retour à l'accueil",
     "loading": "Chargement...",
     "notYetImplemented": "Fonctionnalité non encore implémentée",
+    "groups-default-group" : "Mes appareils",
+    "groups-default-group-description" : "Groupe privé, non partageable",
+    "createSubGroup": "Nouveau",
 
     "last": "Dernier"
   }

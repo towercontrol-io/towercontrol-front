@@ -309,7 +309,7 @@
             return h(USwitch, 
                  { 
                     modelValue: row.getValue('active') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
+                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'neutral',
                     'onUpdate:modelValue': (val: boolean) => {
                         row.original.active = val
                         onActiveChange(row.original, val);
@@ -323,7 +323,7 @@
             return h(USwitch, 
                  { 
                     modelValue: row.getValue('locked') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
+                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'neutral',
                     'onUpdate:modelValue': (val: boolean) => {
                         row.original.locked = val
                         onLockChange(row.original, val);
@@ -337,7 +337,7 @@
             return h(USwitch, 
                  { 
                     modelValue: row.getValue('isTwoFaEnabled') as boolean, 
-                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'primary',
+                    class: 'capitalize', size: 'xs', variant: 'soft', color: 'neutral',
                     disabled: !(row.getValue('isTwoFaEnabled') as boolean), // can only disable
                     'onUpdate:modelValue': (val: boolean) => {
                         row.original.isTwoFaEnabled = val

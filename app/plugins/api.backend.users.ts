@@ -2,6 +2,7 @@ import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, ty
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
 import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody, UserAccessibleRolesResponse } from '~/types';
 import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse } from '~/types';
+import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
 import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
@@ -57,6 +58,7 @@ export default defineNuxtPlugin(() => {
   const userModuleAffectableRolesGet: string = '/users/1.0/roles';
   const userModuleRolesAndRightsPost: string = '/users/1.0/profile/'
   const userModuleRolesAndRightsPut: string = '/users/1.0/profile/'
+  const userModuleGroupsHierarchyGet: string = '/users/1.0/groups';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -292,6 +294,14 @@ export default defineNuxtPlugin(() => {
             appStore.setRenewJWTbefore(getJWTEndDate(response.jwtToken) || 0);
             appStore.setUserAdmin(
                 (    getJWTRole(response.jwtToken,'ROLE_USER_ADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setGroupLocalAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_GROUP_LADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setGroupAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_GROUP_ADMIN')
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
             appStore.setUserEmail(response.email || null);
@@ -872,6 +882,22 @@ export default defineNuxtPlugin(() => {
         }
     },
     
+    /**
+     * Get the user groups with all the associated hierarchy
+     */
+    userModuleGetGroupsHierarchy: async (): Promise<{ success?: GroupsHierarchySimplified[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<GroupsHierarchySimplified[]>(
+                'GET',
+                userModuleGroupsHierarchyGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
 
   };
   return {

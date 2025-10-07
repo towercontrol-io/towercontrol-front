@@ -224,6 +224,7 @@
       <USwitch 
         v-model="twoFa.twoFa.enable" 
         :label="$t('profile.sec_2faEnable')"
+        color="neutral"
       />
       <URadioGroup v-if="twoFa.twoFa.enable" 
          v-model="twoFa.twoFa.type" 

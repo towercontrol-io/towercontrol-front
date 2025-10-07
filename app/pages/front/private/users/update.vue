@@ -1,6 +1,8 @@
 <script setup lang="ts">
    import { useRoute } from 'vue-router';
    import { ref, computed } from 'vue';
+   import type { AccordionItem } from '@nuxt/ui'
+
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
 
@@ -19,17 +21,39 @@
       nuxtApp.hooks.removeHook("usermng:clickId" as any, hookFn);
    });
 
+   const items = ref<AccordionItem[]>([
+      {
+        label: t('useradm.updateUserRolesTitle'),
+        icon: 'i-lucide-rotate-ccw-key',
+        content: t('useradm.updateUserRolesDesc')
+      },{
+        label: t('useradm.updateUserGroupTitle'),
+        icon: 'i-lucide-square-stack',
+        content: t('useradm.updateUserGroupDesc')
+      },{
+        label: t('useradm.updateUserAclsTitle'),
+        icon: 'i-lucide-folder-key',
+        content: t('useradm.updateUserAclsDesc')
+      }
+   ]);
+
 </script>
+
 
 <template>
     <UPageCard
-      :title="$t('useradm.updateUserTitle')"
+      :title="$t('useradm.updateUserTitle') + ((userId!=null)?' ( ' + userId + ' )':'')"
       :description="$t('useradm.updateUserDesc')"
       variant="subtle"
       class="flex-1"
     >
         <UsersAdminSearch v-if="userId===null" :displayed="2"/>
-        <UsersAdminForm v-else :login="userId"/>
+        <UAccordion v-else :login="userId" :items="items">
+           <template #body="{ item }">
+              {{ item.content }}  
+              <UsersAdminRolesForm v-if="item.label === t('useradm.updateUserRolesTitle')" :login="userId"/>
+           </template>
+        </UAccordion>
     </UPageCard>
 
 </template>

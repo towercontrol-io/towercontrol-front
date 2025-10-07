@@ -1,7 +1,8 @@
 <script setup lang="ts">
-  import type { UserBasicProfileResponse } from '~/types';
+  import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
+import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
 
   const { t, setLocale } = useI18n();
   const router = useRouter();
@@ -38,6 +39,10 @@
   const { data: userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
     () => `user-profile-response`,
     () => $apiBackendUsers.getUserProfile()
+  );
+  const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
+    () => `user-config-response`, 
+    () => $apiBackendUsers.getUserModuleConfig()
   );
 
   // -----
@@ -180,8 +185,102 @@
     return topItems;
   });
 
+  // -----------------------------------------------------------------
+  // Manage the right menu with the list of accessible groups
+
+  const groupsLoadContext = reactive({
+    loading : false,
+    error : null as string | null,
+    groups : undefined as GroupsHierarchySimplified[] | undefined,
+    dynGroupsMenu : [] as NavigationMenuItem[],
+  });
+
+  const addItemToList = (list: NavigationMenuItem[], item: GroupsHierarchySimplified) => {
+    let name = (item.name === "groups-default-group")? t("common."+item.name) : item.name;
+    let desc = (item.name === "groups-default-group")? t("common."+item.description) : item.description;
+
+    let canHaveSub = false;
+    if ( appStore.isGroupAdmin() || appStore.isGroupLocalAdmin() ) {
+      if ( (item.name == "groups-default-group") && userConfig.value?.subGroupUnderVirtualAllowed ) {
+        canHaveSub = true;
+      } else if ( item.name != "groups-default-group" ) {
+        canHaveSub = true;
+      }
+    }
+
+    if ( item.children && item.children.length > 0 || canHaveSub) {
+      const children : NavigationMenuItem[] = [];
+      if ( item.children && item.children.length > 0 ) {
+        for ( const child of item.children ) {
+          addItemToList(children, child);
+        }
+      }
+      if ( canHaveSub ) {
+        children.push({
+          label: `${t('common.createSubGroup')}`,
+          icon: 'i-lucide-plus',
+          to: `/front/private/groups/create?parent=${item.shortId}`,
+          onSelect: () => {mainData.open = false }
+        } as NavigationMenuItem);  
+      }
+      list.push({
+        label: name,
+        description: desc,
+        icon: 'i-lucide-folder',
+        defaultOpen: true,
+        type: 'trigger',
+        children: children
+      } as NavigationMenuItem);
+      return;
+    } else {
+      list.push({
+        label: name,
+        description: desc,
+        icon: 'i-lucide-folder',
+        to: `/front/private/groups/?group=${item.shortId}`,
+        onSelect: () => {mainData.open = false }
+      } as NavigationMenuItem);
+    }
+  };
+
+  async function buildGroupsMenu() {
+    const items : NavigationMenuItem[] = [];
+    groupsLoadContext.loading = true;
+    groupsLoadContext.error = null;
+    $apiBackendUsers.userModuleGetGroupsHierarchy().then((res) => {
+        groupsLoadContext.loading = false;
+        if (res.success) {
+          groupsLoadContext.groups = res.success;
+          // Build the structure
+          for ( const g of groupsLoadContext.groups ) {
+            addItemToList(items, g);
+          }
+          if ( appStore.isGroupAdmin() || appStore.isGroupLocalAdmin() ) {
+            items.push({
+              label: `${t('common.createSubGroup')}`,
+              icon: 'i-lucide-plus',
+              to: `/front/private/groups/create`,
+              onSelect: () => {mainData.open = false }
+            } as NavigationMenuItem);  
+          }
+
+          groupsLoadContext.dynGroupsMenu.splice(0, groupsLoadContext.dynGroupsMenu.length, ...items);
+console.log(groupsLoadContext.dynGroupsMenu);
+        } else  if (res.error) {
+          groupsLoadContext.error = t('login.'+res.error.message);
+        }
+    }).catch((err) => {
+        groupsLoadContext.loading = false;
+        groupsLoadContext.error  = t('common.unknownError');
+    });
+  };
+  nuxtApp.hook("usermng:groupUpdate" as any, buildGroupsMenu);
+  nuxtApp.callHook("usermng:groupUpdate" as any);
+
+
+/*
   const rightMenu = computed<NavigationMenuItem[][]>(() => {
-    /*
+    
     const items : NavigationMenuItem[][] = [
       [
         
@@ -193,13 +292,13 @@
           ]
         }
       ]
-    ];*/
+    ];
     const items : NavigationMenuItem[][] = [];
     items.push(dynTopRightMenu.value);
     items.push(dynRightMenu.value);
     return items;
   });
-
+*/
 
 
   /**
@@ -207,7 +306,7 @@
    * It's a list of the existing link like in the link id and a list on unlisted link that are accessible via this search.
    */
   const groups = computed(() => [
-    { id: 'links', label: `${t('menu.searchGoTo')}`, items: rightMenu.value.flat() },
+    { id: 'links', label: `${t('menu.searchGoTo')}`, items: groupsLoadContext.dynGroupsMenu.flat() },
     { id: 'code', label: `${t('menu.searchOther')}`,
           items: [
             { id: 'source', label: 'View page source', icon: 'i-simple-icons-github',to: `https://github.com/nuxt-ui-pro/dashboard/blob/main/app/pages${route.path === '/' ? '/index' : route.path}.vue`,target: '_blank'}
@@ -346,7 +445,7 @@
 
         <UNavigationMenu
           :collapsed="collapsed"
-          :items="rightMenu[0]"
+          :items=dynTopRightMenu
           orientation="vertical"
           tooltip
           popover
@@ -354,7 +453,14 @@
 
         <UNavigationMenu
           :collapsed="collapsed"
-          :items="rightMenu[1]"
+          :items=groupsLoadContext.dynGroupsMenu
+          orientation="vertical"
+          tooltip
+        />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items=dynRightMenu
           orientation="vertical"
           tooltip
           class="mt-auto"

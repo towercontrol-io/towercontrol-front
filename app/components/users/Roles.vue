@@ -59,8 +59,7 @@
 
 <template>
     <div class="relative">
-
-        <div class="flex h-200px">
+        <div class="flex">
             <UCheckboxGroup v-model="value" value-key="id" :items="items" />
         </div>
 
@@ -69,6 +68,5 @@
         >
             <UProgress color="neutral" />
         </div>
-
     </div>
 </template>

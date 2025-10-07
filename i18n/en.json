@@ -145,6 +145,8 @@
     "dark": "Dark",
     "searchBox": "Search",
     "signout": "Sign Out",
+    "groupCreation": "Group Creation",
+    "groupConfiguration": "Group Configuration",
 
     "last" : "Last"
   },
@@ -222,6 +224,8 @@
     "lastRegisterDesc": "List of users who have registered recently.",
     "updateUserTitle": "User profile edition",
     "updateUserDesc": "Modification of a user's configuration and associated rights.",
+    "updateUserRolesTitle": "User Roles",
+    "updateUserRolesDesc": "User role assignment modification.",
 
     "last": "Last"
   },
@@ -281,6 +285,15 @@
 
     "last": "Last"
   },
+  "RolesForm" : {
+    "roleName": "Role name",
+    "roleDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyRoleChange": "Apply changes",
+
+    "last": "Last"
+  },
   "groups" : {
     "groups-default-group" : "My devices",
     "groups-default-group-description" : "Private group, not shareable",
@@ -315,7 +328,9 @@
     "goHome": "Go to Home",
     "loading": "Loading...",
     "notYetImplemented": "Feature not yet implemented",
-
+    "groups-default-group" : "My devices",
+    "groups-default-group-description" : "Private group, not shareable",
+    "createSubGroup": "New",
 
     "last": "Last"
   }

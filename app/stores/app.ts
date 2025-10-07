@@ -12,6 +12,8 @@ export const applicationStore = defineStore('app', {
     user2faSize: 0 as number,
     user2faType: '' as string,
     userAdmin: false as boolean | null,
+    groupLocalAdmin: false as boolean | null,
+    groupAdmin: false as boolean | null,
   }),
   actions: {
     clearStore() {
@@ -24,6 +26,8 @@ export const applicationStore = defineStore('app', {
       this.user2faSize = 0;
       this.user2faType = '';
       this.userAdmin = false;
+      this.groupLocalAdmin = false;
+      this.groupAdmin = false;
     },
     setBackendDown() {
       this.backendUp = false;
@@ -95,6 +99,18 @@ export const applicationStore = defineStore('app', {
     },
     isUserAdmin(): boolean | null {
       return this.userAdmin;
-    }
+    },
+    setGroupLocalAdmin(isAdmin: boolean) {
+      this.groupLocalAdmin = isAdmin;
+    },
+    isGroupLocalAdmin(): boolean | null {
+      return this.groupLocalAdmin;
+    },
+    setGroupAdmin(isAdmin: boolean) {
+      this.groupAdmin = isAdmin;
+    },
+    isGroupAdmin(): boolean | null {
+      return this.groupAdmin;
+    },
   },
  });
