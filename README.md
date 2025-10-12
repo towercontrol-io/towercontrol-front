@@ -14,7 +14,7 @@ Build the application for production:
 
 ```bash
 # npm
-npm run build
+npm run generate
 ```
 
 Locally preview production build:
@@ -65,10 +65,11 @@ Select the following options:
 ```
 npm install @nuxtjs/i18n        # Internationalization support
 npm install @pinia/nuxt         # Pinia state/store management
-npm install @nuxt/ui-pro        # Nuxt UI Pro components
+npm install @nuxt/ui            # Nuxt UI components
 npm install qrcode.vue          # QR Code generation component
 npm install apexcharts --save   # charts
 npm install vue3-apexcharts
+npm install valibot             # Form Fields Validation library
 ```
 
 ## Clean libs

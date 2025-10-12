@@ -9,12 +9,12 @@
    const nuxtApp = useNuxtApp();
 
    const route = useRoute();
-   const parentId = ref(route.query.parent || null);
-
+   let parentId = "";
+   if ( route.params.parentId && route.params.parentId !== 'root' ) {
+      parentId = route.params.parentId as string;
+   } 
 </script>
 
 <template>
-
-groupe creation page - parent : {{ parentId }}
-
+   <GroupsCreate :parentId="parentId"/>
 </template>

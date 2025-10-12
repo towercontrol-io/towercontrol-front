@@ -294,12 +294,43 @@
 
     "last": "Last"
   },
+  "GroupsForm" : {
+    "groupName": "Group name",
+    "groupDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyGroupChange": "Apply changes",
+    "noGroupAvailable": "No group is available, abnormal situation, please contact an administrator.",
+
+    "last": "Last"
+  },
   "groups" : {
     "groups-default-group" : "My devices",
     "groups-default-group-description" : "Private group, not shareable",
     "owner" : "Owner: ",
     "delegation" : "Delegation via ACL: ",
+    "createTitle" : "New Group Creation",
+    "createDesc" : "A group allows you to group devices, manage access rights, and associate common behaviors such as alerts. Groups are hierarchical, and a group can contain sub-groups. A person with rights on a higher-level group will automatically obtain rights on the associated sub-groups.",
+    "name" : "Name of the group",
+    "nameDesc" : "The name of the group is free and will be visible when the group is shared, it can be changed during delegation with restricted rights.",
+    "description" : "Description associated with the group",
+    "descriptionDesc" : "The description provides additional information about the group, it will be visible when the group is shared.",
+    "createAction" : "Create the group",
+    "createSuccess" : "Group created successfully",
+    "gen_createError" : "An error occurred while creating the group",
 
+
+    "groups-get-not-found": "Group not found",
+    "groups-not-all-found" : "Not all the requested groups were found, result truncated",
+    "groups-generate-shortid-too-many-retry" : "Failed to create a new group, too many shortId already used",
+    "groups-group-creation-refused" : "Group creation rejected, insufficient right",
+    "groups-invalid-user-request" : "Group action rejected due to invalid user",
+    "groups-creation-with-parentid-set" : "Impossible to create a root group with a parentId set",
+    "groups-group-creation-success" : "The requested group has been created",
+    "groups-group-creation-right-refused" : "You are not authorized to create a such group",
+    "groups-group-creation-failed" : "Group creation failed",
+    "groups-group-hierarchy-too-deep" : "Group hierarchy is too deep",
+    "groups-group-loop-detected" : "Group loop detected",
     "last": "Last"
   },
   "role" : {
@@ -330,7 +361,9 @@
     "notYetImplemented": "Feature not yet implemented",
     "groups-default-group" : "My devices",
     "groups-default-group-description" : "Private group, not shareable",
-    "createSubGroup": "New",
+    "createSubGroup": "New Group",
+    "createGroup": "New Group",
+    "groups": "Groups",
 
     "last": "Last"
   }

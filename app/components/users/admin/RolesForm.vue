@@ -55,7 +55,7 @@
     const loadRoles = () => {
         componentCtx.rolesLoading = true;
         componentCtx.rolesLoadingError = null;
-        $apiBackendUsers.userModuleGetRightAndRoles(props.login,true,false,false).then((res) => {
+        $apiBackendUsers.userModuleGetRightAndRoles(props.login,true,false,false,false).then((res) => {
             componentCtx.rolesLoading = false;
             if (res.success) {
                 if ( res.success.considerRoles === true ) {

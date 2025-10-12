@@ -659,6 +659,13 @@ export interface UserUpdateBodyRequest {
   considerGroups: boolean;
 
   /**
+   * To indicate if group list contains subgroups
+   * Example: true
+   * Required
+   */
+  considerSubs: boolean;
+
+  /**
    * To indicate if the ACL list is to be considered
    * Example: true
    * Required
@@ -730,19 +737,45 @@ export interface GroupItf {
    * Group name
    * Example: "My Favorite Group"
    */
-  name?: string;
+  name: string;
 
   /**
    * Group description
    * Example: "User administrator"
    */
-  description?: string;
+  description: string;
 
   /**
    * Group attributes
    * Example: [{ name: "type", value: "admin" }]
    */
   attributes?: GroupAttribute[];
+
+  /**
+   * List of sub-groups
+   * Example: [{ shortId: "XyJl1djk", name: "My Favorite SubGroup" }]
+   */
+  subs?: GroupItf[];
+}
+
+/**
+ * Acls information
+ * Acls structure for front-end usage
+ */
+export interface AclItf {
+  /**
+   * Master ACL the user has access to
+   * Example: Acl structure
+   * Required
+   */
+  acl: UserAcl;
+
+  /**
+   * Sub-acls
+   * Example: List ACLS herited from sub-groups
+   * Optional
+   */
+  subs?: AclItf[];
 }
 
 /**
@@ -779,12 +812,19 @@ export interface UserUpdateBodyResponse {
   considerGroups: boolean;
 
   /**
+   * To indicate if group list contains subgroups
+   * Example: true
+   * Required
+   */
+  considerSubs: boolean;
+
+  /**
    * List of owned groups (shortId)
    * Example: [ { shortId: "XdfhYII", name: "My Favorite Group" } ]
    * Optional
    */
   groups?: GroupItf[];
-
+  
   /**
    * To indicate if the ACL list is to be considered
    * Example: true
@@ -796,5 +836,5 @@ export interface UserUpdateBodyResponse {
    * List of acls
    * Optional
    */
-  acls?: UserAcl[];
+  acls?: AclItf[];
 }

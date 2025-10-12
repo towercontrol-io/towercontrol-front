@@ -298,12 +298,42 @@
 
     "last": "Dernier"
   },
+  "GroupsForm" : {
+    "groupName": "Nom du groupe",
+    "groupDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyGroupChange": "Appliquer les modifications",
+    "noGroupAvailable": "Aucun groupe n'est disponible, situation anormale, contactez un administrateur.",
+
+    "last": "Dernier"
+  },
   "groups" : {
     "groups-default-group" : "Mes appareils",
     "groups-default-group-description" : "Groupe privé, non partageable",
     "owner" : "Propriétaire: ",
     "delegation" : "Délégation via ACL: ",
+    "createTitle" : "Création d'un nouveau groupe",
+    "createDesc" : "Un groupe permet de regrouper des appareils, de gérer des droits d'accès mais aussi d'associer des comportements communs tels que des alertes. Les groupes sont hiérarchiques, un groupe peut contenir des sous-groupes. Une personne ayant des droits sur un groupe de niveau supérieur obtiendra automatiquement des droits sur les sous-groupes associés.",
+    "name" : "Nom du groupe",
+    "nameDesc" : "Le nom du groupe est libre et sera visible lorsque le groupe est partagé, il pourra être changé lors d'une délégation avec droits restreints.",
+    "description" : "Description associée au groupe",
+    "descriptionDesc" : "La description permet de donner des informations complémentaires sur le groupe, elle sera visible lorsque le groupe est partagé.",
+    "createAction" : "Créer le groupe",
+    "createSuccess" : "Groupe créé avec succès",
+    "gen_createError" : "Une erreur est survenue lors de la création du groupe",
 
+    "groups-get-not-found": "Groupe non trouvé",
+    "groups-not-all-found" : "Tous les groupes demandés n'ont pas été trouvés, résultat tronqué",
+    "groups-generate-shortid-too-many-retry" : "Échec de la création d'un nouveau groupe, trop de shortId déjà utilisés",
+    "groups-group-creation-refused" : "Création de groupe refusée, droits insuffisants",
+    "groups-invalid-user-request" : "Action de groupe refusée en raison d'un utilisateur invalide",
+    "groups-creation-with-parentid-set" : "Impossible de créer un groupe racine avec un parentId défini",
+    "groups-group-creation-success" : "Le groupe demandé a été créé",
+    "groups-group-creation-right-refused" : "Vous n'êtes pas autorisé à créer un tel groupe",
+    "groups-group-creation-failed" : "Échec de la création du groupe",
+    "groups-group-hierarchy-too-deep" : "La hiérarchie des groupes est trop profonde",
+    "groups-group-loop-detected" : "Boucle de groupe détectée",
     "last": "Dernier"
   },
   "role" : {
@@ -334,7 +364,9 @@
     "notYetImplemented": "Fonctionnalité non encore implémentée",
     "groups-default-group" : "Mes appareils",
     "groups-default-group-description" : "Groupe privé, non partageable",
-    "createSubGroup": "Nouveau",
+    "createSubGroup": "Nouveau groupe",
+    "createGroup": "Nouveau groupe",
+    "groups": "Groupes",
 
     "last": "Dernier"
   }

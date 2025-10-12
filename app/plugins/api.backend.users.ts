@@ -5,7 +5,6 @@ import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse } fr
 import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
-import { ca } from '@nuxt/ui-pro/runtime/locale/index.js';
 
 const GET_TIMEOUT = 5000; // 5 seconds
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
@@ -845,11 +844,12 @@ export default defineNuxtPlugin(() => {
     /**
      * Get the User Rights & Roles
      */
-    userModuleGetRightAndRoles: async (login:string,roles:boolean,groups:boolean,acls:boolean): Promise<{ success?: UserUpdateBodyResponse; error?: ActionResult | { message: string } }> => {
+    userModuleGetRightAndRoles: async (login:string,roles:boolean,groups:boolean,subs:boolean,acls:boolean): Promise<{ success?: UserUpdateBodyResponse; error?: ActionResult | { message: string } }> => {
         const body : UserUpdateBodyRequest = {
             login: login,
             considerRoles : roles,
             considerGroups : groups,
+            considerSubs : subs,
             considerACLs : acls
         };  
         try {

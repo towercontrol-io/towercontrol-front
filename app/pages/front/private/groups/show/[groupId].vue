@@ -9,7 +9,7 @@
    const nuxtApp = useNuxtApp();
 
    const route = useRoute();
-   const groupId = ref(route.query.group || null);
+   const groupId = ref(route.params.groupId || null);
 
 </script>
 

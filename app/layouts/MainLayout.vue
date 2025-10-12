@@ -2,7 +2,7 @@
   import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
-import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
+import { el } from '@nuxt/ui/runtime/locale/index.js';
 
   const { t, setLocale } = useI18n();
   const router = useRouter();
@@ -219,7 +219,7 @@ import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
         children.push({
           label: `${t('common.createSubGroup')}`,
           icon: 'i-lucide-plus',
-          to: `/front/private/groups/create?parent=${item.shortId}`,
+          to: `/front/private/groups/create/${item.shortId}/`,
           onSelect: () => {mainData.open = false }
         } as NavigationMenuItem);  
       }
@@ -227,8 +227,8 @@ import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
         label: name,
         description: desc,
         icon: 'i-lucide-folder',
-        defaultOpen: true,
-        type: 'trigger',
+        to: `/front/private/groups/show/${item.shortId}/`,
+        defaultOpen: false,
         children: children
       } as NavigationMenuItem);
       return;
@@ -237,7 +237,7 @@ import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
         label: name,
         description: desc,
         icon: 'i-lucide-folder',
-        to: `/front/private/groups/?group=${item.shortId}`,
+        to: `/front/private/groups/show/${item.shortId}/`,
         onSelect: () => {mainData.open = false }
       } as NavigationMenuItem);
     }
@@ -252,20 +252,23 @@ import { el } from '@nuxt/ui-pro/runtime/locale/index.js';
         if (res.success) {
           groupsLoadContext.groups = res.success;
           // Build the structure
+          items.push({
+            label: `${t('common.groups')}`, type: 'label'
+          } as NavigationMenuItem
+          );
           for ( const g of groupsLoadContext.groups ) {
             addItemToList(items, g);
           }
-          if ( appStore.isGroupAdmin() || appStore.isGroupLocalAdmin() ) {
+          if ( appStore.isGroupAdmin() ) {
             items.push({
-              label: `${t('common.createSubGroup')}`,
+              label: `${t('common.createGroup')}`,
               icon: 'i-lucide-plus',
-              to: `/front/private/groups/create`,
+              to: `/front/private/groups/create/root/`,
               onSelect: () => {mainData.open = false }
             } as NavigationMenuItem);  
           }
 
           groupsLoadContext.dynGroupsMenu.splice(0, groupsLoadContext.dynGroupsMenu.length, ...items);
-console.log(groupsLoadContext.dynGroupsMenu);
         } else  if (res.error) {
           groupsLoadContext.error = t('login.'+res.error.message);
         }

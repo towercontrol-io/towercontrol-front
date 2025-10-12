@@ -22,3 +22,25 @@ export interface GroupsHierarchySimplified {
      */
     children: GroupsHierarchySimplified[];
 }
+
+
+export interface GroupCreationBody {
+    /**
+     * Name of the group to create
+     * @example "My Devices"
+     */
+    name: string;
+
+    /**
+     * Description of the group
+     * @example "My favorite Devices"
+     */
+    description: string;
+
+    /**
+     * ShortId of the parent group
+     * @example "abC12Dfy"
+     */
+    parenId?: string;
+}
+
