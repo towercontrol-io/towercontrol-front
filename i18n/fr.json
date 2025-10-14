@@ -308,6 +308,16 @@
 
     "last": "Dernier"
   },
+  "AclsForm" : {
+    "groupName": "Nom du groupe",
+    "groupDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyGroupChange": "Appliquer les modifications",
+    "noGroupAvailable": "Aucun groupe n'est disponible, situation anormale, contactez un administrateur.",
+
+    "last": "Dernier"
+  },
   "groups" : {
     "groups-default-group" : "Mes appareils",
     "groups-default-group-description" : "Groupe privé, non partageable",

@@ -226,6 +226,10 @@
     "updateUserDesc": "Modification of a user's configuration and associated rights.",
     "updateUserRolesTitle": "User Roles",
     "updateUserRolesDesc": "User role assignment modification.",
+    "updateUserGroupTitle": "Groups Assigned to User",
+    "updateUserGroupDesc": "Modification of groups assigned to the user.",
+    "updateUserAclsTitle": "User External Groups",
+    "updateUserAclsDesc": "Modification of ACLs assigned to the user.",
 
     "last": "Last"
   },
@@ -295,6 +299,16 @@
     "last": "Last"
   },
   "GroupsForm" : {
+    "groupName": "Group name",
+    "groupDesc": "Description",
+    "isSet": "Attribution",
+    "isSettable": "Modifiable",
+    "applyGroupChange": "Apply changes",
+    "noGroupAvailable": "No group is available, abnormal situation, please contact an administrator.",
+
+    "last": "Last"
+  },
+  "AclsForm" : {
     "groupName": "Group name",
     "groupDesc": "Description",
     "isSet": "Attribution",

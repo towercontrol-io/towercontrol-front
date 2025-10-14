@@ -53,6 +53,7 @@
               {{ item.content }}  
               <UsersAdminRolesForm v-if="item.label === t('useradm.updateUserRolesTitle')" :login="userId"/>
               <UsersAdminGroupsForm v-if="item.label === t('useradm.updateUserGroupTitle')" :login="userId"/>
+              <UsersAdminAclsForm v-if="item.label === t('useradm.updateUserAclsTitle')" :login="userId"/>
            </template>
         </UAccordion>
     </UPageCard>
