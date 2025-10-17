@@ -1,9 +1,10 @@
 <script setup lang="ts">
    import type { TableColumn } from '@nuxt/ui'
-   import { type ActionResult, type UserAccessibleRolesResponse, type UserUpdateBodyResponse } from '~/types';
+   import { type ActionResult, type UserAccessibleRolesResponse, type UserUpdateBodyResponse, type UserUpdateBody } from '~/types';
 
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
+   const toast = useToast();
    const { $apiBackendUsers } = useNuxtApp();
 
 
@@ -29,6 +30,7 @@
         roles : undefined as UserUpdateBodyResponse | undefined,
         tableLines: [] as RoleLine[],
         loaded : 0 as number,
+        rolesUpdateError : null as string | null,
     });
 
 
@@ -45,10 +47,12 @@
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.accessibleRolesError = t('login.'+res.error.message);
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.accessibleRolesLoading = false;
             componentCtx.accessibleRolesError = t('common.unknownError');
+            clearErrors();
         });
     }
 
@@ -65,11 +69,13 @@
             } else if (res.error) {
                 componentCtx.rolesLoadingError = res.error.message;
                 componentCtx.roles = undefined;
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.rolesLoading = false;
             componentCtx.rolesLoadingError = err.message;
             componentCtx.roles = undefined;
+            clearErrors();
         });
     }
 
@@ -124,6 +130,52 @@
         }
     }, { immediate: true });
 
+    // ============================================
+    // Save changes
+    // ============================================
+
+    const saveRoleChanges = () => {
+        const updateBody: UserUpdateBody = {
+            login: props.login,
+            considerRoles: true,
+            roles: [] as string[],
+            considerGroups: false,
+            considerACLs: false,
+        };
+
+        for ( const line of componentCtx.tableLines ) {
+            if ( line.isSet && line.isSettable) {
+                updateBody.roles!.push( line.roleName );
+            }
+        }
+        componentCtx.componentLoading = true;
+        $apiBackendUsers.userModuleUpdateRightAndRoles(updateBody).then((res) => {
+            if ( res.success ) {
+                componentCtx.componentLoading = false;
+                toast.add({
+                    title: t('RolesForm.updateSuccessTitle'),
+                    description: t('RolesForm.updateSuccessDesc'),
+                    icon: 'i-lucide-arrow-big-up-dash',
+                });
+            } else if ( res.error ) {
+                componentCtx.componentLoading = false;
+                componentCtx.rolesUpdateError = t('login.' + res.error.message);
+                clearErrors();
+            }
+        }).catch((err) => {
+            componentCtx.componentLoading = false;
+            componentCtx.rolesUpdateError = t('common.unknownError');
+            clearErrors();
+        });
+    }
+
+    const clearErrors = () => {
+        setTimeout(() => {
+            componentCtx.accessibleRolesError = null;
+            componentCtx.rolesLoadingError = null;
+            componentCtx.rolesUpdateError = null;
+        }, 5000);
+    }
 
     // ============================================
     // Table definition
@@ -165,7 +217,7 @@
                 color="neutral" 
                 variant="outline" 
                 size="md"
-                @click="() => { /* TODO: Save the roles for that user */ }"
+                @click="saveRoleChanges()"
             />
         </div>
 
@@ -174,11 +226,12 @@
         >
             <UProgress color="neutral" />
         </div>
-        <div v-if="componentCtx.accessibleRolesError !== null || componentCtx.rolesLoadingError !== null"
+        <div v-if="componentCtx.accessibleRolesError !== null || componentCtx.rolesLoadingError !== null || componentCtx.rolesUpdateError !== null"
              class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
         >
             {{ componentCtx.accessibleRolesError }}
             {{ componentCtx.rolesLoadingError }}
+            {{ componentCtx.rolesUpdateError }}
         </div>
     </div>
 

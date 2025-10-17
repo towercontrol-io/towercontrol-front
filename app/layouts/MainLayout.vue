@@ -200,7 +200,10 @@ import { el } from '@nuxt/ui/runtime/locale/index.js';
     let desc = (item.name === "groups-default-group")? t("common."+item.description) : item.description;
 
     let canHaveSub = false;
-    if ( appStore.isGroupAdmin() || appStore.isGroupLocalAdmin() ) {
+    if (   appStore.isGroupAdmin() || appStore.isGroupLocalAdmin() 
+        || item.roles.includes('ROLE_GROUP_ADMIN') 
+        || item.roles.includes('ROLE_GROUP_LADMIN') 
+    ) {
       if ( (item.name == "groups-default-group") && userConfig.value?.subGroupUnderVirtualAllowed ) {
         canHaveSub = true;
       } else if ( item.name != "groups-default-group" ) {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
    import type { TableColumn } from '@nuxt/ui'
 import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
-   import { type ActionResult, type GroupItf, type UserUpdateBodyResponse, type UserAccessibleRolesResponse, type AclItf } from '~/types';
+   import { type ActionResult, type GroupItf, type UserAccessibleRolesResponse, type UserUpdateBody, type AclItf, type UserAcl } from '~/types';
 
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
+   const toast = useToast();
    const { $apiBackendUsers } = useNuxtApp();
    const appStore = applicationStore();
 
@@ -39,6 +40,7 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
         accessibleRoles : [] as UserAccessibleRolesResponse[],
         accessibleRolesError : null as string | null,
         accessibleRolesLoading : false,
+        aclUpdateError : null as string | null,
     });
 
 
@@ -55,10 +57,12 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.accessibleRolesError = t('login.'+res.error.message);
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.accessibleRolesLoading = false;
             componentCtx.accessibleRolesError = t('common.unknownError');
+            clearErrors();
         });
     }
 
@@ -75,7 +79,6 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
      */
     const flattenAclHierarchy = (group: AclItf, list: GroupLine[], _set: boolean, _settable: boolean, level: number, asAdmin: boolean) => {
         if ( group.acl.group.startsWith("user_") ) {
-            console.log("Skip user group");
             // @TODO
             return;
         }
@@ -84,8 +87,8 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
             groupName: group.acl.localName as string,
             groupLocalName: group.acl.localName as string,
             groupDesc: '' as string,
-            isSet: _set,
-            isSettable: _settable,
+            isSet: _set && level == 0,
+            isSettable: _settable && level == 0,
             groupLevel: level,
             groupPossibleRoles: (asAdmin)?group.acl.roles:[],
             groupSelectedRoles: (!asAdmin)?group.acl.roles:[],
@@ -110,7 +113,6 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
      */
     const flattenGroupHierarchy = (group: GroupItf, list: GroupLine[], _set: boolean, _settable: boolean, level: number) => {
         if ( group.shortId.startsWith("user_") ) {
-            console.log("Skip user group");
             // @TODO
             return;
         }
@@ -152,28 +154,30 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
                     }
                 } else {
                     componentCtx.groupsLoadingError = t('AclsForm.noGroupAvailable');
+                    clearErrors();
                 }
                 if ( res.success.considerACLs === true && res.success.acls !== undefined ) {
                     for ( const a of res.success.acls.sort((a, b) => a.acl.localName.localeCompare(b.acl.localName)) || [] ) {
                         flattenAclHierarchy(a, componentCtx.accessibleGroups,false,true,0,true);
                     }
                 }
-                console.log(componentCtx.accessibleGroups);
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.accessibleGroupsError = t('login.'+res.error.message);
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.accessibleGroupsLoading = false;
             componentCtx.accessibleGroupsError = t('common.unknownError');
+            clearErrors();
         });
     }
 
     /**
-     * Get the groups the user have access to
+     * Get the groups the user have access to through ACLs
      * and flatten the hierarchy for the display
      */
-    const loadGroups = () => {
+    const loadAcls = () => {
         componentCtx.groupsLoading = true;
         componentCtx.groupsLoadingError = null;
         $apiBackendUsers.userModuleGetRightAndRoles(props.login,false,false,true,true).then((res) => {
@@ -185,19 +189,21 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
                     for ( const g of res.success.acls.sort((a, b) => a.acl.localName.localeCompare(b.acl.localName)) || [] ) {
                         flattenAclHierarchy(g, componentCtx.groups,true,false,0,false);
                     }
-                    console.log(componentCtx.groups);
                 } else {
                     componentCtx.groupsLoadingError = t('AclsForm.noGroupAvailable');
+                    clearErrors();
                 }
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.groupsLoadingError = res.error.message;
                 componentCtx.groups = [];
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.groupsLoading = false;
             componentCtx.groupsLoadingError = err.message;
             componentCtx.groups = [];
+            clearErrors();
         });
     }
 
@@ -207,49 +213,131 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
         componentCtx.tableLines = [];
         loadAvailableRoles();
         loadAvailableGroups();
-        loadGroups();
+        loadAcls();
     });
 
     watch(() => componentCtx.loaded, (newVal,oldVal) => {
         if (newVal && newVal !== oldVal && newVal >= 3) {
             componentCtx.tableLines = [];
-            // load the user groups
-            for ( const r of componentCtx.groups ) {
-                for ( const ar of componentCtx.accessibleGroups ) {
-                    if ( ar.groupName === r.groupName ) {
-                        r.isSettable = true;
-                        if ( ar.groupPossibleRoles !== null ) {
-                            r.groupPossibleRoles = ar.groupPossibleRoles;
+
+            // Starting by possible groups to later include the ACL into the right hierarchy
+            for ( const ar of componentCtx.accessibleGroups ) {
+                if ( ar.groupPossibleRoles == null ) {
+                    ar.groupPossibleRoles = componentCtx.accessibleRoles.map(role => role.name);
+                }
+                componentCtx.tableLines.push(ar);
+            }
+
+            // Update the group hierarchy with the ACLs infos
+            for ( const tl of componentCtx.tableLines ) {
+                for ( const g of componentCtx.groups ) {
+                    if ( g.groupShortId === tl.groupShortId ) {
+                        // the acl is in the accesibleGroup Hierarchy
+                        // attach it
+                        if ( g.groupLevel == 0 ) {
+                            // acls level
+                            tl.isSet = g.isSet;
+                            tl.isSettable = true;
+                            tl.groupSelectedRoles = g.groupSelectedRoles;
+                            tl.groupLocalName = g.groupLocalName;
                         } else {
-                            r.groupPossibleRoles = componentCtx.accessibleRoles.map(role => role.name);
+                            // sub level
+                            tl.isSet = false;
+                            tl.groupSelectedRoles = [];
+                        }
+                    }
+                }
+            }
+
+            // Add the user owned acl but not part of the admin user accessible groups
+            for ( const ac of componentCtx.groups ) {
+                let found : boolean = false;
+                for ( const tl of componentCtx.tableLines ) {
+                    if ( ac.groupShortId === tl.groupShortId ) {
+                        found = true;
+                        break; // allready processed
+                    }
+                }
+                if ( !found ) {
+                    componentCtx.tableLines.push(ac);
+                }
+            }
+
+
+/*
+            for ( const r of componentCtx.groups ) {
+                for ( const ar of componentCtx.tableLines ) {
+                    if ( ar.groupShortId === r.groupShortId ) {
+                        ar.isSettable = true;
+                        ar.isSet = true;
+                        if ( r.groupSelectedRoles !== null ) {
+                            ar.groupSelectedRoles = r.groupSelectedRoles;
+                        } else {
+                            r.groupSelectedRoles = [];
                         }
                         break;
                     }
                 }
                 componentCtx.tableLines.push(r);
             }
-            // Add the possible groups
-            for ( const ar of componentCtx.accessibleGroups ) {
-                let found = false;
-                for ( const r of componentCtx.groups ) {
-                    if ( ar.groupName === r.groupName ) {
-                        found = true;
-                        break;
-                    }
-                }
-                if ( !found ) {
-                    ar.isSet = false;
-                    if ( ar.groupPossibleRoles == null ) {
-                       ar.groupPossibleRoles = componentCtx.accessibleRoles.map(role => role.name);
-                    }
-                    componentCtx.tableLines.push(ar);
-                }
-            }
+               */         
             // reset
             componentCtx.loaded = 0;
             componentCtx.componentLoading = false;
         }
     }, { immediate: true });
+
+    // ============================================
+    // Save changes
+    // ============================================
+
+    const saveAclsChanges = () => {
+        const updateBody: UserUpdateBody = {
+            login: props.login,
+            considerRoles: false,
+            considerGroups: false,
+            considerACLs: true,
+            acls: [] as UserAcl[],
+        };
+
+        for ( const line of componentCtx.tableLines ) {
+            if ( line.isSet && line.isSettable) {
+                updateBody.acls!.push( {
+                    group: line.groupShortId,
+                    roles: line.groupSelectedRoles || [],
+                    localName: line.groupLocalName,
+                } );
+            }
+        }
+        componentCtx.componentLoading = true;
+        $apiBackendUsers.userModuleUpdateRightAndRoles(updateBody).then((res) => {
+            if ( res.success ) {
+                componentCtx.componentLoading = false;
+                toast.add({
+                    title: t('AclsForm.updateSuccessTitle'),
+                    description: t('AclsForm.updateSuccessDesc'),
+                    icon: 'i-lucide-arrow-big-up-dash',
+                });
+            } else if ( res.error ) {
+                componentCtx.componentLoading = false;
+                componentCtx.aclUpdateError = t('login.' + res.error.message);
+                clearErrors();
+            }
+        }).catch((err) => {
+            componentCtx.componentLoading = false;
+            componentCtx.aclUpdateError = t('common.unknownError');
+            clearErrors();
+        });
+    }
+
+    const clearErrors = () => {
+        setTimeout(() => {
+            componentCtx.accessibleRolesError = null;
+            componentCtx.groupsLoadingError = null;
+            componentCtx.accessibleGroupsError = null;
+            componentCtx.aclUpdateError = null;
+        }, 5000);
+    }
 
 
     // ============================================
@@ -295,20 +383,30 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
                     <USwitch v-model="row.original.isSet" :disabled="!row.original.isSettable" color="neutral"/>
                 </template>
                 <template #groupPossibleRoles-cell="{ row }">
-                    <div v-if="row.original.isSet && row.original.groupPossibleRoles !== null">
-                        <USelect
+                    <div v-if="row.original.isSet && row.original.groupPossibleRoles !== null" class="w-56"  style="height: 30px;">
+                        <USelectMenu
                             v-model="row.original.groupSelectedRoles"
-                            :options="row.original.groupPossibleRoles.map( role => ({ label: role, value: role }) )"
+                            :items="row.original.groupPossibleRoles"
                             multiple
                             :clearable="false"
                             :searchable="true"
-                            size="xs"
+                            :disabled="!row.original.isSettable"
+                            size="md"
                             color="neutral"
                             placeholder="Select roles"
+                            class="w-56"
                         />
                     </div>
-                    <div v-else class="text-neutral-500 italic">
+                    <div v-else class="text-neutral-500 w-56" style="height: 30px;">
                         {{ $t('AclsForm.noRoles') }}
+                    </div>
+                </template>
+                <template #groupLocalName-cell="{ row }">
+                    <div v-if="row.original.isSet">
+                        <UInput v-model="row.original.groupLocalName" :disabled="!row.original.isSettable" size="md" color="neutral" class="w-60"/>
+                    </div>
+                    <div v-else class="text-neutral-500">
+                        {{ row.original.groupLocalName }}
                     </div>
                 </template>
             </UTable>
@@ -319,7 +417,7 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
                 color="neutral" 
                 variant="outline" 
                 size="md"
-                @click="() => { /* TODO: Save the roles for that user */ }"
+                @click="saveAclsChanges()"
             />
         </div>
 
@@ -328,11 +426,13 @@ import GroupId from '~/pages/front/private/groups/show/[groupId].vue';
         >
             <UProgress color="neutral" />
         </div>
-        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null"
+        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null || componentCtx.accessibleRolesError !== null || componentCtx.aclUpdateError !== null"
              class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
         >
             {{ componentCtx.accessibleGroupsError }}
             {{ componentCtx.groupsLoadingError }}
+            {{ componentCtx.accessibleRolesError }}
+            {{ componentCtx.aclUpdateError }}
         </div>
     </div>
 

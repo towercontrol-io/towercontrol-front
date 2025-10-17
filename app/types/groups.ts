@@ -18,6 +18,12 @@ export interface GroupsHierarchySimplified {
     description: string;
 
     /**
+     * Special rights associated to that group for the user, only applicable to ACLs
+     * @example ["ROLE_GROUP_LADMIN", "ROLE_DEVICE_READ"]
+     */
+    roles: string[];
+
+    /**
      * children of that group
      */
     children: GroupsHierarchySimplified[];

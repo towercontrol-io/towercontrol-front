@@ -1,9 +1,10 @@
 <script setup lang="ts">
    import type { TableColumn } from '@nuxt/ui'
-   import { type ActionResult, type GroupItf, type UserUpdateBodyResponse } from '~/types';
+   import { type ActionResult, type GroupItf, type UserUpdateBodyResponse, type UserUpdateBody } from '~/types';
 
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
+   const toast = useToast();
    const { $apiBackendUsers } = useNuxtApp();
    const appStore = applicationStore();
 
@@ -32,6 +33,7 @@
         groups : [] as GroupLine[],
         tableLines: [] as GroupLine[],
         loaded : 0 as number,
+        groupUpdateError : null as string | null,
     });
 
     /**
@@ -81,17 +83,19 @@
                     for ( const g of res.success.groups.sort((a, b) => a.name.localeCompare(b.name)) || [] ) {
                         flattenGroupHierarchy(g, componentCtx.accessibleGroups,false,true,0);
                     }
-                    console.log(componentCtx.accessibleGroups);
                 } else {
-                    componentCtx.groupsLoadingError = t('GroupsForm.noGroupAvailable');
+                    componentCtx.accessibleGroupsError = t('GroupsForm.noGroupAvailable');
+                    clearErrors();
                 }
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.accessibleGroupsError = t('login.'+res.error.message);
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.accessibleGroupsLoading = false;
             componentCtx.accessibleGroupsError = t('common.unknownError');
+            clearErrors();
         });
     }
 
@@ -111,19 +115,21 @@
                     for ( const g of res.success.groups.sort((a, b) => a.name.localeCompare(b.name)) || [] ) {
                         flattenGroupHierarchy(g, componentCtx.groups,true,false,0);
                     }
-                    console.log(componentCtx.groups);
                 } else {
                     componentCtx.groupsLoadingError = t('GroupsForm.noGroupAvailable');
+                    clearErrors();
                 }
                 componentCtx.loaded++;
             } else if (res.error) {
                 componentCtx.groupsLoadingError = res.error.message;
                 componentCtx.groups = [];
+                clearErrors();
             }
         }).catch((err) => {
             componentCtx.groupsLoading = false;
             componentCtx.groupsLoadingError = err.message;
             componentCtx.groups = [];
+            clearErrors();
         });
     }
 
@@ -167,6 +173,49 @@
             componentCtx.componentLoading = false;
         }
     }, { immediate: true });
+
+    const saveGroupChanges = () => {
+        const updateBody: UserUpdateBody = {
+            login: props.login,
+            considerRoles: false,
+            considerGroups: true,
+            groups: [] as string[],
+            considerACLs: false,
+        };
+
+        for ( const line of componentCtx.tableLines ) {
+            if ( line.isSet && line.isSettable) {
+                updateBody.groups!.push( line.groupShortId );
+            }
+        }
+        componentCtx.componentLoading = true;
+        $apiBackendUsers.userModuleUpdateRightAndRoles(updateBody).then((res) => {
+            if ( res.success ) {
+                componentCtx.componentLoading = false;
+                toast.add({
+                    title: t('GroupsForm.updateSuccessTitle'),
+                    description: t('GroupsForm.updateSuccessDesc'),
+                    icon: 'i-lucide-arrow-big-up-dash',
+                });
+            } else if ( res.error ) {
+                componentCtx.componentLoading = false;
+                componentCtx.groupUpdateError = t('login.' + res.error.message);
+                clearErrors();
+            }
+        }).catch((err) => {
+            componentCtx.componentLoading = false;
+            componentCtx.groupUpdateError = t('common.unknownError');
+            clearErrors();
+        });
+    }
+
+    const clearErrors = () => {
+        setTimeout(() => {
+            componentCtx.groupsLoadingError = null;
+            componentCtx.accessibleGroupsError = null;
+            componentCtx.groupUpdateError = null;
+        }, 5000);
+    }
 
 
     // ============================================
@@ -215,7 +264,7 @@
                 color="neutral" 
                 variant="outline" 
                 size="md"
-                @click="() => { /* TODO: Save the roles for that user */ }"
+                @click="saveGroupChanges();"
             />
         </div>
 
@@ -224,11 +273,12 @@
         >
             <UProgress color="neutral" />
         </div>
-        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null"
+        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null || componentCtx.groupUpdateError !== null"
              class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
         >
             {{ componentCtx.accessibleGroupsError }}
             {{ componentCtx.groupsLoadingError }}
+            {{ componentCtx.groupUpdateError }}
         </div>
     </div>
 

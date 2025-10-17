@@ -62,6 +62,7 @@ Select the following options:
 
 ## Install packages
 
+Manual :
 ```
 npm install @nuxtjs/i18n        # Internationalization support
 npm install @pinia/nuxt         # Pinia state/store management
@@ -70,6 +71,11 @@ npm install qrcode.vue          # QR Code generation component
 npm install apexcharts --save   # charts
 npm install vue3-apexcharts
 npm install valibot             # Form Fields Validation library
+```
+
+From existing file
+```
+npm install
 ```
 
 ## Clean libs

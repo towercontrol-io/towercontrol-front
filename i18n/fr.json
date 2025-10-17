@@ -29,9 +29,10 @@
     "passwordLostMessageSent": "Un e-mail a été envoyé avec les instructions pour réinitialiser votre mot de passe, cet email n'est valide que pendant quelques minutes, si vous ne le trouvez pas, pensez à vérifier vos spams. Vous pouvez fermer cette page.",
     "emailSize" : "L'adresse e-mail doit contenir au moins 4 caractères",
     "emailInvalid" : "L'adresse e-mail n'est pas valide",
-
     "title": "Connexion",
     "button": "Se connecter",
+    "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
+    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
 
     "user-registration-received": "Demande d'inscription reçue, veuillez vérifier votre e-mail pour confirmer votre inscription",
     "user-creation-created": "Création de l'utilisateur réussie",
@@ -69,8 +70,24 @@
     "user-profile-updated" : "Le profil de l'utilisateur a été mis à jour",
     "user-profile-encryption-error" : "Erreur technique lors du chiffrement du profil utilisateur, modification non enregistrée",
     "user-profile-language-invalid" : "La langue du profil utilisateur n'est pas valide",
-    "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
-    "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
+    "user-profile-not-to-restore" : "Le profil utilisateur n'est pas à restaurer",
+    "user-search-invalid-input" : "L'entrée de recherche utilisateur n'est pas valide",
+    "user-profile-activation-done" : "L'état d'activation/désactivation de l'utilisateur a changé",
+    "user-profile-lock-state-done" : "L'état de verrouillage/déverrouillage de l'utilisateur a changé",
+    "user-two-fa-deactivated" : "La 2FA a été désactivée",
+    "user-profile-2fa-enable-not-allowed" : "L'activation de la 2FA n'est pas autorisée de cette manière",
+    "user-profile-2fa-not-enabled" :"La 2FA n'a pas été activée pour cet utilisateur",
+    "user-profile-unauthorize-role" : "Vous n'êtes pas autorisé à attribuer ce rôle",
+    "user-role-user-does-not-exist" : "L'utilisateur demandant une liste de rôles n'existe pas",
+    "user-group-missing-elements" : "Certains des groupes auxquels l'utilisateur accède sont manquants",
+    "user-profile-role-self-change-not-allowed" : "Vous n'êtes pas autorisé à changer vos propres rôles",
+    "user-profile-role-change-not-authorized" : "Seul un administrateur peut changer les rôles d'un utilisateur",
+    "user-profile-role-change-not-owned" : "Seuls les rôles possédés peuvent être attribués à un utilisateur",
+    "user-profile-role-not-assignable" : "Les rôles non attribuables ne peuvent pas être attribués à un utilisateur",
+    "user-profile-role-not-found" : "Un des rôles à attribuer à l'utilisateur est introuvable",
+    "user-profile-group-not-found" : "Un des groupes à attribuer à l'utilisateur est introuvable",
+    "user-profile-acl-change-not-owned" : "Seules les ACL possédées / admin peuvent être attribuées à un utilisateur",
+    "user-profile-acl-change-already-member" : "Une des ACL à attribuer à l'utilisateur est déjà attribuée",
 
 
     "last" : "Dernier"
@@ -295,6 +312,8 @@
     "isSet": "Attribution",
     "isSettable": "Modifiable",
     "applyRoleChange": "Appliquer les modifications",
+    "updateSuccessTitle": "Mise à jour réussie",
+    "updateSuccessDesc": "Les modifications des rôles ont été appliquées avec succès.",
 
     "last": "Dernier"
   },
@@ -305,6 +324,8 @@
     "isSettable": "Modifiable",
     "applyGroupChange": "Appliquer les modifications",
     "noGroupAvailable": "Aucun groupe n'est disponible, situation anormale, contactez un administrateur.",
+    "updateSuccessTitle": "Mise à jour réussie",
+    "updateSuccessDesc": "Les modifications des groupes ont été appliquées avec succès.",
 
     "last": "Dernier"
   },
@@ -315,6 +336,11 @@
     "isSettable": "Modifiable",
     "applyGroupChange": "Appliquer les modifications",
     "noGroupAvailable": "Aucun groupe n'est disponible, situation anormale, contactez un administrateur.",
+    "noRoles": "",
+    "possibleRoles": "Rôles associés",
+    "groupLocalName": "Nom local du groupe",
+    "updateSuccessTitle": "Mise à jour réussie",
+    "updateSuccessDesc": "Les modifications des acls ont été appliquées avec succès.",
 
     "last": "Dernier"
   },

@@ -29,9 +29,10 @@
     "passwordLostMessageSent": "An email has been sent with instructions to reset your password, this email is only valid for a few minutes, if you don't find it, please check your spam folder. You can close this page.",
     "emailSize" : "Email address must be at least 4 characters long",
     "emailInvalid" : "Email address is not valid",
-
     "title": "Connection",
     "button": "Log In",
+    "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
+    "unknownError": "An unknown error occurred. Please try again later.",
 
     "user-registration-received": "Registration request received, please check your email to confirm your registration",
     "user-creation-created": "User creation success",
@@ -69,8 +70,24 @@
     "user-profile-updated" : "User profile has been updated",
     "user-profile-encryption-error" : "Technical error during user profile encryption, modification nos saved",
     "user-profile-language-invalid" : "User profile language is not valid",
-    "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
-    "unknownError": "An unknown error occurred. Please try again later.",
+    "user-profile-not-to-restore" : "User profile is not to be restored",
+    "user-search-invalid-input" : "User search input is not valid",
+    "user-profile-activation-done" : "User activation/deactivation state changed",
+    "user-profile-lock-state-done" : "User lock/unlock state changed",
+    "user-two-fa-deactivated" : "2FA has been deactivated",
+    "user-profile-2fa-enable-not-allowed" : "2FA activation is not allowed that way",
+    "user-profile-2fa-not-enabled" :"2FA was not enabled for this user",
+    "user-profile-unauthorize-role" : "You are not authorized to assign this role",
+    "user-role-user-does-not-exist" : "The user requesting a role list is not existing",
+    "user-group-missing-elements" : "Some of the groups the user accesses are missing",
+    "user-profile-role-self-change-not-allowed" : "You are not allowed to change your own roles",
+    "user-profile-role-change-not-authorized" : "Only admin can change the roles of a user",
+    "user-profile-role-change-not-owned" : "Only owned roles can be assigned to a user",
+    "user-profile-role-not-assignable" : "Non assignable roles cannot be assigned to a user",
+    "user-profile-role-not-found" : "One of the roles to assign to the user cannot be found",
+    "user-profile-group-not-found" : "One of the groups to assign to the user cannot be found",
+    "user-profile-acl-change-not-owned" : "Only owned / admin ACLs can be assigned to a user",
+    "user-profile-acl-change-already-member" : "One of the ACLs to assign to the user is already assigned",
 
 
     "last" : "Last"
@@ -295,6 +312,8 @@
     "isSet": "Attribution",
     "isSettable": "Modifiable",
     "applyRoleChange": "Apply changes",
+    "updateSuccessTitle": "Update Successful",
+    "updateSuccessDesc": "Role changes have been successfully applied.",
 
     "last": "Last"
   },
@@ -305,6 +324,8 @@
     "isSettable": "Modifiable",
     "applyGroupChange": "Apply changes",
     "noGroupAvailable": "No group is available, abnormal situation, please contact an administrator.",
+    "updateSuccessTitle": "Update Successful",
+    "updateSuccessDesc": "Group changes have been successfully applied.",
 
     "last": "Last"
   },
@@ -315,6 +336,11 @@
     "isSettable": "Modifiable",
     "applyGroupChange": "Apply changes",
     "noGroupAvailable": "No group is available, abnormal situation, please contact an administrator.",
+    "noRoles": "",
+    "possibleRoles": "Associated roles",
+    "groupLocalName": "Local group name",
+    "updateSuccessTitle": "Update Successful",
+    "updateSuccessDesc": "ACL changes have been successfully applied.",
 
     "last": "Last"
   },
