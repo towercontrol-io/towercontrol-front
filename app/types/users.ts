@@ -838,3 +838,39 @@ export interface UserUpdateBodyResponse {
    */
   acls?: AclItf[];
 }
+
+/**
+ * Request User API Token Creation
+ * This interface defines the structure for creating user API tokens
+ */
+export interface UserApiTokenCreationBody {
+  /**
+   * User defined token name, for user reference
+   * Example: "My Api Key"
+   * Required
+   */
+  keyName: string;
+
+  /**
+   * Key expiration date in epoch format (ms since 1970)
+   * Example: 1777777777777
+   * Required
+   */
+  expiration: number;
+
+  /**
+   * List of requested roles for this token
+   * Example: ["ROLE_USER_ADMIN", "ROLE_DEVICE_READ"]
+   * Required
+   */
+  roles: string[];
+
+  /**
+   * List of acl on groups for this token
+   * Example: [{"group":"xxxxxx","localName":"my group","roles":["ROLE_DEVICE_READ","ROLE_DEVICE_WRITE"]}]
+   * Required
+   */
+  acls: UserAcl[];
+}
+
+

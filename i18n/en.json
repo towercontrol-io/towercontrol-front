@@ -164,6 +164,7 @@
     "signout": "Sign Out",
     "groupCreation": "Group Creation",
     "groupConfiguration": "Group Configuration",
+    "apiKeyConfiguration": "API Key Configuration",
 
     "last" : "Last"
   },
@@ -392,6 +393,27 @@
     "role-login-api-desc" : "Request from an API account",
 
     "last": "Last"
+  },
+  "apiKeys": {
+    "gen_title": "API Key Generation",
+    "gen_description": "API keys allow external applications to securely access your data. You can generate a new pair of API keys by specifying a name and description to identify the application that will use these keys.",
+    "create": "Create a new API key",
+    "existingKeys": "Existing API Keys",
+    "createKey" : "Create a new API Key",
+    "keyName": "Key Name",
+    "keyNameDesc" : "The name of the key allows to identify the application or service that will use this key.",
+    "expiration" : "Expiration Date",
+    "expirationDesc" : "The expiration date allows to define a validity period for this key. After this date, the key will no longer be valid and must be replaced by a new key if necessary.",
+
+    "last": "Last"
+  },
+  "duration": {
+    "minute": "{value} minute | {value} minutes",
+    "hour":   "{value} hour | {value} hours",
+    "day":    "{value} day | {value} days",
+    "week":   "{value} week | {value} weeks",
+    "month":  "{value} month | {value} months",
+    "year":   "{value} year | {value} years"
   },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",

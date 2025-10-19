@@ -165,6 +165,7 @@
     "signout": "Déconnexion",
     "groupCreation": "Création d'un groupe",
     "groupConfiguration": "Configuration d'un groupe",
+    "apiKeyConfiguration": "Configuration des clés API",
 
     "last" : "Dernier"
   },
@@ -391,6 +392,27 @@
     "role-login-api-desc" : "Demande d'un compte API",
 
     "last": "Dernier"
+  },
+  "apiKeys": {
+    "gen_title": "Génération de clés API",
+    "gen_description": "Les clés API permettent à des applications externes d'accéder à vos données de manière sécurisée. Vous pouvez générer une nouvelle paire de clés API en spécifiant un nom et une description pour identifier l'application qui utilisera ces clés.",
+    "create": "Créer une nouvelle clé API",
+    "existingKeys": "Clés API existantes",
+    "createKey" : "Créer une nouvelle clef API",
+    "keyName": "Nom de la clé",
+    "keyNameDesc" : "Le nom de la clé permet d'identifier l'application ou le service qui utilisera cette clé.",
+    "expiration" : "Date d'expiration de la clef",
+    "expirationDesc" : "La date d'expiration permet de définir une durée de validité pour cette clé. Après cette date, la clé ne sera plus valide et devra être remplacée par une nouvelle clé si nécessaire.",
+
+    "last": "Dernier"
+  },
+  "duration": {
+    "minute": "{value} minute | {value} minutes",
+    "hour":   "{value} heure | {value} heures",
+    "day":    "{value} jour | {value} jours",
+    "week":   "{value} semaine | {value} semaines",
+    "month":  "{value} mois | {value} mois",
+    "year":   "{value} année | {value} années"
   },
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
