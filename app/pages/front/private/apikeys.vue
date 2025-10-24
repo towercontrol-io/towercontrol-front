@@ -1,5 +1,6 @@
 <script setup lang="ts">
    import { ref, computed, reactive } from 'vue';
+import UserRoles from '~/components/users/UserRoles.vue';
    import { type UserApiTokenCreationBody } from '~/types';
 
    definePageMeta({layout: 'main-layout', layoutProps: { title: 'apiKeyConfiguration' }});
@@ -7,6 +8,7 @@
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
    const { $formatDuration } = useNuxtApp();
+   const appStore = applicationStore();
 
     const componentCtx = reactive({
         creationMode: true as boolean,
@@ -39,9 +41,7 @@
 
     const onChangeDuration = () => {
         componentCtx.newApiKey.expiration = Math.floor(mapValueToDuration(componentCtx.duration));
-        console.log(componentCtx.newApiKey.expiration);
         componentCtx.durationString = $formatDuration(componentCtx.newApiKey.expiration);
-        console.log(componentCtx.durationString);
     }
 
 </script>
@@ -115,6 +115,14 @@
                     <span>{{ componentCtx.durationString }}</span>
                 </UFormField>
 
+                <UFormField
+                    name="roles"
+                    :label="$t('apiKeys.roles')"
+                    :description="$t('apiKeys.rolesDesc')"
+                    class="mt-2"
+                >
+                    <UsersUserRoles :login="appStore.userLogin as string" :userRoles="componentCtx.newApiKey.roles" class="mt-2"/>
+                </UFormField>
 
             </UForm>
         </template>
