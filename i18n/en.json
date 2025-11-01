@@ -359,8 +359,6 @@
     "createAction" : "Create the group",
     "createSuccess" : "Group created successfully",
     "gen_createError" : "An error occurred while creating the group",
-
-
     "groups-get-not-found": "Group not found",
     "groups-not-all-found" : "Not all the requested groups were found, result truncated",
     "groups-generate-shortid-too-many-retry" : "Failed to create a new group, too many shortId already used",
@@ -377,6 +375,7 @@
   "role" : {
     "role-god-admin-desc": "Super administrator",
     "role-user-admin-desc": "User administrator",
+    "role-user-apikey-desc": "User can create apikey for himself",
     "role-group-admin-desc": "Group administrator",
     "role-group-ladmin-desc": "Local group administrator",
     "role-device-admin-desc": "Device administrator",
@@ -409,6 +408,8 @@
     "groups": "Groups assigned to the key",
     "groupsDesc": "The groups assigned to this API key determine the sets of objects that the application can access. Select the appropriate groups based on the application's needs. For each group, a restriction/increase of rights is applicable. But the rights related to API access must be given at the role level.",
     "createNow" : "Create",
+    "updateSuccessTitle" : "Creation successful",
+    "updateSuccessDesc" : "The API key has been successfully created. You can now obtain the token and use the key.",
 
     "last": "Last"
   },

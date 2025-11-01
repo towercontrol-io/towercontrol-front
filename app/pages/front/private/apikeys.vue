@@ -7,6 +7,7 @@ import UserRoles from '~/components/users/UserRoles.vue';
 
    const { t } = useI18n();
    const nuxtApp = useNuxtApp();
+   const toast = useToast();
    const { $formatDuration } = useNuxtApp();
    const appStore = applicationStore();
 
@@ -21,6 +22,7 @@ import UserRoles from '~/components/users/UserRoles.vue';
             roles: [],
             acls: [],
         } as UserApiTokenCreationBody,
+        apiCreationError : null as string | null,
     });
 
     // Watch for changes in ApiKey form to authorize creation
@@ -51,10 +53,37 @@ import UserRoles from '~/components/users/UserRoles.vue';
     }
 
     const onNewApiKeyCreation = () => {
-        // Call the API to create the new API key
-        console.log(componentCtx.newApiKey);
 
-        componentCtx.creationMode = false;
+        // update the expiration from Now
+        let initExp = componentCtx.newApiKey.expiration;
+        componentCtx.newApiKey.expiration += Date.now();
+
+        // Call the API to create the new API key
+        nuxtApp.$apiBackendUsers.userModuleApiKeyCreation(componentCtx.newApiKey).then((res) => {
+            if (res.success) {
+                // Handle successful API key creation
+                toast.add({
+                    title: t('apiKeys.updateSuccessTitle'),
+                    description: t('apiKeys.updateSuccessDesc'),
+                    icon: 'i-lucide-arrow-big-up-dash',
+                });
+                componentCtx.creationMode = false;
+            } else if ( res.error ) {
+                componentCtx.apiCreationError = t('login.' + res.error.message);
+                componentCtx.newApiKey.expiration = initExp;
+                clearErrors();
+            }        
+        }).catch((err) => {
+            componentCtx.apiCreationError = t('common.unknownError');
+            componentCtx.newApiKey.expiration = initExp;
+            clearErrors();
+        });
+    }
+
+    const clearErrors = () => {
+        setTimeout(() => {
+            componentCtx.apiCreationError = null;
+        }, 5000);
     }
 
 </script>
@@ -93,74 +122,85 @@ import UserRoles from '~/components/users/UserRoles.vue';
         </template>
     </UCard>
 
-    <UCard 
-       v-if="componentCtx.creationMode" 
-       class="w-full max-w-3xl mx-auto"
-       variant="subtle"
-    >
-        <template #header>
-            <div class="flex items-center justify-between w-full">
-                <span class="font-bold">
-                    {{ t('apiKeys.createKey') }}
-                </span>
+    <div class="relative"  v-if="componentCtx.creationMode" >
+        <UCard 
+        class="w-full max-w-3xl mx-auto"
+        variant="subtle"
+        >
+            <template #header>
+                <div class="flex items-center justify-between w-full">
+                    <span class="font-bold">
+                        {{ t('apiKeys.createKey') }}
+                    </span>
 
-                <UButton
-                    :label="$t('apiKeys.createNow')"
-                    :disabled="!componentCtx.canCreate"
-                    color="neutral"
-                    type="submit"
-                    @click="onNewApiKeyCreation()"
-                />
+                    <UButton
+                        :label="$t('apiKeys.createNow')"
+                        :disabled="!componentCtx.canCreate"
+                        color="neutral"
+                        type="submit"
+                        @click="onNewApiKeyCreation()"
+                    />
+                </div>
+            </template>
+            <template #default>
+                <UForm
+                    id="settings"
+                    :state="componentCtx.newApiKey"
+                    @submit="() => {}"
+                >
+                    <UFormField
+                        name="keyName"
+                        :label="$t('apiKeys.keyName')"
+                        :description="$t('apiKeys.keyNameDesc')"
+                        required
+                        class="flex max-sm:flex-col justify-between items-start gap-4"
+                    >
+                        <UInput v-model="componentCtx.newApiKey.keyName" type="text" class="w-70" />
+                    </UFormField>
+
+                    <UFormField
+                        name="expiration"
+                        :label="$t('apiKeys.expiration')"
+                        :description="$t('apiKeys.expirationDesc')"
+                        required
+                        class="flex max-sm:flex-col justify-between items-start gap-4 mt-2"
+                    >
+                        <USlider v-model="componentCtx.duration" :min="1" :max="100" class="w-70 mb-2" @change="onChangeDuration()" />
+                        <span>{{ componentCtx.durationString }}</span>
+                    </UFormField>
+
+                    <UFormField
+                        name="roles"
+                        :label="$t('apiKeys.roles')"
+                        :description="$t('apiKeys.rolesDesc')"
+                        class="mt-2"
+                    >
+                        <UsersUserRoles :login="appStore.userLogin as string" :userRoles="componentCtx.newApiKey.roles" class="mt-2"/>
+                    </UFormField>
+
+                    <UFormField
+                        name="groups"
+                        :label="$t('apiKeys.groups')"
+                        :description="$t('apiKeys.groupsDesc')"
+                        class="mt-2"
+                    >
+                        <UsersUserApiKeyAcl :login="appStore.userLogin as string" :keyAcls="componentCtx.newApiKey.acls" class="mt-2"/>
+                    </UFormField>
+
+                </UForm>
+            </template>
+        </UCard>
+        <div v-if="componentCtx.apiCreationError"
+            class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
+        >
+            <div class="flex flex-col items-center gap-4">
+                <div class="mb-2 text-lg text-center text-red-600 font-bold">
+                    {{ componentCtx.apiCreationError}}
+                </div>
             </div>
-        </template>
-        <template #default>
-            <UForm
-                id="settings"
-                :state="componentCtx.newApiKey"
-                @submit="() => {}"
-            >
-                <UFormField
-                    name="keyName"
-                    :label="$t('apiKeys.keyName')"
-                    :description="$t('apiKeys.keyNameDesc')"
-                    required
-                    class="flex max-sm:flex-col justify-between items-start gap-4"
-                >
-                    <UInput v-model="componentCtx.newApiKey.keyName" type="text" class="w-70" />
-                </UFormField>
+        </div>
+    </div>
 
-                <UFormField
-                    name="expiration"
-                    :label="$t('apiKeys.expiration')"
-                    :description="$t('apiKeys.expirationDesc')"
-                    required
-                    class="flex max-sm:flex-col justify-between items-start gap-4 mt-2"
-                >
-                    <USlider v-model="componentCtx.duration" :min="1" :max="100" class="w-70 mb-2" @change="onChangeDuration()" />
-                    <span>{{ componentCtx.durationString }}</span>
-                </UFormField>
-
-                <UFormField
-                    name="roles"
-                    :label="$t('apiKeys.roles')"
-                    :description="$t('apiKeys.rolesDesc')"
-                    class="mt-2"
-                >
-                    <UsersUserRoles :login="appStore.userLogin as string" :userRoles="componentCtx.newApiKey.roles" class="mt-2"/>
-                </UFormField>
-
-                <UFormField
-                    name="groups"
-                    :label="$t('apiKeys.groups')"
-                    :description="$t('apiKeys.groupsDesc')"
-                    class="mt-2"
-                >
-                    <UsersUserApiKeyAcl :login="appStore.userLogin as string" :keyAcls="componentCtx.newApiKey.acls" class="mt-2"/>
-                </UFormField>
-
-            </UForm>
-        </template>
-    </UCard>
     </div>
 
 </template>

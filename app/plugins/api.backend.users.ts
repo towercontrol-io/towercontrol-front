@@ -1,7 +1,7 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
 import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody, UserAccessibleRolesResponse } from '~/types';
-import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse } from '~/types';
+import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse, UserApiTokenCreationBody } from '~/types';
 import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
@@ -58,6 +58,7 @@ export default defineNuxtPlugin(() => {
   const userModuleRolesAndRightsPost: string = '/users/1.0/profile/'
   const userModuleRolesAndRightsPut: string = '/users/1.0/profile/'
   const userModuleGroupsHierarchyGet: string = '/users/1.0/groups';
+  const userModuleApikeyCreatePut: string = '/users/1.0/apikey/';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -301,6 +302,10 @@ export default defineNuxtPlugin(() => {
             );
             appStore.setGroupAdmin(
                 (    getJWTRole(response.jwtToken,'ROLE_GROUP_ADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setApikeyCreator(
+                (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
             appStore.setUserEmail(response.email || null);
@@ -891,6 +896,23 @@ export default defineNuxtPlugin(() => {
                 'GET',
                 userModuleGroupsHierarchyGet,
                 undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Update User profile to add an api key
+     */
+    userModuleApiKeyCreation: async (body:UserApiTokenCreationBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                userModuleApikeyCreatePut,
+                body,
                 false
             );
             return { success: response }

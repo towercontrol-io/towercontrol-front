@@ -359,7 +359,6 @@
     "createAction" : "Créer le groupe",
     "createSuccess" : "Groupe créé avec succès",
     "gen_createError" : "Une erreur est survenue lors de la création du groupe",
-
     "groups-get-not-found": "Groupe non trouvé",
     "groups-not-all-found" : "Tous les groupes demandés n'ont pas été trouvés, résultat tronqué",
     "groups-generate-shortid-too-many-retry" : "Échec de la création d'un nouveau groupe, trop de shortId déjà utilisés",
@@ -376,6 +375,7 @@
   "role" : {
     "role-god-admin-desc": "Super administrateur",
     "role-user-admin-desc": "Administrateur des utilisateurs",
+    "role-user-apikey-desc": "User can create apikey for himself",
     "role-group-admin-desc": "Administrateur des groupes",
     "role-group-ladmin-desc": "Administrateur local des groupes",
     "role-device-admin-desc": "Administrateur des appareils",
@@ -408,7 +408,9 @@
     "groups": "Groupes attribués à la clef",
     "groupsDesc": "Les groupes attribués à cette clé API déterminent les ensembles d'objets auxquels l'application peut accéder. Sélectionnez les groupes appropriés en fonction des besoins de l'application. Pour chaque groupe, une restriction/augmentation de droits est applicable. Mais les droits relatifs à l'accès aux API doivent être donnés au niveau des rôles.",
     "createNow" : "Créer",
-    
+    "updateSuccessTitle" : "Création réussie",
+    "updateSuccessDesc" : "La clé API a été créée avec succès. Vous pouvez maintenant obtenir le token et utiliser la clé.",
+
     "last": "Dernier"
   },
   "duration": {

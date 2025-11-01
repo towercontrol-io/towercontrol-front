@@ -331,12 +331,15 @@ import { el } from '@nuxt/ui/runtime/locale/index.js';
       ],
       [
         { label: `${t('menu.profile')}`, icon: 'i-lucide-user', to: '/front/private/profile'},
-        { label: `${t('menu.apikeys')}`,icon: 'i-lucide-key-round',to: '/front/private/apikeys'}
       ]
     ] as DropdownMenuItem[][];
 
+    if ( appStore.isApikeyCreator() ) {
+      items[1]!.push({ label: `${t('menu.apikeys')}`, icon: 'i-lucide-key-round', to: '/front/private/apikeys' });
+    }
+
     if ( billingEnabled ) {
-      items[1].push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
+      items[1]!.push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
     }
 
     const themeItems = { 

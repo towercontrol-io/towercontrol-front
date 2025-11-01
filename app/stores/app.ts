@@ -14,6 +14,7 @@ export const applicationStore = defineStore('app', {
     userAdmin: false as boolean | null,
     groupLocalAdmin: false as boolean | null,
     groupAdmin: false as boolean | null,
+    apikeyCreator: false as boolean | null,
   }),
   actions: {
     clearStore() {
@@ -28,6 +29,7 @@ export const applicationStore = defineStore('app', {
       this.userAdmin = false;
       this.groupLocalAdmin = false;
       this.groupAdmin = false;
+      this.apikeyCreator = false;
     },
     setBackendDown() {
       this.backendUp = false;
@@ -111,6 +113,12 @@ export const applicationStore = defineStore('app', {
     },
     isGroupAdmin(): boolean | null {
       return this.groupAdmin;
+    },
+    setApikeyCreator(canCreate: boolean) {
+      this.apikeyCreator = canCreate;
+    },
+    isApikeyCreator(): boolean | null {
+      return this.apikeyCreator;
     },
   },
  });
