@@ -404,6 +404,11 @@
     "keyNameDesc" : "The name of the key allows to identify the application or service that will use this key.",
     "expiration" : "Expiration Date",
     "expirationDesc" : "The expiration date allows to define a validity period for this key. After this date, the key will no longer be valid and must be replaced by a new key if necessary.",
+    "roles": "Key attributed roles",
+    "rolesDesc": "The roles assigned to this API key determine the actions that the application can perform. Select the appropriate roles based on the application's needs.",
+    "groups": "Groups assigned to the key",
+    "groupsDesc": "The groups assigned to this API key determine the sets of objects that the application can access. Select the appropriate groups based on the application's needs. For each group, a restriction/increase of rights is applicable. But the rights related to API access must be given at the role level.",
+    "createNow" : "Create",
 
     "last": "Last"
   },

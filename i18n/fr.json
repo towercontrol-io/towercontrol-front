@@ -403,7 +403,12 @@
     "keyNameDesc" : "Le nom de la clé permet d'identifier l'application ou le service qui utilisera cette clé.",
     "expiration" : "Date d'expiration de la clef",
     "expirationDesc" : "La date d'expiration permet de définir une durée de validité pour cette clé. Après cette date, la clé ne sera plus valide et devra être remplacée par une nouvelle clé si nécessaire.",
-
+    "roles": "Rôles attribués à la clef",
+    "rolesDesc": "Les rôles attribués à cette clé API déterminent les actions que l'application peut effectuer. Sélectionnez les rôles appropriés en fonction des besoins de l'application.",
+    "groups": "Groupes attribués à la clef",
+    "groupsDesc": "Les groupes attribués à cette clé API déterminent les ensembles d'objets auxquels l'application peut accéder. Sélectionnez les groupes appropriés en fonction des besoins de l'application. Pour chaque groupe, une restriction/augmentation de droits est applicable. Mais les droits relatifs à l'accès aux API doivent être donnés au niveau des rôles.",
+    "createNow" : "Créer",
+    
     "last": "Dernier"
   },
   "duration": {

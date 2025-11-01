@@ -11,7 +11,8 @@ import UserRoles from '~/components/users/UserRoles.vue';
    const appStore = applicationStore();
 
     const componentCtx = reactive({
-        creationMode: true as boolean,
+        creationMode: false as boolean,
+        canCreate: false as boolean,
         duration: 0 as number,
         durationString: "" as string,
         newApiKey: {
@@ -21,6 +22,11 @@ import UserRoles from '~/components/users/UserRoles.vue';
             acls: [],
         } as UserApiTokenCreationBody,
     });
+
+    // Watch for changes in ApiKey form to authorize creation
+    watch(() => componentCtx.newApiKey, (newVal) => {
+        componentCtx.canCreate = !(!newVal.keyName || !newVal.expiration );
+    }, { deep: true });
 
     // Converts a value (1–100) into a duration between 1 hour and 10 years (in seconds)
     // using an exponential progression for smoother scaling
@@ -44,10 +50,17 @@ import UserRoles from '~/components/users/UserRoles.vue';
         componentCtx.durationString = $formatDuration(componentCtx.newApiKey.expiration);
     }
 
+    const onNewApiKeyCreation = () => {
+        // Call the API to create the new API key
+        console.log(componentCtx.newApiKey);
+
+        componentCtx.creationMode = false;
+    }
+
 </script>
 
 <template>
-    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-2xl mx-auto">
+    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-2xl mx-auto mb-4">
 
     <UPageCard
       :title="$t('apiKeys.gen_title')"
@@ -86,7 +99,19 @@ import UserRoles from '~/components/users/UserRoles.vue';
        variant="subtle"
     >
         <template #header>
-            <span class="font-bold">{{ t('apiKeys.createKey') }}</span>
+            <div class="flex items-center justify-between w-full">
+                <span class="font-bold">
+                    {{ t('apiKeys.createKey') }}
+                </span>
+
+                <UButton
+                    :label="$t('apiKeys.createNow')"
+                    :disabled="!componentCtx.canCreate"
+                    color="neutral"
+                    type="submit"
+                    @click="onNewApiKeyCreation()"
+                />
+            </div>
         </template>
         <template #default>
             <UForm
@@ -122,6 +147,15 @@ import UserRoles from '~/components/users/UserRoles.vue';
                     class="mt-2"
                 >
                     <UsersUserRoles :login="appStore.userLogin as string" :userRoles="componentCtx.newApiKey.roles" class="mt-2"/>
+                </UFormField>
+
+                <UFormField
+                    name="groups"
+                    :label="$t('apiKeys.groups')"
+                    :description="$t('apiKeys.groupsDesc')"
+                    class="mt-2"
+                >
+                    <UsersUserApiKeyAcl :login="appStore.userLogin as string" :keyAcls="componentCtx.newApiKey.acls" class="mt-2"/>
                 </UFormField>
 
             </UForm>

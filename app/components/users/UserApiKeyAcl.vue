@@ -11,7 +11,10 @@
 
    const props = defineProps({ 
       login: { type: String, required: true, default: '' },
+      keyAcls: { type: Array as PropType<UserAcl[]>, required: true, default: () => [] }
    });
+   props.keyAcls.splice(0, props.keyAcls.length); // clear the array to be able to push new values later
+
 
     type GroupLine = {
         groupShortId : string;
@@ -39,7 +42,6 @@
         accessibleRoles : [] as UserAccessibleRolesResponse[],
         accessibleRolesError : null as string | null,
         accessibleRolesLoading : false,
-        aclUpdateError : null as string | null,
     });
 
 
@@ -261,25 +263,6 @@
                     componentCtx.tableLines.push(ac);
                 }
             }
-
-
-/*
-            for ( const r of componentCtx.groups ) {
-                for ( const ar of componentCtx.tableLines ) {
-                    if ( ar.groupShortId === r.groupShortId ) {
-                        ar.isSettable = true;
-                        ar.isSet = true;
-                        if ( r.groupSelectedRoles !== null ) {
-                            ar.groupSelectedRoles = r.groupSelectedRoles;
-                        } else {
-                            r.groupSelectedRoles = [];
-                        }
-                        break;
-                    }
-                }
-                componentCtx.tableLines.push(r);
-            }
-               */         
             // reset
             componentCtx.loaded = 0;
             componentCtx.componentLoading = false;
@@ -290,51 +273,49 @@
     // Save changes
     // ============================================
 
-    const saveAclsChanges = () => {
-        const updateBody: UserUpdateBody = {
-            login: props.login,
-            considerRoles: false,
-            considerGroups: false,
-            considerACLs: true,
-            acls: [] as UserAcl[],
-        };
+    /**
+     * When a new group is selected in the table
+     */
+    const onNewGroupSelection = (line:GroupLine) => {
 
-        for ( const line of componentCtx.tableLines ) {
-            if ( line.isSet && line.isSettable) {
-                updateBody.acls!.push( {
-                    group: line.groupShortId,
-                    roles: line.groupSelectedRoles || [],
-                    localName: line.groupLocalName,
-                } );
+        // recheeck the ACLs list 
+        if ( line.isSet ) {
+            // new ACL to add
+            props.keyAcls.push({
+                group: line.groupShortId,
+                localName: line.groupLocalName,
+                roles: line.groupSelectedRoles || [],
+            });
+        } else {
+            // remove ACL
+            for ( let i = 0; i < props.keyAcls.length; i++ ) {
+                if ( props.keyAcls[i]!.group === line.groupShortId ) {
+                    props.keyAcls.splice(i,1);
+                    break;
+                }
             }
         }
-        componentCtx.componentLoading = true;
-        $apiBackendUsers.userModuleUpdateRightAndRoles(updateBody).then((res) => {
-            if ( res.success ) {
-                componentCtx.componentLoading = false;
-                toast.add({
-                    title: t('AclsForm.updateSuccessTitle'),
-                    description: t('AclsForm.updateSuccessDesc'),
-                    icon: 'i-lucide-arrow-big-up-dash',
-                });
-            } else if ( res.error ) {
-                componentCtx.componentLoading = false;
-                componentCtx.aclUpdateError = t('login.' + res.error.message);
-                clearErrors();
-            }
-        }).catch((err) => {
-            componentCtx.componentLoading = false;
-            componentCtx.aclUpdateError = t('common.unknownError');
-            clearErrors();
-        });
     }
+
+    /**
+     * When the roles selection change for a group
+     */
+    const onRoleChange = (line:GroupLine) => {
+        // update the ACLs list
+        for ( let i = 0; i < props.keyAcls.length; i++ ) {
+            if ( props.keyAcls[i]!.group === line.groupShortId ) {
+                props.keyAcls[i]!.roles = line.groupSelectedRoles || [];
+                break;;
+            }
+        }
+    }
+       
 
     const clearErrors = () => {
         setTimeout(() => {
             componentCtx.accessibleRolesError = null;
             componentCtx.groupsLoadingError = null;
             componentCtx.accessibleGroupsError = null;
-            componentCtx.aclUpdateError = null;
         }, 5000);
     }
 
@@ -347,7 +328,6 @@
         { accessorKey: 'groupName',header: t("AclsForm.groupName") },
         { accessorKey: 'isSet',header: t("AclsForm.isSet") },
         { accessorKey: 'groupPossibleRoles',header: t("AclsForm.possibleRoles") },
-        { accessorKey: 'groupLocalName',header: t("AclsForm.groupLocalName") },
     ];
     const columnVisibility = ref({
         isSettable: false,
@@ -379,7 +359,7 @@
                     </span>
                 </template>
                 <template #isSet-cell="{ row }">
-                    <USwitch v-model="row.original.isSet" :disabled="!row.original.isSettable" color="neutral"/>
+                    <USwitch v-model="row.original.isSet" :disabled="!row.original.isSettable" color="neutral" @change="onNewGroupSelection(row.original)"/>
                 </template>
                 <template #groupPossibleRoles-cell="{ row }">
                     <div v-if="row.original.isSet && row.original.groupPossibleRoles !== null" class="w-56"  style="height: 30px;">
@@ -394,6 +374,7 @@
                             color="neutral"
                             placeholder="Select roles"
                             class="w-56"
+                            @change="onRoleChange(row.original)"
                         />
                     </div>
                     <div v-else class="text-neutral-500 w-56" style="height: 30px;">
@@ -409,15 +390,6 @@
                     </div>
                 </template>
             </UTable>
-            <UButton 
-                v-if="!componentCtx.componentLoading"
-                :label="$t('AclsForm.applyGroupChange')"
-                class="mt-4 self-end h-10" 
-                color="neutral" 
-                variant="outline" 
-                size="md"
-                @click="saveAclsChanges()"
-            />
         </div>
 
         <div v-if="componentCtx.componentLoading"
@@ -425,13 +397,12 @@
         >
             <UProgress color="neutral" />
         </div>
-        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null || componentCtx.accessibleRolesError !== null || componentCtx.aclUpdateError !== null"
+        <div v-if="componentCtx.accessibleGroupsError !== null || componentCtx.groupsLoadingError !== null || componentCtx.accessibleRolesError !== null "
              class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
         >
             {{ componentCtx.accessibleGroupsError }}
             {{ componentCtx.groupsLoadingError }}
             {{ componentCtx.accessibleRolesError }}
-            {{ componentCtx.aclUpdateError }}
         </div>
     </div>
 
