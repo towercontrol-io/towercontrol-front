@@ -1,7 +1,7 @@
 import { type UserConfigResponse, type UserLoginBody, type UserLoginResponse, type UserPasswordChangeBody, type UserPasswordLostBody, type UserAccountRegistrationBody, TwoFATypes } from '~/types';
 import type { UserAccountCreationBody, UserAcl, UserBasicProfileResponse, ACTION_RESULT, UserProfileCustomFieldBody, CustomField, UserBasicProfileBody } from '~/types';
 import type { UserTwoFaBody, UserTwoFaResponse, UserListElementResponse, UserIdentificationBody, UserSearchBody, UserStateSwitchBody, UserAccessibleRolesResponse } from '~/types';
-import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse, UserApiTokenCreationBody } from '~/types';
+import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse, UserApiTokenCreationBody, UserApiTokenResponse } from '~/types';
 import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
@@ -59,6 +59,9 @@ export default defineNuxtPlugin(() => {
   const userModuleRolesAndRightsPut: string = '/users/1.0/profile/'
   const userModuleGroupsHierarchyGet: string = '/users/1.0/groups';
   const userModuleApikeyCreatePut: string = '/users/1.0/apikey/';
+  const userModuleApikeyListGet: string = '/users/1.0/apikey/';
+  const userModuleApikeyDelete: string = '/users/1.0/apikey/';
+  const userModuleApikeyJwtGet: string = '/users/1.0/apikey/{id}/jwt/';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -913,6 +916,58 @@ export default defineNuxtPlugin(() => {
                 'PUT',
                 userModuleApikeyCreatePut,
                 body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Get the user apikeys list
+     */
+    userModuleGetApiKeysList: async (): Promise<{ success?: UserApiTokenResponse[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<UserApiTokenResponse[]>(
+                'GET',
+                userModuleApikeyListGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Delete the user apikeys 
+     */
+    userModuleDeleteApiKey: async (keyId: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                userModuleApikeyDelete + keyId+'/',
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    /**
+     * Get the JWT token associated to an apikey
+     */
+    userModuleApikeyJwtGet: async (keyId: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<string>(
+                'GET',
+                userModuleApikeyJwtGet.replace('{id}', keyId),
+                undefined,
                 false
             );
             return { success: response }

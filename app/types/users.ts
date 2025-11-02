@@ -873,4 +873,36 @@ export interface UserApiTokenCreationBody {
   acls: UserAcl[];
 }
 
+export interface UserApiTokenResponse {
+  /**
+   * Api Token ID (uniq string)
+   * Example: "apikey_A3E5C710"
+   */
+  id: string;
+
+  /**
+   * User defined token name, for user reference
+   * Example: "My Api Key"
+   */
+  keyName: string;
+
+  /**
+   * Key expiration date in epoch format (ms since 1970)
+   * Example: 1777777777777
+   */
+  expiration: number;
+
+  /**
+   * List of requested roles for this token
+   * Example: [ "ROLE_USER_ADMIN", "ROLE_DEVICE_READ" ]
+   */
+  roles: string[];
+
+  /**
+   * List of acl on groups for this token
+   * Example: [{ "group": "xxxxxx", "localName": "my group", "roles": ["ROLE_DEVICE_READ", "ROLE_DEVICE_WRITE"] }]
+   */
+  acls: UserAcl[];
+}
+
 
