@@ -58,10 +58,10 @@ export default defineNuxtPlugin(() => {
   const userModuleRolesAndRightsPost: string = '/users/1.0/profile/'
   const userModuleRolesAndRightsPut: string = '/users/1.0/profile/'
   const userModuleGroupsHierarchyGet: string = '/users/1.0/groups';
-  const userModuleApikeyCreatePut: string = '/users/1.0/apikey/';
-  const userModuleApikeyListGet: string = '/users/1.0/apikey/';
-  const userModuleApikeyDelete: string = '/users/1.0/apikey/';
-  const userModuleApikeyJwtGet: string = '/users/1.0/apikey/{id}/jwt/';
+  const userModuleApikeyCreatePut: string = '/users/1.0/apikey';
+  const userModuleApikeyListGet: string = '/users/1.0/apikey';
+  const userModuleApikeyDelete: string = '/users/1.0/apikey/{id}/';
+  const userModuleApikeyJwtGet: string = '/users/1.0/apikey/{id}/jwt';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -948,7 +948,7 @@ export default defineNuxtPlugin(() => {
         try {
             const response = await apiCallwithTimeout<ActionResult>(
                 'DELETE',
-                userModuleApikeyDelete + keyId+'/',
+                userModuleApikeyDelete.replace('{id}', keyId),
                 undefined,
                 false
             );
@@ -964,7 +964,7 @@ export default defineNuxtPlugin(() => {
      */
     userModuleApikeyJwtGet: async (keyId: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
         try {
-            const response = await apiCallwithTimeout<string>(
+            const response = await apiCallwithTimeout<ActionResult>(
                 'GET',
                 userModuleApikeyJwtGet.replace('{id}', keyId),
                 undefined,
