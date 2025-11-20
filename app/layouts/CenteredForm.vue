@@ -44,15 +44,13 @@
 </script>
 
 <template>
-  <div :style="`height: 100vh; width: 100%; 
-        z-index: 1; overflow: hidden; position: relative; 
+  <div :style="`min-height: 100vh; width: 100%; 
+        z-index: 1; overflow-y: auto; position: relative; 
         display: flex; 
         background: url('${backgroundImage}') center center / cover rgb(240, 242, 245); 
         box-sizing: border-box;
         justify-content: center;`">
-        <div style="max-width: 500px; position: absolute; 
-            top: 47%; left: 50%; transform: translate(-50%, -50%); 
-            height: auto;">
+        <div class="max-w-md lg:max-w-4xl mx-auto my-auto px-4 py-8 h-auto">
           <slot />
         </div>
         <ToolsToasterDisconnected />

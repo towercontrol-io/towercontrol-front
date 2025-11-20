@@ -71,6 +71,21 @@ export interface UserConfigResponse {
    * Required
    */
   subGroupUnderVirtualAllowed: boolean;
+
+  /**
+   * The backend supports the non-community edition features
+   * Example: false
+   * Required
+   */
+  nonCommunityEdition: boolean;
+
+  /**
+   * Registration process requires a captcha validation (NCE edition)
+   * Example: false
+   * Required
+   */
+  registrationCaptchaRequired: boolean;
+
 };
 
 

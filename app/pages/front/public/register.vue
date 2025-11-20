@@ -5,6 +5,7 @@
     import type { InputPasswordFields } from '~/types/compInputPassword';
     import type { ActionResult } from '~/types';
     import { useRouter } from 'vue-router';
+import { user } from '#build/ui';
 
 
     definePageMeta({layout: 'centered-form'});
@@ -24,6 +25,14 @@
         router.push('/front/public/error?error='+ _error);
     }
 
+        // -----
+    // Load the useer module configuration data to adapt the page to the configuration
+    const { $apiBackendUsers } = useNuxtApp();
+    const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
+        () => `user-config-response`, 
+        () => $apiBackendUsers.getUserModuleConfig()
+    );
+
     
     const register = reactive({
         email: '' as string,
@@ -34,18 +43,11 @@
         } as InputPasswordFields,
         conditions : false as boolean,
 
+        captchaState : 0 as number,
         disableButton : true as boolean,
         displayMessage : false as boolean,
         success : false as boolean
     });
-
-    // -----
-    // Load the useer module configuration data to adapt the page to the configuration
-    const { $apiBackendUsers } = useNuxtApp();
-    const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
-        () => `user-config-response`, 
-        () => $apiBackendUsers.getUserModuleConfig()
-    );
 
     const errorStr = reactive({
         value : null as string | null
@@ -60,6 +62,9 @@
         //if (register.email.length < 4) errors.push({ name: 'email', message: $t('login.emailSize') });
         //if (!register.email.includes('@') ) errors.push({ name: 'email', message: $t('login.emailInvalid') });
         register.disableButton = !(errors.length == 0 && register.conditions);
+        if ( !userConfig.value?.registrationCaptchaRequired ) {
+            register.captchaState = 1;
+        }
         return errors;
     }
 
@@ -124,29 +129,35 @@
                 @submit="onSubmitRegistration"
                 class="space-y-1"
             >
-            <!--
-                <UFormField :label="$t('users.registerEmail')" name="email" required>
-                    <UInput 
-                        v-model="register.email" 
-                        :placeholder="t('login.login')" 
-                        class="w-full"
-                    />
-                </UFormField>
-            -->    
-                <UFormField :label="$t('users.eula')" name="eula" required style="margin-top:0.5rem;text-align:left;">
-                    <USwitch 
-                        required 
-                        v-model="register.conditions" 
-                        :label="t('login.eulaAcceptSwitch')"
-                    />
-                </UFormField>   
-                <ToolsInputPassword v-model="register.password" />
+                <!-- Layout responsive PC vs Mobile -->
+                <div class="flex flex-col lg:flex-row lg:gap-4">
+                    <!-- Left column : EULA et Password -->
+                    <div class="flex-1 space-y-1">
+                        <UFormField :label="$t('users.eula')" name="eula" required style="margin-top:0.5rem;text-align:left;">
+                            <USwitch 
+                                required 
+                                v-model="register.conditions" 
+                                :label="t('login.eulaAcceptSwitch')"
+                            />
+                        </UFormField>   
+                        <ToolsInputPassword v-model="register.password" />
+                    </div>
+                    
+                    <!-- Right Column : Captcha -->
+                    <div v-if="userConfig?.registrationCaptchaRequired" class="lg:flex-1 lg:flex lg:items-end mt-1 lg:mt-0">
+                        <div class="w-full">
+                            <ToolsCaptcha :captchaKey="verificationKey" v-model:challengeState="register.captchaState"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton toujours en bas -->
                 <UButton 
                         type="submit" 
                         color="primary" 
                         block
                         style="margin-top:0.3rem;margin-bottom:0.3rem;"
-                        :disabled="register.disableButton || !register.password.confirmed || !register.password.valid"
+                        :disabled="register.disableButton || !register.password.confirmed || !register.password.valid || register.captchaState === 0"
                     >
                         {{ t('users.creationAccount') }}
                 </UButton>

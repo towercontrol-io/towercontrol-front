@@ -88,6 +88,17 @@
     "user-profile-group-not-found" : "One of the groups to assign to the user cannot be found",
     "user-profile-acl-change-not-owned" : "Only owned / admin ACLs can be assigned to a user",
     "user-profile-acl-change-already-member" : "One of the ACLs to assign to the user is already assigned",
+    "user-apikey-created" : "The user API Key has been created",
+    "user-apikey-not-found" :"The requested API Key cannot be found",
+    "user-apikey-delete-success" : "The user API Key has been deleted",
+    "user-apikey-expired" : "The user API Key is expired",
+    "user-user-not-found" : "The requested user cannot be found",
+    "users-rights-inactive-locked" : "The user is either inactive or locked",
+    "users-rights-not-registered-user" : "The user is not a registered user",
+    "users-rights-not-signed-user" : "The user is not signed in",
+    "users-apikey-or-group-not-found" : "The requested API Key or Group cannot be found",
+    "users-rights-role-not-found-in-apikey" : "The role or group required for this operation is not found in the API Key",
+    "user-creation-account-captcha-refused" : "Captcha validation failed",
 
 
     "last" : "Last"
@@ -435,6 +446,14 @@
     "month":  "{value} month | {value} months",
     "year":   "{value} year | {value} years"
   },
+  "captcha": {
+    "instruction" : "Please validate the captcha to continue. To do this, select the icons corresponding to the image above.",
+    "wrongSelection": "Incorrect captcha selection, please try again.",
+    "failed": "Failed to validate captcha, please try again.",
+    "error": "A technical error occurred while validating the captcha, please try again later.",
+
+    "last": "Last"
+  },
   "common": {
     "backendTimeout": "The backend did not respond within the expected time. Please try again later.",
     "unknownError": "An unknown error occurred. Please try again later.",
@@ -446,6 +465,7 @@
     "createSubGroup": "New Group",
     "createGroup": "New Group",
     "groups": "Groups",
+    
 
     "last": "Last"
   }

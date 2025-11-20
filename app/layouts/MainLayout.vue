@@ -2,7 +2,6 @@
   import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
-import { el } from '@nuxt/ui/runtime/locale/index.js';
 
   const { t, setLocale } = useI18n();
   const router = useRouter();

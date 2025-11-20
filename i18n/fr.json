@@ -88,6 +88,17 @@
     "user-profile-group-not-found" : "Un des groupes à attribuer à l'utilisateur est introuvable",
     "user-profile-acl-change-not-owned" : "Seules les ACL possédées / admin peuvent être attribuées à un utilisateur",
     "user-profile-acl-change-already-member" : "Une des ACL à attribuer à l'utilisateur est déjà attribuée",
+    "user-apikey-created" : "La clé API de l'utilisateur a été créée",
+    "user-apikey-not-found" :"La clé API demandée est introuvable",
+    "user-apikey-delete-success" : "La clé API de l'utilisateur a été supprimée",
+    "user-apikey-expired" : "La clé API de l'utilisateur a expiré",
+    "user-user-not-found" : "L'utilisateur demandé est introuvable",
+    "users-rights-inactive-locked" : "L'utilisateur est soit inactif, soit verrouillé",
+    "users-rights-not-registered-user" : "L'utilisateur n'est pas un utilisateur enregistré",
+    "users-rights-not-signed-user" : "L'utilisateur n'est pas connecté",
+    "users-apikey-or-group-not-found" : "La clé API ou le groupe demandé est introuvable",
+    "users-rights-role-not-found-in-apikey" : "Le rôle ou le groupe requis pour cette opération n'est pas trouvé dans la clé API",
+    "user-creation-account-captcha-refused" : "La validation du Captcha a échoué",
 
 
     "last" : "Dernier"
@@ -435,6 +446,15 @@
     "month":  "{value} mois | {value} mois",
     "year":   "{value} année | {value} années"
   },
+  "captcha": {
+    "instruction" : "Veuillez valider le captcha pour continuer. Pour ce faire, sélectionnez les icônes correspondant à l'image ci-dessus.",
+    "wrongSelection": "Sélection de captcha incorrecte, veuillez réessayer.",
+    "failed": "Échec de la validation du captcha, veuillez réessayer.",
+    "error": "Une erreur technique est survenue lors de la validation du captcha, veuillez réessayer ultérieurement.",
+
+    "last": "Dernier"
+  },
+
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",

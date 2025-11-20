@@ -6,7 +6,7 @@
     const model = defineModel<InputPasswordFields<string>>({ required: true }) // v-model
 
     // -----
-    // Load the useer module configuration data to adapt the page to the configuration
+    // Load the user module configuration data to adapt the page to the configuration
     const { $apiBackendUsers } = useNuxtApp();
     const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
         () => `user-config-response`, 
