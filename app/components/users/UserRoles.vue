@@ -80,10 +80,18 @@
         }, 5000);
     }
 
-    const onSwitchChange = () => {
+    const onSwitchChange = (line:RoleLine) => {
         // Update the role list based on the tableLines
-        console.log("Switch changed");
-        
+        if ( line.isSet ) {
+            // add it
+            props.userRoles.push(line.roleName);
+        } else {
+            // remove it
+            const index = props.userRoles.indexOf(line.roleName);
+            if (index > -1) {
+                props.userRoles.splice(index, 1);
+            }
+        }
     }
 
     // ============================================
@@ -116,7 +124,7 @@
                 class="flex-1 text-xs"
             >
                 <template #isSet-cell="{ row }">
-                    <USwitch v-model="row.original.isSet" :disabled="!row.original.isSettable" color="neutral" @change="onSwitchChange()"/>
+                    <USwitch v-model="row.original.isSet" :disabled="!row.original.isSettable" color="neutral" @change="onSwitchChange(row.original)"/>
                 </template>
             </UTable>
         </div>
