@@ -346,6 +346,18 @@ export default defineNuxtPlugin(() => {
                 (    getJWTRole(response.jwtToken,'ROLE_USER_ADMIN')
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
+            appStore.setGroupLocalAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_GROUP_LADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setGroupAdmin(
+                (    getJWTRole(response.jwtToken,'ROLE_GROUP_ADMIN')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setApikeyCreator(
+                (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
+                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
