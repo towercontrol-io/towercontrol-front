@@ -337,6 +337,10 @@
       items[1]!.push({ label: `${t('menu.apikeys')}`, icon: 'i-lucide-key-round', to: '/front/private/apikeys' });
     }
 
+    if ( appStore.isCaptureEndpointCreator() ) {
+      items[1]!.push({ label: `${t('menu.captureEndpoints')}`, icon: 'i-lucide-plug-zap', to: '/front/private/endpoints' });
+    }
+
     if ( billingEnabled ) {
       items[1]!.push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
     }

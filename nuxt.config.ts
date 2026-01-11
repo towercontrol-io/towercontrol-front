@@ -1,6 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import i18n from '@nuxtjs/i18n'
 
+// List of i18 files
+const fileNames = [
+    'common',   // related to user, groups... management
+    'capture',  // related to capture endpoints
+]
+//i18n helper function
+function getFileList(locale: string) {
+    return fileNames.map(name => `${locale}/${name}.json`)
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -38,8 +48,8 @@ export default defineNuxtConfig({
   },
   i18n: {
     locales: [
-      { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'fr', name: 'Français', file: 'fr.json' },
+      { code: 'en', name: 'English', files: getFileList('en') },
+      { code: 'fr', name: 'Français', files: getFileList('fr') },
     ],
     detectBrowserLanguage: {
       useCookie: false,

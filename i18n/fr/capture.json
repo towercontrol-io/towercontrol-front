@@ -1,0 +1,46 @@
+{
+  "capture": {
+    "title": "Gestion des intégrations de données",
+    "description": "Vous pouvez ici configurer les intégrations de données pour collecter les information provenant de sources diverses comme vos objets connectés ou des API extrenes.",
+    "create": "Créer un nouveau point de collecte",
+    "existingEndpoints": "Points de collecte existants",
+    "errorLoadingEndpoints": "Échec du chargement des points de collecte",
+
+    "capture-protocol-not-found" : "Le protocole demandé n'a pas été trouvé parmi les protocoles disponibles",
+    "capture-protocol-already-exists" : "Le protocole demandé existe déjà",
+    "capture-endpoint-not-found" : "Le point de collecte demandé n'a pas été trouvé parmi les points de collecte disponibles",
+    "capture-ingest-protocol-unknown" : "Le protocole demandé est inconnu",
+    "capture-ingest-endpoint-unknown" : "Le point de collecte demandé est inconnu",
+    "capture-ingest-right-error": "Vous n'avez pas les droits pour ingérer des données sur ce point de collecte",
+    "capture-ingest-protocol-class-error" : "La classe de traitement du protocole est invalide ou introuvable",
+    "capture-ingest-protocol-missing-method" : "La classe de traitement du protocole ne possède pas la méthode toPivot requise",
+    "capture-ingest-parse-error" : "Une erreur est survenue lors de l'analyse des données entrantes",
+    "capture-ingest-closing-or-overloaded" : "Le point de collecte est en cours de fermeture ou surchargé, l'ingestion n'est pas possible",
+    "capture-async-service-closing" : "Le service asynchrone de capture est en cours de fermeture, l'ingestion n'est pas possible",
+    "capture-async-service-overloaded" : "Le service asynchrone de capture est surchargé, l'ingestion n'est pas possible",
+    "capture-endpoint-user-not-authorized" : "L'utilisateur n'est pas autorisé à créer un point de collecte",
+    "capture-endpoint-name-missing" : "Le nom du point de collecte est manquant",
+    "capture-endpoint-protocol-missing" : "Le protocole du point de collecte est manquant",
+    "capture-endpoint-mandatory-fields-missing" : "Certains champs obligatoires sont manquants dans la définition du point de collecte",
+    "capture-endpoint-mandatory-field-missing" : "Au moins un des champs obligatoires est manquant dans la définition du point de collecte",
+    "capture-endpoint-ref-generation-failed" : "Erreur serveur : échec de la génération d'une référence unique pour le point de collecte, veuillez réessayer plus tard",
+    "capture-endpoint-list-user-not-authorized" : "L'utilisateur n'est pas autorisé à lister les points de collecte",
+    "protocol-family-invalid-format" : "Le format de la famille de protocoles est invalide",
+    "protocol-type-invalid-format" : "Le format du type de protocole est invalide",
+    "protocol-version-invalid-format" : "Le format de la version du protocole est invalide",
+    "protocol-description-invalid-format" : "Le format de la description du protocole est invalide",
+
+    "protocol-lorawan" : "LoRaWAN",
+    "protocol-helium" : "Helium",
+    "protocol-version-chirpstack-v4" : "Chirpstack v4",
+    "lorawan-helium-chirpstack-v4" : "LoRaWAN Helium Chirpstack v4",
+    "lorawan-helium-chirpstack-v4-bad-timestamp-format" : "Le format du timestamp est invalide, remplacé par RxTime",
+
+    "capture-driver-helium-chirpstackv4-bad-timestamp-format" : "Le format du timestamp est invalide, remplacé par RxTime ou 0",
+    "capture-driver-helium-chirpstackv4-missing-gateway-id" : "L'ID de la passerelle est manquant dans les métadonnées",
+    "capture-driver-helium-chirpstackv4-unknown-device" : "L'appareil n'est pas trouvé dans le système",
+    "capture-driver-helium-chirpstackv4-no-rights-on-device" : "L'injecteur n'a pas les droits pour ingérer des données pour un appareil",
+
+    "last" : "Dernier"
+  }
+}

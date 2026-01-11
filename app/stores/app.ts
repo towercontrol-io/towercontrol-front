@@ -15,6 +15,7 @@ export const applicationStore = defineStore('app', {
     groupLocalAdmin: false as boolean | null,
     groupAdmin: false as boolean | null,
     apikeyCreator: false as boolean | null,
+    captureEndpointCreator: false as boolean,
   }),
   actions: {
     clearStore() {
@@ -30,6 +31,13 @@ export const applicationStore = defineStore('app', {
       this.groupLocalAdmin = false;
       this.groupAdmin = false;
       this.apikeyCreator = false;
+      this.captureEndpointCreator = false;
+    },
+    setCaptureEndpointCreator(isCapture : boolean) {
+      this.captureEndpointCreator = isCapture;
+    },
+    isCaptureEndpointCreator(): boolean {
+      return this.captureEndpointCreator;
     },
     setBackendDown() {
       this.backendUp = false;

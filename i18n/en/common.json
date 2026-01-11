@@ -112,6 +112,7 @@
     "registerEmail": "Email address",
     "registerSubmit": "Register",
     "registerInvite": "Invitation code",
+    "registerInviteRequired": "An invitation code is required for registration",
     "registeredMessage": "Your registration request has been received, please follow the next steps, you will soon be able to log in.",
     "verificationKeyMissing": "The verification key is missing, invalid address.",
     "creationMessage" : "To create your account, please create your password.",
@@ -176,6 +177,8 @@
     "groupCreation": "Group Creation",
     "groupConfiguration": "Group Configuration",
     "apiKeyConfiguration": "API Key Configuration",
+    "captureEndpoints": "Capture endpoints",
+    "endpointAdmin": "Endpoint Management",
 
     "last" : "Last"
   },
@@ -466,8 +469,7 @@
     "createSubGroup": "New Group",
     "createGroup": "New Group",
     "groups": "Groups",
-    
-
+ 
     "last": "Last"
   }
 }

@@ -177,6 +177,8 @@
     "groupCreation": "Création d'un groupe",
     "groupConfiguration": "Configuration d'un groupe",
     "apiKeyConfiguration": "Configuration des clés API",
+    "captureEndpoints": "Points de collecte",
+    "endpointAdmin": "Gestion des points de collecte IoT",
 
     "last" : "Dernier"
   },

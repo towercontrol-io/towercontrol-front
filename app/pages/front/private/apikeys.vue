@@ -212,7 +212,7 @@
 </script>
 
 <template>
-    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-2xl mx-auto mb-4">
+    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-4xl mx-auto mb-4">
 
     <UPageCard
       :title="$t('apiKeys.gen_title')"
@@ -235,7 +235,7 @@
 
     <div class="relative">
         <UCard 
-        class="w-full max-w-3xl mx-auto"
+        class="w-full max-w-4xl mx-auto"
         variant="subtle"
         >
             <template #header>
@@ -373,7 +373,7 @@
 
     <div class="relative"  v-if="componentCtx.creationMode" >
         <UCard 
-        class="w-full max-w-3xl mx-auto"
+        class="w-full max-w-4xl mx-auto"
         variant="subtle"
         >
             <template #header>

@@ -5,6 +5,7 @@ import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse, Use
 import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
+import { get } from '@nuxt/ui/runtime/utils/index.js';
 
 const GET_TIMEOUT = 5000; // 5 seconds
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
@@ -310,6 +311,9 @@ export default defineNuxtPlugin(() => {
             appStore.setApikeyCreator(
                 (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+            );
+            appStore.setCaptureEndpointCreator(
+                getJWTRole(response.jwtToken,'ROLE_BACKEND_CAPTURE')
             );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
