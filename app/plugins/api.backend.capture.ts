@@ -1,4 +1,4 @@
-import type { CaptureProtocolResponseItf, MandatoryField, CaptureEndpointResponseItf } from '~/types';
+import type { CaptureProtocolResponseItf, MandatoryField, CaptureEndpointResponseItf, CaptureEndpointCreationBody } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -10,6 +10,7 @@ export default defineNuxtPlugin(() => {
   const captureModuleProtocolListGet: string = '/capture/1.0/protocol';
   const captureModuleEndpointListGet: string = '/capture/1.0/endpoint';
   const captureModuleEndpointDelete: string = '/capture/1.0/endpoint/{id}/';
+  const captureModuleEndpointCreatePost: string = '/capture/1.0/endpoint';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -151,6 +152,24 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+        /**
+         * Create a new Endpoint
+         */
+        captureModuleEndpointCreation: async (body:CaptureEndpointCreationBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+            try {
+                const response = await apiCallwithTimeout<ActionResult>(
+                    'POST',
+                    captureModuleEndpointCreatePost,
+                    body,
+                    false
+                );
+                return { success: response }
+            } catch (error : any) {
+                return { error };
+            }
+        },
+
 
   };
   return {

@@ -92,6 +92,48 @@ export interface CaptureProtocolResponseItf {
 }
 
 /**
+ * Capture endpoint creation body
+ * Equivalent TypeScript interface for the Java class CaptureEndpointCreationBody
+ */
+export interface CaptureEndpointCreationBody {
+  /**
+   * User defined name for the endpoint to create
+   * Example: "My HeyIoT endpoint"
+   */
+  name: string;
+
+  /**
+   * User defined description for the endpoint to create
+   * Example: "Where I get my temperature data"
+   */
+  description: string;
+
+  /**
+   * This will force encryption for the payload data at rest
+   * Example: false
+   */
+  encrypted: boolean;
+
+  /**
+   * Id of the protocol to be used for this endpoint
+   * Example: "Axdsf7Gh"
+   */
+  protocolId: string;
+
+  /**
+   * Force the wide Open value (override of the default protocol value) :
+   * Not only endpoint owner can report data to this endpoint. Manipulate carefully. Valid JWT still required.
+   * Example: false
+   */
+  forceWideOpen: boolean;
+
+  /**
+   * List of protocol specific fields to be provided for configuration
+   */
+  customConfig: CustomField[];
+}
+
+/**
  * Capture endpoint response
  * Equivalent TypeScript interface for the Java class CaptureEndpointResponseItf
  */
@@ -204,3 +246,4 @@ export interface CaptureEndpointResponseItf {
    */
   totalQueuedToProcess: number;
 }
+

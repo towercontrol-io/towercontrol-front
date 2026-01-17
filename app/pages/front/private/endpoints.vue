@@ -1,9 +1,9 @@
 <script setup lang="ts">
-    import { ref, computed, reactive } from 'vue';
+    import { ref, computed, reactive, watch } from 'vue';
     import { applicationStore } from '~/stores/app';
     import { useRouter } from 'vue-router';
     import type { TableRow } from '@nuxt/ui';
-    import type { CaptureProtocolResponseItf, MandatoryField, CaptureEndpointResponseItf } from '~/types';
+    import type { CaptureProtocolResponseItf, CaptureEndpointResponseItf, CaptureEndpointCreationBody } from '~/types';
 
     definePageMeta({layout: 'main-layout', layoutProps: { title: 'endpointAdmin' }});
 
@@ -16,14 +16,20 @@
     const { $formatDuration } = useNuxtApp();
 
     const componentCtx = reactive({
-        creationMode: false as boolean,
+        creationMode: true as boolean,
+        canCreate: false as boolean,
 
         apiLoadError: null as string | null,
         apiDelError: null as string | null,
+        apiCreateError: null as string | null,
         apiProtLoading: false as boolean,
         apiEndpLoading: false as boolean,
         protocolList: [] as CaptureProtocolResponseItf[],
         endpointList: [] as CaptureEndpointResponseItf[],
+        selectedProtocolFamily: '' as string,
+        selectedProtocolType: '' as string,
+        selectedProtocolVersion: '' as string,
+        selectedProtocol: null as CaptureProtocolResponseItf | null,
         endpointColumns : {
             id: false,
             customConfig: false,
@@ -50,6 +56,14 @@
         ] as string[],
         deleteConfirmLayer: false as boolean,
         toBeDeletedId: '' as string,
+        newEndPoint : {
+            name: '',
+            description: '',
+            encrypted: false,
+            protocolId: '',
+            forceWideOpen: false,
+            customConfig: [],
+        } as CaptureEndpointCreationBody,
     });
 
    const clearErrors = () => {
@@ -90,6 +104,99 @@
         }
         return t('capture.protoNotFound');
     };
+
+    const protocolFamilyOptions = computed(() => {
+        const families = new Set(
+            componentCtx.protocolList
+                .map((protocol) => protocol.protocolFamily)
+                .filter((family) => !!family),
+        );
+
+        return Array.from(families).map((family) => ({
+            label: t(`capture.${family}`),
+            value: family,
+        }));
+    });
+
+    const protocolTypeOptions = computed(() => {
+        if ( !componentCtx.selectedProtocolFamily ) {
+            return [];
+        }
+
+        const types = new Set(
+            componentCtx.protocolList
+                .filter((protocol) => protocol.protocolFamily === componentCtx.selectedProtocolFamily)
+                .map((protocol) => protocol.protocolType)
+                .filter((protocolType) => !!protocolType),
+        );
+
+        return Array.from(types).map((protocolType) => ({
+            label: t(`capture.${protocolType}`),
+            value: protocolType,
+        }));
+    });
+
+    const protocolVersionOptions = computed(() => {
+        if ( !componentCtx.selectedProtocolFamily || !componentCtx.selectedProtocolType ) {
+            return [];
+        }
+
+        const versions = new Set(
+            componentCtx.protocolList
+                .filter((protocol) =>
+                    protocol.protocolFamily === componentCtx.selectedProtocolFamily
+                    && protocol.protocolType === componentCtx.selectedProtocolType,
+                )
+                .map((protocol) => protocol.protocolVersion)
+                .filter((protocolVersion) => !!protocolVersion),
+        );
+
+        return Array.from(versions).map((protocolVersion) => ({
+            label: t(`capture.${protocolVersion}`),
+            value: protocolVersion,
+        }));
+    });
+
+    watch(
+        () => componentCtx.selectedProtocolFamily,
+        () => {
+            componentCtx.selectedProtocolType = '';
+            componentCtx.selectedProtocolVersion = '';
+            componentCtx.selectedProtocol = null;
+            componentCtx.newEndPoint.protocolId = '';
+        },
+    );
+
+    watch(
+        () => componentCtx.selectedProtocolType,
+        () => {
+            componentCtx.selectedProtocolVersion = '';
+            componentCtx.selectedProtocol = null;
+            componentCtx.newEndPoint.protocolId = '';
+        },
+    );
+
+    watch(
+        () => componentCtx.selectedProtocolVersion,
+        () => {
+            if ( !componentCtx.selectedProtocolFamily
+                || !componentCtx.selectedProtocolType
+                || !componentCtx.selectedProtocolVersion ) {
+                componentCtx.selectedProtocol = null;
+                componentCtx.newEndPoint.protocolId = '';
+                return;
+            }
+
+            const matchedProtocol = componentCtx.protocolList.find(
+                (protocol) => protocol.protocolFamily === componentCtx.selectedProtocolFamily
+                    && protocol.protocolType === componentCtx.selectedProtocolType
+                    && protocol.protocolVersion === componentCtx.selectedProtocolVersion,
+            );
+
+            componentCtx.selectedProtocol = matchedProtocol ?? null;
+            componentCtx.newEndPoint.protocolId = matchedProtocol?.id ?? '';
+        },
+    );
 
 
     // =======================================================
@@ -169,6 +276,15 @@
         });
     };
 
+    // =======================================================
+    // ENDPOINT CREATION
+    // =======================================================
+
+    const onNewApiKeyCreation = () => {
+        componentCtx.apiCreateError = null;
+
+    };
+
 </script> 
 
 <template>
@@ -226,9 +342,11 @@
                                 <span class="font-bold">{{ t('capture.nameCol') }}</span>
                             </template>
                             <template #name-cell="{ row }">
-                                <span class="block max-w-[12rem] whitespace-normal break-words line-clamp-2">
-                                    {{ row.original.name }}
-                                </span>
+                                <UTooltip :text="row.original.description">
+                                    <span class="block max-w-[12rem] whitespace-normal break-words line-clamp-2">
+                                       {{ row.original.name }}
+                                    </span>
+                                </UTooltip>
                             </template>
 
                             <template #description-header>
@@ -360,6 +478,144 @@
                 <div class="flex flex-col items-center gap-4">
                     <div class="mb-2 text-lg text-center text-red-600 font-bold">
                         {{ componentCtx.apiLoadError }} {{ componentCtx.apiDelError }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative"  v-if="componentCtx.creationMode" >
+            <UCard 
+            class="w-full max-w-4xl mx-auto"
+            variant="subtle"
+            >
+                <template #header>
+                    <div class="flex items-center justify-between w-full">
+                        <span class="font-bold">
+                            {{ t('capture.createEndpoint') }}
+                        </span>
+
+                        <UButton
+                            :label="$t('capture.createNow')"
+                            :disabled="!componentCtx.canCreate"
+                            color="neutral"
+                            type="submit"
+                            @click="onNewApiKeyCreation()"
+                        />
+                    </div>
+                </template>
+                <template #default>
+                    <UForm
+                        id="settings"
+                        :state="componentCtx.newEndPoint"
+                        @submit="() => {}"
+                    >
+                        <UFormField
+                            name="name"
+                            :label="$t('capture.endpName')"
+                            :description="$t('capture.endpNameDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <UInput v-model="componentCtx.newEndPoint.name" type="text" class="w-70" />
+                        </UFormField>
+
+                        <UFormField
+                            name="description"
+                            :label="$t('capture.endpDescription')"
+                            :description="$t('capture.endpDescriptionDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <UTextarea v-model="componentCtx.newEndPoint.description" type="text" class="w-70" />
+                        </UFormField>
+
+                        <UFormField
+                            name="encrypted"
+                            :label="$t('capture.endpEncryption')"
+                            :description="$t('capture.endpEncryptionDesc')"
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <UCheckbox v-model="componentCtx.newEndPoint.encrypted" color="neutral" class="w-70"/>
+                        </UFormField>
+
+                        <UFormField
+                            name="forceWideOpen"
+                            :label="$t('capture.endpWideOpen')"
+                            :description="$t('capture.endpWideOpenDesc')"
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <UCheckbox v-model="componentCtx.newEndPoint.forceWideOpen" color="neutral" class="w-70"/>
+                        </UFormField>
+
+
+                        <UFormField
+                            name="protocolFamily"
+                            :label="$t('capture.endpProtocolFamily')"
+                            :description="$t('capture.endpProtocolFamilyDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <USelectMenu
+                                v-model="componentCtx.selectedProtocolFamily"
+                                :items="protocolFamilyOptions"
+                                value-key="value"
+                                label-key="label"
+                                :searchable="true"
+                                class="w-70"
+                            />
+                        </UFormField>
+
+                        <UFormField
+                            name="protocolType"
+                            :label="$t('capture.endpProtocolType')"
+                            :description="$t('capture.endpProtocolTypeDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <USelectMenu
+                                v-model="componentCtx.selectedProtocolType"
+                                :items="protocolTypeOptions"
+                                value-key="value"
+                                label-key="label"
+                                :searchable="true"
+                                :disabled="!componentCtx.selectedProtocolFamily"
+                                class="w-70"
+                            />
+                        </UFormField>
+
+                        <UFormField
+                            name="protocolVersion"
+                            :label="$t('capture.endpProtocolVersion')"
+                            :description="$t('capture.endpProtocolVersionDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <USelectMenu
+                                v-model="componentCtx.selectedProtocolVersion"
+                                :items="protocolVersionOptions"
+                                value-key="value"
+                                label-key="label"
+                                :searchable="true"
+                                :disabled="!componentCtx.selectedProtocolType"
+                                class="w-70"
+                            />
+                        </UFormField>
+                        <div v-if="componentCtx.selectedProtocol" class="w-70 ms-auto text-xs text-neutral-500 mb-2">
+                            {{ t(`capture.${componentCtx.selectedProtocol.description}`) }}
+                        </div>
+
+
+
+                        
+                    </UForm>
+                </template>
+            </UCard>
+            <div v-if="componentCtx.apiCreateError != null"
+                class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
+            >
+                <div class="flex flex-col items-center gap-4">
+                    <div class="mb-2 text-lg text-center text-red-600 font-bold">
+                        {{ componentCtx.apiCreateError}}
                     </div>
                 </div>
             </div>
