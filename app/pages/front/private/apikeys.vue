@@ -251,7 +251,7 @@
                         v-model:column-visibility="componentCtx.apiKeysLinesVisibility"
                         :empty="$t('apiKeys.noResults')"
                         sticky
-                        class="flex-1 text-xs h-55"
+                        class="flex-1 text-xs"
                     >
                         <template #keyName-header>
                             <span class="font-bold">{{ t('apiKeys.keyName') }}</span>

@@ -9,6 +9,7 @@ export default defineNuxtPlugin(() => {
   // Set the routes
   const captureModuleProtocolListGet: string = '/capture/1.0/protocol';
   const captureModuleEndpointListGet: string = '/capture/1.0/endpoint';
+  const captureModuleEndpointDelete: string = '/capture/1.0/endpoint/{id}/';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -128,6 +129,24 @@ export default defineNuxtPlugin(() => {
                 false
             );
             return { success: response };
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    /**
+     * Delete the capture endpoint
+     */
+    captureModuleDeleteEndpoint: async (endpointId: string): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                captureModuleEndpointDelete.replace('{id}', endpointId),
+                undefined,
+                false
+            );
+            return { success: response }
         } catch (error : any) {
             return { error };
         }
