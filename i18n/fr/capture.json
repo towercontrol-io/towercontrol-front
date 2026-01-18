@@ -56,6 +56,8 @@
     "endpProtocolTypeDesc" : "Choisissez le type de protocole dans la famille sélectionnée.",
     "endpProtocolVersion" : "Version du protocole",
     "endpProtocolVersionDesc" : "Choisissez la version du protocole pour ce point de collecte.",
+    "mandatoryFieldRequired" : "Ce champ est requis.",
+    "mandatoryFieldInvalid" : "Valeur invalide.",
     "createEndpoint" : "Nouveau point de collecte",
 
     "capture-protocol-not-found" : "Le protocole demandé n'a pas été trouvé parmi les protocoles disponibles",
@@ -90,6 +92,8 @@
     "protocol-version-chirpstack-v4" : "Chirpstack v4",
     "lorawan-helium-chirpstack-v4" : "LoRaWAN Helium Chirpstack v4",
     "lorawan-helium-chirpstack-v4-bad-timestamp-format" : "Le format du timestamp est invalide, remplacé par RxTime",
+    "protocol-server-api-endpoint" : "Adresse du serveur API Chirpstack",
+    "protocol-lorawan-helium-chirp-v4-api-endpoint" : "Adresse de la console API GRPC Helium.",
 
     "capture-driver-helium-chirpstackv4-bad-timestamp-format" : "Le format du timestamp est invalide, remplacé par RxTime ou 0",
     "capture-driver-helium-chirpstackv4-missing-gateway-id" : "L'ID de la passerelle est manquant dans les métadonnées",

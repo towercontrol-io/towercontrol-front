@@ -105,6 +105,23 @@
         return t('capture.protoNotFound');
     };
 
+    const mandatoryFields = computed(() => componentCtx.selectedProtocol?.mandatoryFields ?? []);
+
+    const getCustomConfigValue = (name: string) : string => {
+        const existing = componentCtx.newEndPoint.customConfig.find((field) => field.name === name);
+        return existing?.value ?? '';
+    };
+
+    const setCustomConfigValue = (name: string, value: string) => {
+        const existing = componentCtx.newEndPoint.customConfig.find((field) => field.name === name);
+        if ( existing ) {
+            existing.value = value;
+            return;
+        }
+
+        componentCtx.newEndPoint.customConfig.push({ name, value });
+    };
+
     const protocolFamilyOptions = computed(() => {
         const families = new Set(
             componentCtx.protocolList
@@ -195,6 +212,13 @@
 
             componentCtx.selectedProtocol = matchedProtocol ?? null;
             componentCtx.newEndPoint.protocolId = matchedProtocol?.id ?? '';
+        },
+    );
+
+    watch(
+        () => componentCtx.selectedProtocol?.id,
+        () => {
+            componentCtx.newEndPoint.customConfig = [];
         },
     );
 
@@ -602,6 +626,16 @@
                         </UFormField>
                         <div v-if="componentCtx.selectedProtocol" class="w-70 ms-auto text-xs text-neutral-500 mb-2">
                             {{ t(`capture.${componentCtx.selectedProtocol.description}`) }}
+                        </div>
+
+                        <div v-if="mandatoryFields.length" class="mt-2">
+                            <CaptureMandatoryFieldInput
+                                v-for="field in mandatoryFields"
+                                :key="field.name"
+                                :field="field"
+                                :model-value="getCustomConfigValue(field.name)"
+                                @update:model-value="(value) => setCustomConfigValue(field.name, value)"
+                            />
                         </div>
 
 
