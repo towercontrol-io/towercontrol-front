@@ -59,6 +59,9 @@
     "mandatoryFieldRequired" : "Ce champ est requis.",
     "mandatoryFieldInvalid" : "Valeur invalide.",
     "createEndpoint" : "Nouveau point de collecte",
+    "createSuccessTitle" : "Point de collecte créé",
+    "createSuccessDesc" : "Le point de collecte a été créé avec succès.",
+    "errorCreatingEndpoint" : "Une erreur est survenue lors de la création du point de collecte",
 
     "capture-protocol-not-found" : "Le protocole demandé n'a pas été trouvé parmi les protocoles disponibles",
     "capture-protocol-already-exists" : "Le protocole demandé existe déjà",

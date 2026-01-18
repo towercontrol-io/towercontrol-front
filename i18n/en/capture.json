@@ -59,6 +59,9 @@
     "mandatoryFieldRequired" : "This field is required.",
     "mandatoryFieldInvalid" : "Invalid value.",
     "createEndpoint" : "New capture endpoint",
+    "createSuccessTitle" : "Capture endpoint created",
+    "createSuccessDesc" : "The capture endpoint has been successfully created.",
+    "errorCreatingEndpoint" : "An error occurred while creating the capture endpoint",
 
     "capture-protocol-not-found" : "The requested protocol was not found in available protocols",
     "capture-protocol-already-exists" : "The requested protocol already exists",

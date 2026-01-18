@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
+    import { computed, watchEffect } from 'vue';
     import type { MandatoryField } from '~/types';
 
     type ParsedFieldType = {
@@ -18,6 +18,7 @@
 
     const emit = defineEmits<{
         (e: 'update:modelValue', value: string): void;
+        (e: 'update:valid', value: boolean): void;
     }>();
 
     const { t } = useI18n();
@@ -44,6 +45,8 @@
         }
 
         if (rawType === 'boolean') {
+            // force default false when not touched
+            emit('update:modelValue', 'false');
             return { kind: 'boolean' };
         }
 
@@ -85,7 +88,7 @@
                 return;
             }
             if (parsed.value.kind === 'enum' && parsed.value.multiple) {
-                const nextValue = Array.isArray(value) ? value.join('|') : '';
+                const nextValue = Array.isArray(value) ? value.join(',') : '';
                 emit('update:modelValue', nextValue);
                 return;
             }
@@ -174,6 +177,10 @@
         }
 
         return null;
+    });
+
+    watchEffect(() => {
+        emit('update:valid', errorMessage.value === null);
     });
 </script>
 

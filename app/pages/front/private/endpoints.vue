@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, computed, reactive, watch } from 'vue';
+    import { ref, computed, reactive, watch, watchEffect } from 'vue';
     import { applicationStore } from '~/stores/app';
     import { useRouter } from 'vue-router';
     import type { TableRow } from '@nuxt/ui';
@@ -30,6 +30,7 @@
         selectedProtocolType: '' as string,
         selectedProtocolVersion: '' as string,
         selectedProtocol: null as CaptureProtocolResponseItf | null,
+        mandatoryFieldValidity: {} as Record<string, boolean>,
         endpointColumns : {
             id: false,
             customConfig: false,
@@ -70,6 +71,7 @@
         setTimeout(() => {
             componentCtx.apiLoadError = null;
             componentCtx.apiDelError = null;
+            componentCtx.apiCreateError = null;
         }, 5000);
     }
 
@@ -121,6 +123,28 @@
 
         componentCtx.newEndPoint.customConfig.push({ name, value });
     };
+
+    const setCustomConfigValidity = (name: string, isValid: boolean) => {
+        componentCtx.mandatoryFieldValidity[name] = isValid;
+    };
+
+    const canCreate = computed(() => {
+        if (!componentCtx.newEndPoint.name?.trim()) {
+            return false;
+        }
+        if (!componentCtx.newEndPoint.description?.trim()) {
+            return false;
+        }
+        if (!componentCtx.newEndPoint.protocolId) {
+            return false;
+        }
+
+        return mandatoryFields.value.every((field) => componentCtx.mandatoryFieldValidity[field.name]);
+    });
+
+    watchEffect(() => {
+        componentCtx.canCreate = canCreate.value;
+    });
 
     const protocolFamilyOptions = computed(() => {
         const families = new Set(
@@ -219,6 +243,7 @@
         () => componentCtx.selectedProtocol?.id,
         () => {
             componentCtx.newEndPoint.customConfig = [];
+            componentCtx.mandatoryFieldValidity = {};
         },
     );
 
@@ -228,7 +253,7 @@
     // =======================================================
    const loadEndpointList = () => {
         componentCtx.apiLoadError = null;
-        componentCtx.protocolList = [];
+        componentCtx.endpointList = [];
         componentCtx.apiEndpLoading = true;
 
         nuxtApp.$apiBackendCapture.captureModuleGetEndpoints().then((res) => {
@@ -304,9 +329,30 @@
     // ENDPOINT CREATION
     // =======================================================
 
-    const onNewApiKeyCreation = () => {
+    const onNewEndpointCreation = () => {
         componentCtx.apiCreateError = null;
-
+        nuxtApp.$apiBackendCapture.captureModuleEndpointCreation(componentCtx.newEndPoint).then( (res) => {
+            if (res.success) {
+                // Handle successful API key creation
+                toast.add({
+                    title: t('capture.createSuccessTitle'),
+                    description: t('capture.createSuccessDesc'),
+                    icon: 'i-lucide-arrow-big-up-dash',
+                });
+                // refresh the endpoint list
+                loadEndpointList();
+                componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
+                componentCtx.creationMode = false;
+            } else if ( res.error ) {
+                componentCtx.apiCreateError = t('capture.' + res.error.message);
+                componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
+                clearErrors();
+            }        
+        }).catch((err) => {
+            componentCtx.apiCreateError = t('capture.errorCreatingEndpoint');
+            componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
+            clearErrors();
+        })
     };
 
 </script> 
@@ -523,7 +569,7 @@
                             :disabled="!componentCtx.canCreate"
                             color="neutral"
                             type="submit"
-                            @click="onNewApiKeyCreation()"
+                            @click="onNewEndpointCreation()"
                         />
                     </div>
                 </template>
@@ -635,12 +681,9 @@
                                 :field="field"
                                 :model-value="getCustomConfigValue(field.name)"
                                 @update:model-value="(value) => setCustomConfigValue(field.name, value)"
+                                @update:valid="(isValid) => setCustomConfigValidity(field.name, isValid)"
                             />
                         </div>
-
-
-
-                        
                     </UForm>
                 </template>
             </UCard>
