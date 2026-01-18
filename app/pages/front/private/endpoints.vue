@@ -16,8 +16,7 @@
     const { $formatDuration } = useNuxtApp();
 
     const componentCtx = reactive({
-        creationMode: true as boolean,
-        canCreate: false as boolean,
+        creationMode: false as boolean,
 
         apiLoadError: null as string | null,
         apiDelError: null as string | null,
@@ -140,10 +139,6 @@
         }
 
         return mandatoryFields.value.every((field) => componentCtx.mandatoryFieldValidity[field.name]);
-    });
-
-    watchEffect(() => {
-        componentCtx.canCreate = canCreate.value;
     });
 
     const protocolFamilyOptions = computed(() => {
@@ -341,7 +336,19 @@
                 });
                 // refresh the endpoint list
                 loadEndpointList();
-                componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
+                componentCtx.selectedProtocolFamily= '';
+                componentCtx.selectedProtocolType = '';
+                componentCtx.selectedProtocolVersion = '';
+                componentCtx.selectedProtocol =  null;
+                componentCtx.mandatoryFieldValidity =  {} as Record<string, boolean>;
+                componentCtx.newEndPoint = {
+                    name: '',
+                    description: '',
+                    encrypted: false,
+                    protocolId: '',
+                    forceWideOpen: false,
+                    customConfig: [],
+                } as CaptureEndpointCreationBody;
                 componentCtx.creationMode = false;
             } else if ( res.error ) {
                 componentCtx.apiCreateError = t('capture.' + res.error.message);
@@ -566,7 +573,7 @@
 
                         <UButton
                             :label="$t('capture.createNow')"
-                            :disabled="!componentCtx.canCreate"
+                            :disabled="canCreate === false"
                             color="neutral"
                             type="submit"
                             @click="onNewEndpointCreation()"
