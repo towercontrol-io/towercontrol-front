@@ -272,7 +272,7 @@
         loadEndpointList();
     });
 
-    const onEndpointRowSelect = (row: TableRow<CaptureEndpointResponseItf>) => {
+    const onEndpointRowSelect = (e: Event, row: TableRow<CaptureEndpointResponseItf>) => {
         row.toggleExpanded();
     };
 

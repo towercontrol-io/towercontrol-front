@@ -1,5 +1,6 @@
 <script lang="ts" setup>
     import type { PrivTicketAbstractResponseItf } from '~/types';
+    import type { TableRow } from '@nuxt/ui';
 
     const props = defineProps<{
         tickets: PrivTicketAbstractResponseItf[];
@@ -25,6 +26,15 @@
         id: 'topic',
         value: ''
     }]);
+    const context = reactive({
+        expanded: {} as Record<string, boolean>,
+    });
+
+
+    const onRowSelect = (e: Event, row: TableRow<PrivTicketAbstractResponseItf>) => {
+        const isExpanded = row.getIsExpanded();
+        context.expanded = isExpanded ? {} : { [row.id]: true };
+    };
 
 </script>
 
@@ -42,10 +52,12 @@
             <UTable
                 ref="table"
                 v-model:column-filters="columnFilters"
+                v-model:expanded="context.expanded"
                 :loading="props.loading"
                 loading-color="primary"
                 loading-animation="carousel"
                 :data="props.tickets"
+                :onSelect="onRowSelect"
                 :empty="$t('tickets.noResults')"
                 sticky
                 cellpadding=20
@@ -77,6 +89,9 @@
                 </template>
                 <template #status-cell="{ row }">
                     <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
+                </template>
+                <template #expanded="{ row }">
+                    <TicketsTicketContent :ticketId="row.original.id" :key="row.original.id" />
                 </template>
             </UTable>
         </div>

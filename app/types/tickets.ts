@@ -50,3 +50,32 @@ export interface PrivTicketAbstractResponseItf {
     /** Status of the ticket (OPEN | CLOSED) */
     status: string;
 }
+
+
+/**
+ * PrivMessageContent - One of the message reply
+ */
+export interface PrivMessageContent {
+    /** Reply id */
+    id: string;
+
+    /** Response date in milliseconds since epoch */
+    creationMs: number;
+
+    /** Ticket message content (Markdown allowed) */
+    content: string;
+}
+
+/**
+ * Ticket content & replies
+ */
+export interface PrivTicketUserDetailResponseItf {
+    /** Ticket id */
+    id: number;
+
+    /** Ticket content (Markdown allowed) */
+    content: string;
+
+    /** List of responses & replies to the ticket */
+    responses: PrivMessageContent[];
+}

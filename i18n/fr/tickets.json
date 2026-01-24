@@ -49,6 +49,9 @@
     "ticket-creation-public-email-missing" : "L'email est obligatoire pour la création anonyme de tickets",
     "ticket-public-confirmation-invalid" : "Code de confirmation invalide",
     "ticket-creation-public-email-missing-invalid" : "L'email est obligatoire pour la création anonyme de tickets",
+    "tickets-ticket-access-denied" : "Vous n'avez pas les droits pour accéder à ce ticket de support",
+    "tickets-ticket-not-found" : "Le ticket de support demandé est introuvable",
+
 
     "last" : "Dernier"
   }

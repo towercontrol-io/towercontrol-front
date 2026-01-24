@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -10,6 +10,7 @@ export default defineNuxtPlugin(() => {
   const ticketsModulePublicCreationPost: string = '/tickets/1.0/public/create';
   const ticketsModuleCreatePost: string = '/tickets/1.0/ticket';
   const ticketsModuleListGet: string = '/tickets/1.0/ticket';
+  const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -151,6 +152,24 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Get details of one signe ticket with associated messages
+     */
+    ticketsModulePrivateOneTicket: async (ticketId:number): Promise<{ success?: PrivTicketUserDetailResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketUserDetailResponseItf>(
+                'GET',
+                ticketsModuleTicketGet+'/'+ticketId+'/',
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    
 
   };
   return {
