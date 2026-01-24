@@ -64,13 +64,14 @@ Select the following options:
 
 Manual :
 ```
-npm install @nuxtjs/i18n        # Internationalization support
-npm install @pinia/nuxt         # Pinia state/store management
-npm install @nuxt/ui            # Nuxt UI components
-npm install qrcode.vue          # QR Code generation component
-npm install apexcharts --save   # charts
+npm install @nuxtjs/i18n            # Internationalization support
+npm install @pinia/nuxt             # Pinia state/store management
+npm install @nuxt/ui                # Nuxt UI components
+npm install qrcode.vue              # QR Code generation component
+npm install apexcharts --save       # charts
 npm install vue3-apexcharts
-npm install valibot             # Form Fields Validation library
+npm install valibot                 # Form Fields Validation library
+npm install @tiptap/extension-text-align    # Text align extension for tiptap editor (tickets)
 ```
 
 From existing file

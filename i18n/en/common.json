@@ -405,6 +405,8 @@
     "role-login-2fa-desc": "Logged user with 2 factor authentication",
     "role-login-complete-desc": "Logged user with complete authentication",
     "role-login-api-desc" : "Request from an API account",
+    "role-support-manager-desc" : "Ticket / Support manager",
+    "role-support-user-desc" : "Allow a user to create support tickets",
 
     "last": "Last"
   },

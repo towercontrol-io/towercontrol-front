@@ -1,0 +1,37 @@
+{
+  "tickets": {
+    "contactFormTitle" : "Contact the team",
+    "contactFormDescription" : "Please fill out the form below to contact our team. We will get back to you as soon as possible.",
+    "contactEmail" : "Email",
+    "contactEmailDesc" : "We will use this email address to respond.",
+    "contactEmailRequired" : "Email is required.",
+    "contactEmailInvalid" : "Please enter a valid email address.",
+    "contactTopic" : "Topic",
+    "contactTopicDesc" : "Short summary of your request.",
+    "contactTopicRequired" : "Topic is required.",
+    "contactTopicMinLength" : "Topic must be at least 5 characters.",
+    "contactTopicInvalid" : "Topic must include text.",
+    "contactContent" : "Message",
+    "contactContentDesc" : "Describe your request in detail.",
+    "contactContentRequired" : "Message of at least 20 characters is required.",
+    "contactSend" : "Send",
+    "contactFormInvalid" : "Please fill in all required fields.",
+    "contactConfirmationMissing" : "Confirmation code was not returned.",
+    "contactCreationFailed" : "Ticket creation failed.",
+    "contactSuccess" : "Your request has been sent. Ticket #{ticketId}.",
+
+    "ticket-new-ticket-created" : "Support ticket has been created",
+    "ticket-creation-failed" : "Support ticket creation failed",
+    "ticket-creation-body-empty" : "Support ticket content cannot be empty",
+    "ticket-creation-content-too-short" : "Support ticket content is too short, title or content must not be empty",
+    "ticket-content-invalid-markdown" : "Support ticket content contains invalid markdown syntax",
+    "tickets-creation-user-not-found" : "User creating the support ticket was not found",
+    "tickets-creation-anonymous-invalid-email" : "The email provided is not valid",
+    "tickets-creation-anonymous-not-allowed" : "Anonymous ticket creation is not allowed",
+    "ticket-creation-public-email-missing" : "Email is mandatory for anonymous ticket creation",
+    "ticket-public-confirmation-invalid" : "Invalid confirmation code",
+    "ticket-creation-public-email-missing-invalid" : "Email is mandatory for anonymous ticket creation",
+
+    "last" : "Last"
+  }
+}

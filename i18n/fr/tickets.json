@@ -1,0 +1,37 @@
+{
+  "tickets": {
+    "contactFormTitle" : "Nous contacter",
+    "contactFormDescription" : "Veuillez remplir le formulaire ci-dessous pour contacter notre équipe. Nous vous répondrons dans les plus brefs délais.",
+    "contactEmail" : "Email",
+    "contactEmailDesc" : "Nous utiliserons cette adresse pour vous répondre.",
+    "contactEmailRequired" : "L'email est requis.",
+    "contactEmailInvalid" : "Veuillez saisir une adresse email valide.",
+    "contactTopic" : "Sujet",
+    "contactTopicDesc" : "Résumé de votre demande.",
+    "contactTopicRequired" : "Le sujet est requis.",
+    "contactTopicMinLength" : "Le sujet doit contenir au moins 5 caractères.",
+    "contactTopicInvalid" : "Le sujet doit contenir du texte.",
+    "contactContent" : "Message",
+    "contactContentDesc" : "Décrivez votre demande en détail.",
+    "contactContentRequired" : "Un message d'au moins 20 caractères est requis.",
+    "contactSend" : "Envoyer",
+    "contactFormInvalid" : "Veuillez remplir tous les champs requis.",
+    "contactConfirmationMissing" : "Le code de confirmation n'a pas été retourné.",
+    "contactCreationFailed" : "La création du ticket a échoué.",
+    "contactSuccess" : "Votre demande a été envoyée. Ticket n°{ticketId}.",
+
+    "ticket-new-ticket-created" : "Le ticket de support a été créé",
+    "ticket-creation-failed" : "La création du ticket de support a échoué",
+    "ticket-creation-body-empty" : "Le contenu du ticket de support ne peut pas être vide",
+    "ticket-creation-content-too-short" : "Le contenu du ticket de support est trop court, le titre ou le contenu ne doivent pas être vides",
+    "ticket-content-invalid-markdown" : "Le contenu du ticket de support contient une syntaxe markdown invalide",
+    "tickets-creation-user-not-found" : "L'utilisateur créant le ticket de support n'a pas été trouvé",
+    "tickets-creation-anonymous-invalid-email" : "L'email fourni n'est pas valide",
+    "tickets-creation-anonymous-not-allowed" : "La création anonyme de tickets n'est pas autorisée",
+    "ticket-creation-public-email-missing" : "L'email est obligatoire pour la création anonyme de tickets",
+    "ticket-public-confirmation-invalid" : "Code de confirmation invalide",
+    "ticket-creation-public-email-missing-invalid" : "L'email est obligatoire pour la création anonyme de tickets",
+
+    "last" : "Dernier"
+  }
+}

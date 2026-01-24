@@ -5,6 +5,7 @@ import i18n from '@nuxtjs/i18n'
 const fileNames = [
     'common',   // related to user, groups... management
     'capture',  // related to capture endpoints
+    'tickets',  // related to ticketing system
 ]
 //i18n helper function
 function getFileList(locale: string) {

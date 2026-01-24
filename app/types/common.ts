@@ -1,3 +1,10 @@
+
+export interface CustomField {
+    // Define CustomField interface based on your needs
+    key: string;
+    value: string;
+}
+
 /**
  * Possible results of an action
  */

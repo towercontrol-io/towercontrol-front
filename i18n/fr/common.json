@@ -404,6 +404,8 @@
     "role-login-2fa-desc": "Utilisateur connecté avec 2 facteurs d'authentification",
     "role-login-complete-desc": "Utilisateur connecté avec authentification complète",
     "role-login-api-desc" : "Demande d'un compte API",
+    "role-support-manager-desc" : "Gestionnaire de tickets / support",
+    "role-support-user-desc" : "Permet à un utilisateur de créer des tickets de support",
 
     "last": "Dernier"
   },
