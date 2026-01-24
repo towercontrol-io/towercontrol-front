@@ -161,7 +161,7 @@
     "logout": "Déconnexion",
     "profile": "Profil",
     "billing" : "Facturation",
-    "suport": "Support & Ticket",
+    "support": "Support & Ticket",
     "documentation": "Documentation",
     "apiDocumentation": "Documentation API",
     "searchGoTo" : "Aller à",
@@ -179,6 +179,9 @@
     "apiKeyConfiguration": "Configuration des clés API",
     "captureEndpoints": "Points de collecte",
     "endpointAdmin": "Gestion des points de collecte IoT",
+    "alarmsNotifications": "Alarmes & Notifications",
+    "supportTickets": "Tickets de support",
+    "ticketsUser": "Mes tickets de support",
 
     "last" : "Dernier"
   },

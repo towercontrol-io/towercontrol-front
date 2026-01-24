@@ -161,7 +161,7 @@
     "logout": "Logout",
     "profile": "Profile",
     "billing" : "Billing",
-    "suport": "Support & Ticket",
+    "support": "Support & Ticket",
     "documentation": "Documentation",
     "apiDocumentation": "API Documentation",
     "searchGoTo" : "Go To",
@@ -179,6 +179,9 @@
     "apiKeyConfiguration": "API Key Configuration",
     "captureEndpoints": "Capture endpoints",
     "endpointAdmin": "Endpoint Management",
+    "alarmsNotifications": "Alarms & Notifications",
+    "supportTickets": "Support Tickets",
+    "ticketsUser": "My Support Tickets",
 
     "last" : "Last"
   },

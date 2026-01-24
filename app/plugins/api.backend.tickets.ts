@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -8,6 +8,8 @@ export default defineNuxtPlugin(() => {
 
   // Set the routes
   const ticketsModulePublicCreationPost: string = '/tickets/1.0/public/create';
+  const ticketsModuleCreatePost: string = '/tickets/1.0/ticket';
+  const ticketsModuleListGet: string = '/tickets/1.0/ticket';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -99,13 +101,30 @@ export default defineNuxtPlugin(() => {
   const apiBackendTickets = {
   
     /**
-     * Create a new Endpoint
+     * Create a new Tiket (public API)
      */
     ticketsModulePublicCreation: async (body:PrivTicketCreationBody): Promise<{ success?: PrivTicketCreationResponseItf; error?: ActionResult | { message: string } }> => {
         try {
             const response = await apiCallwithTimeout<PrivTicketCreationResponseItf>(
                 'POST',
                 ticketsModulePublicCreationPost,
+                body,
+                true
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Create a new Tiket (private API)
+     */
+    ticketsModulePrivateCreation: async (body:PrivTicketCreationBody): Promise<{ success?: PrivTicketCreationResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketCreationResponseItf>(
+                'POST',
+                ticketsModuleCreatePost,
                 body,
                 false
             );
@@ -114,6 +133,24 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+    /**
+     * List Owner tickets with closed tickets on request
+     */
+    ticketsModulePrivateList: async (closedAsWell:boolean): Promise<{ success?: PrivTicketAbstractResponseItf[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketAbstractResponseItf[]>(
+                'GET',
+                ticketsModuleListGet+(closedAsWell ? '?closed=true' : ''),
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
 
   };
   return {

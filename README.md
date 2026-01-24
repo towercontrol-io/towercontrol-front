@@ -72,6 +72,7 @@ npm install apexcharts --save       # charts
 npm install vue3-apexcharts
 npm install valibot                 # Form Fields Validation library
 npm install @tiptap/extension-text-align    # Text align extension for tiptap editor (tickets)
+npm install @nuxtjs/mdc             # Markdown Nuxt.js
 ```
 
 From existing file

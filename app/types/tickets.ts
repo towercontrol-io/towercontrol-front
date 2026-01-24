@@ -32,3 +32,21 @@ export interface PrivTicketCreationResponseItf {
     confirmationCode?: string;
 
 }
+
+
+/**
+ * Ticket abstract body (used for the list of tickets)
+ */
+export interface PrivTicketAbstractResponseItf {
+    /** Ticket id */
+    id: number;
+
+    /** Ticket short title (Markdown allowed) */
+    topic: string;
+
+    /** Moment of creation in milliseconds since epoch */
+    creationMs: number;
+
+    /** Status of the ticket (OPEN | CLOSED) */
+    status: string;
+}

@@ -5,7 +5,7 @@
     import type { InputPasswordFields } from '~/types/compInputPassword';
     import type { ActionResult } from '~/types';
     import { useRouter } from 'vue-router';
-import { user } from '#build/ui';
+
 
 
     definePageMeta({layout: 'centered-form'});

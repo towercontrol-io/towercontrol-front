@@ -156,10 +156,12 @@
     if ( ticketsEnabled ) {
       if ( supportLink && supportLink !== '' ) {
         // use external support link
-        items.push({ label: `${t('menu.suport')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
+        items.push({ label: `${t('menu.support')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
       } else {
-        // use internal ticketing system
-        items.push({ label: `${t('menu.suport')}`, to: '/front/private/tickets', icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
+        // use internal ticketing system when NCE
+        if ( userConfig.value?.nonCommunityEdition ) {
+          items.push({ label: `${t('menu.support')}`, to: '/front/private/tickets', icon: 'i-lucide-sticker',onSelect: () => {mainData.open = false } } );
+        }
       }
     }
     if ( documentationLink && documentationLink !== '' ) {
@@ -169,7 +171,7 @@
     }
     if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
       items.push(
-        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink, target: '_blank' },
+        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink },
       );
     }
     return items;
@@ -423,6 +425,10 @@
     }
   };
 
+  // ------------------------------------------------------------
+  // Ticket notification management
+  const ticketPending = ref(0);
+
 </script>
 
 <template>
@@ -525,7 +531,23 @@
           </template>
 
           <template #right>
-            <UTooltip text="Notifications" :shortcuts="['N']">
+            <UTooltip 
+              v-if="(ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.nonCommunityEdition )" 
+              :text="$t('menu.supportTickets')" >
+              <UButton
+                color="neutral"
+                variant="ghost"
+                square
+                @click="router.push('/front/private/tickets');"
+              >
+                <UChip v-if="ticketPending > 0" color="success" inset>
+                  <UIcon name="i-lucide-sticker" class="size-5 shrink-0" />
+                </UChip>
+                <UIcon v-if="ticketPending == 0" name="i-lucide-sticker" class="size-5 shrink-0" />
+              </UButton>
+            </UTooltip>
+
+            <UTooltip :text="$t('menu.alarmsNotifications')" :shortcuts="['N']">
               <UButton
                 color="neutral"
                 variant="ghost"
