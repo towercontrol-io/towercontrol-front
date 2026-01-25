@@ -35,7 +35,16 @@
     "statusUnknown" : "Unknown",
     "noResults" : "No tickets found",
     "filterTopics" : "Search for a topic...",
-
+    "youFrom" : "You - {timeAgo} ago",
+    "supportFrom" : "Support - {timeAgo} ago",
+    "responseContentLabel" : "Add a response",
+    "responseContentDescription" : "Write your response or additional details to the ticket",
+    "responseAdd" : "Add response",
+    "responseClose" : "Respond and close",
+    "closeOnly" : "Close the ticket",
+    "responseAddedSuccessfully" : "Response added successfully",
+    "responseAddedSuccessfullyDesc" : "Your response has been added to the support ticket.",
+    "userPendingCol" : "Pending",
 
     "ticket-new-ticket-created" : "Support ticket has been created",
     "ticket-creation-failed" : "Support ticket creation failed",
@@ -50,6 +59,9 @@
     "ticket-creation-public-email-missing-invalid" : "Email is mandatory for anonymous ticket creation",
     "tickets-ticket-access-denied" : "You don't have the rights to access this support ticket",
     "tickets-ticket-not-found" : "The requested support ticket was not found",
+    "ticket-ticket-updated" : "Support ticket has been updated",
+    "ticket-update-failed" : "Support ticket update failed",
+    "tickets-update-user-is-inactive" : "The requested ticket belongs to an inactive user",
 
     "last" : "Last"
   }

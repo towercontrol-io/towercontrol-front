@@ -10,6 +10,7 @@
 
     const { t } = useI18n();
     const { $formatDuration } = useNuxtApp();
+    const nuxtApp = useNuxtApp();
 
     const statusLabel = (status: string) => {
         if (status === 'OPEN') {
@@ -36,6 +37,19 @@
         context.expanded = isExpanded ? {} : { [row.id]: true };
     };
 
+    const columnVisibility = ref({
+        userPending: false
+    });
+
+    // --------------------------------------------------------------------
+    // Handle the component signals
+    // --------------------------------------------------------------------
+
+    // Close the expended row when ticket list is refreshed
+    nuxtApp.hook("ticketlst:refresh" as any, async () => {
+        context.expanded = {} as Record<string, boolean>;
+    });
+
 </script>
 
 <template>
@@ -53,6 +67,7 @@
                 ref="table"
                 v-model:column-filters="columnFilters"
                 v-model:expanded="context.expanded"
+                v-model:column-visibility="columnVisibility"
                 :loading="props.loading"
                 loading-color="primary"
                 loading-animation="carousel"
@@ -88,10 +103,14 @@
                     <span class="font-bold">{{ t('tickets.ticketStatusCol') }}</span>
                 </template>
                 <template #status-cell="{ row }">
-                    <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
+                    <UChip v-if="row.original.userPending" color="error">
+                       <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
+                    </UChip>
+                    <UBadge v-else :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
                 </template>
+               
                 <template #expanded="{ row }">
-                    <TicketsTicketContent :ticketId="row.original.id" :key="row.original.id" />
+                    <TicketsTicketContent :ticketId="row.original.id" :key="row.original.id" :ticket="row.original"/>
                 </template>
             </UTable>
         </div>

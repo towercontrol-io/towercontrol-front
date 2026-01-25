@@ -37,6 +37,15 @@
     "statusUnknown" : "Inconnu",
     "noResults" : "Aucun ticket n'a été trouvé",
     "filterTopics" : "Chercher un sujet...",
+    "youFrom" : "Vous - il y a {timeAgo}",
+    "supportFrom" : "Support - il y a {timeAgo}",
+    "responseContentLabel" : "Ajouter une réponse",
+    "responseContentDescription" : "Rédigez votre réponse ou vos précisions complémentaires au ticket",
+    "responseAdd" : "Ajouter la réponse",
+    "responseClose" : "Répondre et clore",
+    "closeOnly" : "Clore le ticket",
+    "responseAddedSuccessfully" : "Réponse ajoutée avec succès",
+    "responseAddedSuccessfullyDesc" : "Votre réponse a été ajoutée au ticket de support.",
 
     "ticket-new-ticket-created" : "Le ticket de support a été créé",
     "ticket-creation-failed" : "La création du ticket de support a échoué",
@@ -51,7 +60,9 @@
     "ticket-creation-public-email-missing-invalid" : "L'email est obligatoire pour la création anonyme de tickets",
     "tickets-ticket-access-denied" : "Vous n'avez pas les droits pour accéder à ce ticket de support",
     "tickets-ticket-not-found" : "Le ticket de support demandé est introuvable",
-
+    "ticket-ticket-updated" : "Le ticket de support a été mis à jour",   
+    "ticket-update-failed" : "La mise à jour du ticket de support a échoué",
+    "tickets-update-user-is-inactive" : "Le ticket demandé appartient à un utilisateur inactif",
 
     "last" : "Dernier"
   }

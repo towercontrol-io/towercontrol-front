@@ -3,7 +3,6 @@
     import { applicationStore } from '~/stores/app';
     import { useRouter } from 'vue-router';
     import type { PrivTicketAbstractResponseItf } from '~/types';
-    import type { TableRow } from '@nuxt/ui';
 
     definePageMeta({layout: 'main-layout', layoutProps: { title: 'ticketsUser' }});
 
@@ -34,6 +33,7 @@
         nuxtApp.$apiBackendTickets.ticketsModulePrivateList(componentCtx.closedAsWell).then((res) => {
             if (res.success) {
                 componentCtx.tickets = res.success;
+                nuxtApp.callHook("ticketlst:refresh" as any); 
             } else if (res.error) {
                 componentCtx.ticketsLoadingError = t('tickets.'+res.error.message);
             }
@@ -59,6 +59,11 @@
         componentCtx.creationMode = false;
         loadTickets();
     });
+
+    nuxtApp.hook("ticketcontent:close" as any, async () => {
+        loadTickets();
+    });
+
 
 </script> 
 

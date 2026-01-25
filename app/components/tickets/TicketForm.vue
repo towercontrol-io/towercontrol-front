@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { computed, reactive, ref } from 'vue';
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
-    import type { Editor, JSONContent } from '@tiptap/vue-3'
     import { TextAlign } from '@tiptap/extension-text-align'
     import type { PrivTicketCreationBody, PrivTicketCreationResponseItf } from '~/types';
     import type { ActionResult } from '~/types';

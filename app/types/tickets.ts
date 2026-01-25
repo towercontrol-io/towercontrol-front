@@ -49,6 +49,9 @@ export interface PrivTicketAbstractResponseItf {
 
     /** Status of the ticket (OPEN | CLOSED) */
     status: string;
+
+    /** True when a response from user is expected */
+    userPending: boolean;
 }
 
 
@@ -64,6 +67,9 @@ export interface PrivMessageContent {
 
     /** Ticket message content (Markdown allowed) */
     content: string;
+
+    /** Ticket message written by ticket owner */
+    fromUser: boolean;
 }
 
 /**
@@ -78,4 +84,27 @@ export interface PrivTicketUserDetailResponseItf {
 
     /** List of responses & replies to the ticket */
     responses: PrivMessageContent[];
+}
+
+/**
+ * Body used to add a response to a ticket
+ */
+export interface PrivTicketUserMessageBody {
+    /** Ticket id */
+    id: number;
+
+    /** Response content (Markdown allowed), empty when just closing the ticket */
+    content: string;
+
+    /** Specific content reserved to admin, not visible by the user, used for KB usually */
+    adminContent?: string;
+
+    /** Close the ticket */
+    closeTicket: boolean;
+
+    /** Keep for KB (admin only) once closed */
+    closeKb: boolean;
+
+    /** Authorization Key for public anonymous response */
+    AuthKey?: string;
 }

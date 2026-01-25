@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -11,6 +11,7 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleCreatePost: string = '/tickets/1.0/ticket';
   const ticketsModuleListGet: string = '/tickets/1.0/ticket';
   const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
+  const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -169,6 +170,22 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Add a message to a ticket or close it (authenticated user)
+     */
+    ticketsModulePrivateUpdate: async (body:PrivTicketUserMessageBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                ticketsModuleMessagePut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
     
 
   };
