@@ -32,6 +32,8 @@
     "ticketStatusCol" : "Status",
     "statusOpen" : "Open",
     "statusClosed" : "Closed",
+    "statusResponsePending" : "Pending",
+    "statusClosedKb" : "In KB",
     "statusUnknown" : "Unknown",
     "noResults" : "No tickets found",
     "filterTopics" : "Search for a topic...",
@@ -44,7 +46,8 @@
     "closeOnly" : "Close the ticket",
     "responseAddedSuccessfully" : "Response added successfully",
     "responseAddedSuccessfullyDesc" : "Your response has been added to the support ticket.",
-    "userPendingCol" : "Pending",
+    "supportTitle" : "Support Ticket Management",
+    "supportDescription" : "View and manage support tickets for all users here. You can track the status of requests, add additional information if necessary, and view responses from users.",  
 
     "ticket-new-ticket-created" : "Support ticket has been created",
     "ticket-creation-failed" : "Support ticket creation failed",

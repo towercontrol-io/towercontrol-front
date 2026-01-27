@@ -13,6 +13,8 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
   const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
 
+  const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
+
   // Get dynmaic configuration
   const config = useRuntimeConfig();
   const appStore = applicationStore();
@@ -186,7 +188,28 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
-    
+
+    // =========================================================================
+    // SUPPORT USER API
+    // =========================================================================
+
+    /**
+     * List tickets with parameters
+     */
+    ticketsModuleSupportList: async (closedAsWell:boolean, pageNumber:number, pageSize:number, search:string): Promise<{ success?: PrivTicketAbstractResponseItf[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketAbstractResponseItf[]>(
+                'GET',
+                ticketsModuleSupportListGet+(closedAsWell ? '?closed=true&' : '?')+'pageNumber='+pageNumber+'&pageSize='+pageSize+(search.length > 0 ? '&searchCriteria='+search : ''),
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
 
   };
   return {

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
     import type { PrivTicketAbstractResponseItf } from '~/types';
+    import { getPaginationRowModel } from '@tanstack/vue-table'
     import type { TableRow } from '@nuxt/ui';
 
     const props = defineProps<{
@@ -16,8 +17,14 @@
         if (status === 'OPEN') {
             return t('tickets.statusOpen');
         }
+        if (status === 'RESP_PENDING') {
+            return t('tickets.statusResponsePending');
+        }
         if (status === 'CLOSED') {
             return t('tickets.statusClosed');
+        }
+        if (status === 'CLOSED_KB') {
+            return t('tickets.statusClosedKb');
         }
         return t('tickets.statusUnknown');
     };
@@ -33,13 +40,13 @@
 
 
     const onRowSelect = (e: Event, row: TableRow<PrivTicketAbstractResponseItf>) => {
-        const isExpanded = row.getIsExpanded();
-        context.expanded = isExpanded ? {} : { [row.id]: true };
+
     };
 
     const columnVisibility = ref({
         userPending: false
     });
+
 
     // --------------------------------------------------------------------
     // Handle the component signals
@@ -55,14 +62,6 @@
 <template>
     <div class="relative">
         <div class="flex flex-col flex-1 w-full">
-            <div class="flex pb-2 border-b border-accented">
-            <UInput
-                :model-value="table?.tableApi?.getColumn('topic')?.getFilterValue() as string"
-                class="max-w-sm"
-                :placeholder="t('tickets.filterTopics')"
-                @update:model-value="table?.tableApi?.getColumn('topic')?.setFilterValue($event)"
-            />
-            </div>
             <UTable
                 ref="table"
                 v-model:column-filters="columnFilters"
@@ -78,7 +77,10 @@
                 sticky
                 cellpadding=20
                 class="flex-1 text-xs min-h-55"
-            >
+                :pagination-options="{
+                    getPaginationRowModel: getPaginationRowModel()
+                }"
+                >
                 <template #id-header>
                     <span class="font-bold">{{ t('tickets.ticketIdCol') }}</span>
                 </template>
@@ -108,10 +110,6 @@
                        <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
                     </UChip>
                     <UBadge v-else :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
-                </template>
-               
-                <template #expanded="{ row }">
-                    <TicketsTicketContent :ticketId="row.original.id" :key="row.original.id" :ticket="row.original"/>
                 </template>
             </UTable>
         </div>

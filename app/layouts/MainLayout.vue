@@ -183,6 +183,9 @@
     if ( appStore.isUserAdmin() ) {
       topItems.push({ label: `${t('menu.userAdmin')}`,icon: 'i-lucide-user-round-cog',to: '/front/private/users',onSelect: () => {mainData.open = false}});  
     }
+    if ( appStore.isSupportAdmin() && userConfig.value?.nonCommunityEdition) {
+      topItems.push({ label: `${t('menu.supportAdmin')}`,icon: 'i-lucide-headset',to: '/front/private/support',onSelect: () => {mainData.open = false}});  
+    }
     return topItems;
   });
 

@@ -182,6 +182,7 @@
     "alarmsNotifications": "Alarmes & Notifications",
     "supportTickets": "Tickets de support",
     "ticketsUser": "Mes tickets de support",
+    "supportAdmin" : "Gestion du support",
 
     "last" : "Dernier"
   },

@@ -34,6 +34,8 @@
     "ticketStatusCol" : "Statut",
     "statusOpen" : "Ouvert",
     "statusClosed" : "Fermé",
+    "statusResponsePending" : "En attente",
+    "statusClosedKb" : "Pour KB",
     "statusUnknown" : "Inconnu",
     "noResults" : "Aucun ticket n'a été trouvé",
     "filterTopics" : "Chercher un sujet...",
@@ -46,6 +48,8 @@
     "closeOnly" : "Clore le ticket",
     "responseAddedSuccessfully" : "Réponse ajoutée avec succès",
     "responseAddedSuccessfullyDesc" : "Votre réponse a été ajoutée au ticket de support.",
+    "supportTitle" : "Gestion des tickets de support",
+    "supportDescription" : "Consultez et gérez les tickets de support de tous les utilisateurs ici. Vous pouvez suivre l'état des demandes, ajouter des informations supplémentaires si nécessaire et consulter les réponses des utilisateurs.",  
 
     "ticket-new-ticket-created" : "Le ticket de support a été créé",
     "ticket-creation-failed" : "La création du ticket de support a échoué",
