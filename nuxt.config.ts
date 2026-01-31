@@ -30,7 +30,7 @@ export default defineNuxtConfig({
       EULA_LINK: 'https://foo.bar/eula',          // Link / External page with the EULA
       DOCUMENTATION_LINK: 'https://github.com/disk91/IoTowerControl-community/wiki', // Link to External documentation ( displayes when set )
       SUPPORT_LINK: '',                           // Link to External support / '' internal when enable
-      APIDOC_LINK: '',                            // Link to External API documentation (displayed when set)
+      APIDOC_LINK: 'http://localhost:8091/api/swagger-ui/index.html', // Link to External API documentation (displayed when set)
       FORCE_INVITE_CODE : '',                     // If set, this code will be used for registration, this allows on backend to force application specific processing
       DISABLE_INVITE_CODE: false,                 // If true, the invite code field will not be displayed on registration, FORCE_INVITE_CODE is applied but hidden
       FORCE_COLOR_SCHEME: '',                     // If set, with a color scheme (primary,neutral) (see MainLayout.vue), this will force the color and remove the user ability to change it.

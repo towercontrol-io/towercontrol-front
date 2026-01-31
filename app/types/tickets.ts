@@ -21,7 +21,19 @@ export interface PrivTicketCreationBody {
 
     /** Confirmation code to validate ticket creation for public users */
     confirmationCode?: string;
+
+    /** True when ticket can be used to enrich FAQ / Knowledge base. Reserved to support managers. */
+    faqEligible?: boolean;
+
+    /** True when ticket can be made public in FAQ / Knowledge base. Reserved to support managers. */
+    faqPublic?: boolean;
+
+    /** Optional LLM context information to help LLM to better understand the ticket and provide better answers to users. */
+    llmContent?: string;
+
 }
+
+
 
 export interface PrivTicketCreationResponseItf {
 

@@ -24,6 +24,8 @@
     "create" : "Create Ticket",
     "existingTickets" : "Your ongoing and past tickets",
     "newTicket" : "New Support Request",
+    "ticketCreateNew" : "Open Request",
+    "ticketCancel" : "Cancel",
     "userNoAccessMessage" : "Your account is not enabled for support access. Please contact your administrator.",
     "showClosedTickets" : "Show closed tickets",
     "ticketIdCol" : "Id",
@@ -48,6 +50,17 @@
     "responseAddedSuccessfullyDesc" : "Your response has been added to the support ticket.",
     "supportTitle" : "Support Ticket Management",
     "supportDescription" : "View and manage support tickets for all users here. You can track the status of requests, add additional information if necessary, and view responses from users.",  
+    "faqCreate" : "Create a FAQ entry",
+    "faqNew" : "New FAQ entry",
+    "faqTopic" : "FAQ Topic",
+    "faqTopicDesc" : "This part will be the text summarizing the FAQ question.",
+    "faqPubResponse" : "Public, user displayed, FAQ Response",
+    "faqPubResponseDesc" : "This part will contain the public response to the frequently asked question in the FAQ.",
+    "faqLlmResponse" : "RResponse used to train the LLM.",
+    "faqLlmResponseDesc" : "This part will contain the response used to train the language model (LLM) to improve automatic answers to user questions.",
+    "faqCreateNew" : "Create a FAQ",
+    "faqPubCreateNew" : "Create a public FAQ",
+
 
     "ticket-new-ticket-created" : "Support ticket has been created",
     "ticket-creation-failed" : "Support ticket creation failed",
@@ -65,7 +78,9 @@
     "ticket-ticket-updated" : "Support ticket has been updated",
     "ticket-update-failed" : "Support ticket update failed",
     "tickets-update-user-is-inactive" : "The requested ticket belongs to an inactive user",
-
+    "tickets-invalid-pagination-params" : "Invalid pagination parameters",
+    "tickets-faq-invalid-context" : "Invalid FAQ context parameters, it's not an FAQ ticket",
+    
     "last" : "Last"
   }
 }

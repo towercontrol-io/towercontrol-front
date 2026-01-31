@@ -50,6 +50,16 @@
     "responseAddedSuccessfullyDesc" : "Votre réponse a été ajoutée au ticket de support.",
     "supportTitle" : "Gestion des tickets de support",
     "supportDescription" : "Consultez et gérez les tickets de support de tous les utilisateurs ici. Vous pouvez suivre l'état des demandes, ajouter des informations supplémentaires si nécessaire et consulter les réponses des utilisateurs.",  
+    "faqCreate" : "Créer une entrée FAQ",
+    "faqNew" : "Nouvelle entrée FAQ",
+    "faqTopic" : "Sujet de la FAQ",
+    "faqTopicDesc" : "Cette partie va être le texte résumant la question de la FAQ.",
+    "faqPubResponse" : "Réponse affichée à l'utilisateur de la FAQ",
+    "faqPubResponseDesc" : "Cette partie va contenir la réponse publique à la question fréquemment posée dans la FAQ.",
+    "faqLlmResponse" : "Réponse utilisée pour entrainer le LLM.",
+    "faqLlmResponseDesc" : "Cette partie va contenir la réponse utilisée pour entrainer le modèle de langage (LLM) afin d'améliorer les réponses automatiques aux questions des utilisateurs.",
+    "faqCreateNew" : "Créer une FAQ",
+    "faqPubCreateNew" : "Créer une FAQ publique",
 
     "ticket-new-ticket-created" : "Le ticket de support a été créé",
     "ticket-creation-failed" : "La création du ticket de support a échoué",
@@ -67,6 +77,8 @@
     "ticket-ticket-updated" : "Le ticket de support a été mis à jour",   
     "ticket-update-failed" : "La mise à jour du ticket de support a échoué",
     "tickets-update-user-is-inactive" : "Le ticket demandé appartient à un utilisateur inactif",
+    "tickets-invalid-pagination-params" : "Paramètres de pagination invalides",
+    "tickets-faq-invalid-context" : "Paramètres de contexte FAQ invalides, ce n'est pas un ticket FAQ",
 
     "last" : "Dernier"
   }

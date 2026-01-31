@@ -15,7 +15,7 @@
     const { $formatDuration } = useNuxtApp();
 
     const componentCtx = reactive({
-        creationMode: false,
+        faqMode: false,
         ticketsLoading: false as boolean,
         ticketsLoadingError: null as string | null,
         closedAsWell: false as boolean,
@@ -75,7 +75,7 @@
     // --------------------------------------------------------------------
 
     nuxtApp.hook("ticketmng:close" as any, async () => {
-        componentCtx.creationMode = false;
+        componentCtx.faqMode = false;
         loadTickets();
     });
 
@@ -95,9 +95,33 @@
         orientation="horizontal"
         class="mb-4"
        >
+       <UButton
+            form="settings"
+            :label="$t('tickets.faqCreate')"
+            icon="i-lucide-plus"
+            color="neutral"
+            type="submit"
+            class="w-fit lg:ms-auto"
+            @click="componentCtx.faqMode = true"
+        />
        </UPageCard>
     
         <div v-if="appStore.isSupportUser()" class="relative">
+
+            <UCard 
+                v-if="componentCtx.faqMode"
+                class="w-full max-w-4xl mx-auto mb-4"
+                variant="subtle"
+            >
+                <template #header>
+                    <span class="font-bold">{{ t('tickets.faqNew') }}</span>
+                </template>
+                <template #default>
+                    <div class="relative">
+                        <TicketsFaqForm />
+                    </div>
+                </template>
+            </UCard>
 
             <UCard 
                 class="w-full max-w-4xl mx-auto"

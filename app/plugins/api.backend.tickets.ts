@@ -14,6 +14,7 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
 
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
+  const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -122,7 +123,7 @@ export default defineNuxtPlugin(() => {
     },
 
     /**
-     * Create a new Tiket (private API)
+     * Create a new Ticket (private API)
      */
     ticketsModulePrivateCreation: async (body:PrivTicketCreationBody): Promise<{ success?: PrivTicketCreationResponseItf; error?: ActionResult | { message: string } }> => {
         try {
@@ -202,6 +203,24 @@ export default defineNuxtPlugin(() => {
                 'GET',
                 ticketsModuleSupportListGet+(closedAsWell ? '?closed=true&' : '?')+'pageNumber='+pageNumber+'&pageSize='+pageSize+(search.length > 0 ? '&searchCriteria='+search : ''),
                 undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    /**
+     * Create a new FAQ Ticket(private API)
+     */
+    ticketsModulePrivateFAQCreation: async (body:PrivTicketCreationBody): Promise<{ success?: PrivTicketCreationResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketCreationResponseItf>(
+                'POST',
+                ticketsModuleFAQCreatePost,
+                body,
                 false
             );
             return { success: response }
