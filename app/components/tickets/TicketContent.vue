@@ -5,8 +5,8 @@
     import { TextAlign } from '@tiptap/extension-text-align'
 
     const props = defineProps<{
-            ticketId: number;
             ticket : PrivTicketAbstractResponseItf;
+            isAdmin ?: boolean;
     }>();
 
     const { t } = useI18n();
@@ -20,6 +20,7 @@
         ticket: {} as PrivTicketUserDetailResponseItf,
         submitError: null as string | null,
         response: {} as PrivTicketUserMessageBody,
+        formState: {} as any
     });
 
     // --------------------------------------------------------------------
@@ -29,9 +30,10 @@
     const loadTicket = async () => {
         componentCtx.ticketLoading = true;
         componentCtx.ticketLoadingError = null;
-        useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticketId).then((res) => {
+        useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticket.id).then((res) => {
             if (res.success) {
                 componentCtx.ticket = res.success;
+                useNuxtApp().callHook("ticketcontent:open" as any, props.ticket.id);
             } else if (res.error) {
                 componentCtx.ticketLoadingError = t('tickets.'+res.error.message);
             }
@@ -76,7 +78,7 @@
       }
       isSubmitting.value = true;
       componentCtx.response.closeTicket = close;
-      componentCtx.response.id = props.ticketId;
+      componentCtx.response.id = props.ticket.id;
       componentCtx.response.closeKb = false;
       componentCtx.response.adminContent = '';
       componentCtx.response.AuthKey = '';
@@ -118,6 +120,10 @@
 
     const onSubmit = async () => {
       processTicketResponse(false);
+    };
+
+    const onSupportEdit = async () => {
+      useRouter().push({ path: `/front/private/support/ticket/${props.ticket.id}/` });
     };
 
     const isSubmitting = ref(false);
@@ -185,9 +191,9 @@
       <MDC :value="message.content" class="[&_*]:!my-0"/>
     </div>
   </div>
-  <div v-if="ticket.status == 'OPEN'"
+  <div v-if="ticket.status == 'OPEN' || isAdmin"
        class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1 border-l-sky-200 dark:border-l-sky-800 text-black dark:text-white pl-4">
-    <UForm :state="formState" class="w-full" @submit="() => {}">   
+    <UForm :state="componentCtx.formState" class="w-full" @submit="() => {}">   
       <UFormField
             name="responseContent"
             :label="$t('tickets.responseContentLabel')"
@@ -241,6 +247,16 @@
                 type="submit"
                 @click="onClose"
                 icon="i-lucide-square-x"
+                class="px-2 ml-1"
+                size="xs"
+              />
+              <UButton
+                v-if="isAdmin"
+                :label="$t('tickets.supportEdit')"
+                color="success"
+                type="submit"
+                @click="onSupportEdit"
+                icon="i-lucide-square-pen"
                 class="px-2 ml-1"
                 size="xs"
               />

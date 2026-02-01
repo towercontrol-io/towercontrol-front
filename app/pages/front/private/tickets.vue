@@ -64,6 +64,15 @@
         loadTickets();
     });
 
+    nuxtApp.hook("ticketcontent:open" as any, async (ticketId : number) => {
+        for (const ticket of componentCtx.tickets) {
+            if (ticket.id === ticketId) {
+                ticket.userPending = false;  // update the UI w/o refreshing the list
+                break;
+            }
+        }
+    });
+
 
 </script> 
 

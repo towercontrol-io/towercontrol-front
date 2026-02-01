@@ -65,6 +65,9 @@ export interface PrivTicketAbstractResponseItf {
     /** True when a response from user is expected */
     userPending: boolean;
 
+    /** True when a response from admin is expected */
+    adminPending: boolean;
+
     /** Number of items matching in database (support manager only) */
     countItems: number;
 }

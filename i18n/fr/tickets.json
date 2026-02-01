@@ -34,7 +34,7 @@
     "ticketStatusCol" : "Statut",
     "statusOpen" : "Ouvert",
     "statusClosed" : "Fermé",
-    "statusResponsePending" : "En attente",
+    "statusResponsePending" : "En cours",
     "statusClosedKb" : "Pour KB",
     "statusUnknown" : "Inconnu",
     "noResults" : "Aucun ticket n'a été trouvé",
@@ -60,6 +60,7 @@
     "faqLlmResponseDesc" : "Cette partie va contenir la réponse utilisée pour entrainer le modèle de langage (LLM) afin d'améliorer les réponses automatiques aux questions des utilisateurs.",
     "faqCreateNew" : "Créer une FAQ",
     "faqPubCreateNew" : "Créer une FAQ publique",
+    "supportEdit" : "Modification avancée",
 
     "ticket-new-ticket-created" : "Le ticket de support a été créé",
     "ticket-creation-failed" : "La création du ticket de support a échoué",

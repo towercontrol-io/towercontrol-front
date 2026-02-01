@@ -38,7 +38,9 @@
     };
 
     const columnVisibility = ref({
-        userPending: false
+        userPending: false,
+        adminPending: false,
+        countItems: false
     });
 
     // --------------------------------------------------------------------
@@ -111,7 +113,7 @@
                 </template>
                
                 <template #expanded="{ row }">
-                    <TicketsTicketContent :ticketId="row.original.id" :key="row.original.id" :ticket="row.original"/>
+                    <TicketsTicketContent :key="row.original.id" :ticket="row.original"/>
                 </template>
             </UTable>
         </div>

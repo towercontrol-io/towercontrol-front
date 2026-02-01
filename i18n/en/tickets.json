@@ -60,6 +60,7 @@
     "faqLlmResponseDesc" : "This part will contain the response used to train the language model (LLM) to improve automatic answers to user questions.",
     "faqCreateNew" : "Create a FAQ",
     "faqPubCreateNew" : "Create a public FAQ",
+    "supportEdit" : "Advanced Edit",
 
 
     "ticket-new-ticket-created" : "Support ticket has been created",
@@ -80,7 +81,7 @@
     "tickets-update-user-is-inactive" : "The requested ticket belongs to an inactive user",
     "tickets-invalid-pagination-params" : "Invalid pagination parameters",
     "tickets-faq-invalid-context" : "Invalid FAQ context parameters, it's not an FAQ ticket",
-    
+
     "last" : "Last"
   }
 }

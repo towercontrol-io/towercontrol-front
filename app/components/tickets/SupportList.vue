@@ -40,11 +40,14 @@
 
 
     const onRowSelect = (e: Event, row: TableRow<PrivTicketAbstractResponseItf>) => {
-
+        const isExpanded = row.getIsExpanded();
+        context.expanded = isExpanded ? {} : { [row.id]: true };
     };
 
     const columnVisibility = ref({
-        userPending: false
+        userPending: false,
+        adminPending: false,
+        countItems: false
     });
 
 
@@ -106,11 +109,15 @@
                     <span class="font-bold">{{ t('tickets.ticketStatusCol') }}</span>
                 </template>
                 <template #status-cell="{ row }">
-                    <UChip v-if="row.original.userPending" color="error">
-                       <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
+                    <UChip v-if="row.original.adminPending" color="error">
+                       <UBadge :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN' || row.original.status=='RESP_PENDING')?'neutral':'success'" />
                     </UChip>
-                    <UBadge v-else :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN')?'neutral':'success'" />
+                    <UBadge v-else :label="statusLabel(row.original.status)" variant="subtle" :color="(row.original.status=='OPEN' || row.original.status=='RESP_PENDING')?'neutral':'success'" />
                 </template>
+                <template #expanded="{ row }">
+                    <TicketsTicketContent :key="row.original.id" :ticket="row.original" :is-admin="true"/>
+                </template>
+
             </UTable>
         </div>
 
