@@ -43,6 +43,7 @@
             totalBadOwnerRefused : false,
             totalBadPayloadFormat : false,
             totalBadDeviceRight : false,
+            totalBillingRefused : false,
         },
         endpointExpanded: {} as Record<string, boolean>,
         endpointColOrder : [
@@ -512,6 +513,9 @@
                                                 <UTooltip :text="t('capture.endpStatRightDesc')">
                                                     <th class="font-bold px-2 py-1.5 border-dotted border-neutral-300/60">{{ t('capture.totalBadDeviceRight') }}</th>
                                                 </UTooltip>
+                                                <UTooltip :text="t('capture.endpStatBillDesc')">
+                                                    <th class="font-bold px-2 py-1.5 border-dotted border-neutral-300/60">{{ t('capture.totalBillingRefused') }}</th>
+                                                </UTooltip>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -524,6 +528,7 @@
                                                 <td class="text-error px-2 py-1 border-r border-dotted border-neutral-300/60">{{ row.original.totalBadOwnerRefused }}</td>
                                                 <td class="text-error px-2 py-1 border-r border-dotted border-neutral-300/60">{{ row.original.totalBadPayloadFormat }}</td>
                                                 <td class="text-error px-2 py-1 border-dotted border-neutral-300/60">{{ row.original.totalBadDeviceRight }}</td>
+                                                <td class="text-error px-2 py-1 border-dotted border-neutral-300/60">{{ row.original.totalBillingRefused }}</td>
                                             </tr>
                                         </tbody>
                                     </table>

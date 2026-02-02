@@ -388,6 +388,7 @@
     "groups-group-creation-failed" : "Échec de la création du groupe",
     "groups-group-hierarchy-too-deep" : "La hiérarchie des groupes est trop profonde",
     "groups-group-loop-detected" : "Boucle de groupe détectée",
+    "groups-group-creation-refused-billing" : "Création de groupe refusée en raison de restrictions de facturation",
     "last": "Dernier"
   },
   "role" : {

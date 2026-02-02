@@ -245,5 +245,12 @@ export interface CaptureEndpointResponseItf {
    * Example: 1250
    */
   totalQueuedToProcess: number;
+
+  /**
+   * Stats - total frames refused due to billing restrictions
+   * Example: 1250
+   */
+  totalBillingRefused: number;
+
 }
 

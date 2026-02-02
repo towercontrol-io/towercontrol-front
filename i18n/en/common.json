@@ -306,7 +306,6 @@
     "actionCancel": "Cancel Action",
     "deleted": "Pending deletion",
 
-
     "last": "Last"
   },
   "RecentReg" : {
@@ -389,6 +388,7 @@
     "groups-group-creation-failed" : "Group creation failed",
     "groups-group-hierarchy-too-deep" : "Group hierarchy is too deep",
     "groups-group-loop-detected" : "Group loop detected",
+    "groups-group-creation-refused-billing" : "Group creation rejected due to billing restrictions",
     "last": "Last"
   },
   "role" : {
