@@ -61,7 +61,7 @@
     "faqCreateNew" : "Create a FAQ",
     "faqPubCreateNew" : "Create a public FAQ",
     "supportEdit" : "Advanced Edit",
-
+    "editPersonaldata" : "Mark personal data using strikethrough font",
 
     "ticket-new-ticket-created" : "Support ticket has been created",
     "ticket-creation-failed" : "Support ticket creation failed",

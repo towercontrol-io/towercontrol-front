@@ -153,6 +153,16 @@
    */
   const dynRightMenu = computed<NavigationMenuItem[]>( () => {
     const items: NavigationMenuItem[] = [];
+    if ( documentationLink && documentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: documentationLink, target: '_blank' }
+      );
+    }
+    if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink },
+      );
+    }
     if ( ticketsEnabled ) {
       if ( supportLink && supportLink !== '' ) {
         // use external support link
@@ -163,16 +173,6 @@
           items.push({ label: `${t('menu.support')}`, to: '/front/private/tickets', icon: 'i-lucide-sticker',onSelect: () => {mainData.open = false } } );
         }
       }
-    }
-    if ( documentationLink && documentationLink !== '' ) {
-      items.push(
-        { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: documentationLink, target: '_blank' }
-      );
-    }
-    if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
-      items.push(
-        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink },
-      );
     }
     return items;
   });

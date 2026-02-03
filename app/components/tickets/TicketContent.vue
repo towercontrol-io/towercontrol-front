@@ -20,7 +20,10 @@
         ticket: {} as PrivTicketUserDetailResponseItf,
         submitError: null as string | null,
         response: {} as PrivTicketUserMessageBody,
-        formState: {} as any
+        formState: {} as any,
+
+        ticketEdit: false as boolean,
+        messageEdit: [] as boolean[],
     });
 
     // --------------------------------------------------------------------
@@ -33,6 +36,9 @@
         useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticket.id).then((res) => {
             if (res.success) {
                 componentCtx.ticket = res.success;
+                for ( const msg of componentCtx.ticket.responses ) {
+                  componentCtx.messageEdit[msg.id] = false;
+                }
                 useNuxtApp().callHook("ticketcontent:open" as any, props.ticket.id);
             } else if (res.error) {
                 componentCtx.ticketLoadingError = t('tickets.'+res.error.message);
@@ -172,23 +178,93 @@
       }]
     ] satisfies EditorToolbarItem<typeof customHandlers>[][]
 
+    // --------------------------------------------------------------------
+    // Admin mode with edition
+    // --------------------------------------------------------------------
 
+    const onEditTicket = async () => {
+      componentCtx.ticketEdit = true;
+    };
 
+    const onSaveTicket = async () => {
+      componentCtx.ticketEdit = false;
+    }
+
+    const onCancelTicket = async () => {
+      componentCtx.ticketEdit = false;
+    }
+
+    const onEditMessage = async (messageId : string) => {
+      componentCtx.messageEdit[messageId as any] = true;
+    };
+
+    const onSaveMessage = async (messageId : string) => {
+      componentCtx.messageEdit[messageId as any] = false;
+    }
+
+    const onCancelMessage = async (messageId : string) => {
+      componentCtx.messageEdit[messageId as any] = false;
+    }
 </script>
 
 
 <template>
-  <div class="bg-white dark:bg-gray-800 p-4 rounded-md border border-accented">
-    <MDC v-if="componentCtx.ticket.content" :value="componentCtx.ticket.content" class="[&_*]:!my-0"/>
-  </div>
-  <div v-for="message in componentCtx.ticket.responses" :key="message.id" class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1  text-black dark:text-white">
-    <div v-if="message.fromUser == true"  class="bg-white dark:bg-gray-800 pl-4">
-      <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('tickets.youFrom',{ timeAgo : $formatDuration((Date.now() - message.creationMs) / 1000)}) }}</span>
-      <MDC :value="message.content" class="[&_*]:!my-0"/> 
+  <div class="flex gap-2 items-start">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-md border border-accented flex-1">
+      <div v-if="componentCtx.ticket.content">
+        <MDC v-if="!componentCtx.ticketEdit" :value="componentCtx.ticket.content" class="[&_*]:!my-0"/>
+        <UEditor v-if="componentCtx.ticketEdit" v-model="componentCtx.ticket.content" content-type="markdown" class="w-full bg-white dark:bg-gray-800"
+                ref="contentRef"
+                :extensions="[
+                  TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                ]"
+                v-slot="{ editor, handlers }"
+                :ui="{ base: 'min-h-40' }"
+              >
+              {{ t('tickets.editPersonaldata') }}
+                  <UEditorToolbar :editor="editor" :items="fixedToolbarItems" 
+                    class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center">
+                  </UEditorToolbar>
+        </UEditor>
+      </div>
     </div>
-    <div v-else class="bg-sky-100 dark:bg-gray-700 pl-4">
-      <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('tickets.supportFrom',{ timeAgo : $formatDuration((Date.now() - message.creationMs) / 1000)}) }}</span>
-      <MDC :value="message.content" class="[&_*]:!my-0"/>
+    <UIcon v-if="isAdmin && !componentCtx.ticketEdit" name="i-lucide-square-pen" class="mt-2 flex-shrink-0 size-5" @click="onEditTicket"/>
+    <div v-if="isAdmin && componentCtx.ticketEdit" class="flex flex-col gap-2">
+      <UIcon name="i-lucide-square-x" class="mt-2 flex-shrink-0 size-5 cursor-pointer" @click="onCancelTicket"/>
+      <UIcon name="i-lucide-save" class="flex-shrink-0 size-5 cursor-pointer" @click="onSaveTicket"/>
+    </div>
+  </div>
+
+  <div v-for="message in componentCtx.ticket.responses" :key="message.id" class="flex gap-2 item-start">
+    <div v-if="!componentCtx.messageEdit[message.id as any]" class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1 text-black dark:text-white flex-1">
+      <div v-if="message.fromUser == true"  class="bg-white dark:bg-gray-800 pl-4">
+        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('tickets.youFrom',{ timeAgo : $formatDuration((Date.now() - message.creationMs) / 1000)}) }}</span>
+        <MDC :value="message.content" class="[&_*]:!my-0"/> 
+      </div>
+      <div v-else class="bg-sky-100 dark:bg-gray-700 pl-4">
+        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('tickets.supportFrom',{ timeAgo : $formatDuration((Date.now() - message.creationMs) / 1000)}) }}</span>
+        <MDC :value="message.content" class="[&_*]:!my-0"/>
+      </div>
+    </div>
+    <div v-if="componentCtx.messageEdit[message.id as any]" class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1 text-black dark:text-white flex-1">
+        <UEditor v-model="message.content" content-type="markdown" class="w-full bg-white dark:bg-gray-800"
+                ref="contentRef"
+                :extensions="[
+                  TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                ]"
+                v-slot="{ editor, handlers }"
+                :ui="{ base: 'min-h-40' }"
+              >
+              {{ t('tickets.editPersonaldata') }}
+                  <UEditorToolbar :editor="editor" :items="fixedToolbarItems" 
+                    class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center">
+                  </UEditorToolbar>
+        </UEditor>
+    </div>
+    <UIcon v-if="isAdmin && !componentCtx.messageEdit[message.id as any]" name="i-lucide-square-pen" class="mt-6 flex-shrink-0 size-5" @click="onEditMessage(message.id)"/>
+    <div v-if="isAdmin && componentCtx.messageEdit[message.id as any]" class="flex flex-col gap-2">
+      <UIcon name="i-lucide-square-x" class="mt-6 flex-shrink-0 size-5 cursor-pointer" @click="onCancelMessage(message.id)"/>
+      <UIcon name="i-lucide-save" class="flex-shrink-0 size-5 cursor-pointer" @click="onSaveMessage(message.id)"/>
     </div>
   </div>
   <div v-if="ticket.status == 'OPEN' || isAdmin"
