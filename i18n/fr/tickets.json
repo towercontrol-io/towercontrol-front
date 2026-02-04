@@ -62,6 +62,8 @@
     "faqPubCreateNew" : "Créer une FAQ publique",
     "supportEdit" : "Modification avancée",
     "editPersonaldata" : "Marquer les données personnelles en utilisant la police barée",
+    "ticketUpdateSuccessfully" : "Le ticket a été mis à jour avec succès",
+    "ticketUpdateSuccessfullyDesc" : "Le ticket de support a été mis à jour avec succès.",
 
     "ticket-new-ticket-created" : "Le ticket de support a été créé",
     "ticket-creation-failed" : "La création du ticket de support a échoué",

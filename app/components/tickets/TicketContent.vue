@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody } from '~/types';
+    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody } from '~/types';
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
     import { TextAlign } from '@tiptap/extension-text-align'
 
@@ -18,6 +18,7 @@
         ticketLoading: false as boolean,
         ticketLoadingError: null as string | null,
         ticket: {} as PrivTicketUserDetailResponseItf,
+        ticketContent: '' as string,
         submitError: null as string | null,
         response: {} as PrivTicketUserMessageBody,
         formState: {} as any,
@@ -36,8 +37,9 @@
         useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticket.id).then((res) => {
             if (res.success) {
                 componentCtx.ticket = res.success;
+                componentCtx.ticketContent = res.success.content;
                 for ( const msg of componentCtx.ticket.responses ) {
-                  componentCtx.messageEdit[msg.id] = false;
+                  componentCtx.messageEdit[msg.id as any] = false;
                 }
                 useNuxtApp().callHook("ticketcontent:open" as any, props.ticket.id);
             } else if (res.error) {
@@ -105,7 +107,6 @@
               onError();
           }
       }).catch((error) => {
-          console.error(error);
           componentCtx.submitError = t('common.unknownError');
           onError();
       }).finally(() => {
@@ -187,10 +188,44 @@
     };
 
     const onSaveTicket = async () => {
-      componentCtx.ticketEdit = false;
+      componentCtx.submitError = null;
+      if (!canSubmit.value && !close) {
+          componentCtx.submitError = t('tickets.contactFormInvalid');
+          onError();
+          return;
+      }
+      isSubmitting.value = true;
+      const updateBody : PrivTicketUpdateBody = {
+        id: componentCtx.ticket.id,
+        quickUpdate: true,
+        content: componentCtx.ticket.content,
+        topic: props.ticket.topic,
+      };
+
+      useNuxtApp().$apiBackendTickets.ticketsModulePrivateTicketUpdate(updateBody).then((res) => {
+          if (res.success) {
+              componentCtx.ticketContent = componentCtx.ticket.content;
+              componentCtx.ticketEdit = false;
+              toast.add({
+                title: t('tickets.ticketUpdateSuccessfully'),
+                description: t('tickets.ticketUpdateSuccessfullyDesc'),
+                icon: 'i-lucide-arrow-big-up-dash',
+              });
+          } else if (res.error) {
+              componentCtx.submitError = t('tickets.'+res.error.message);
+              onError();
+          }
+      }).catch((error) => {
+          componentCtx.submitError = t('common.unknownError');
+          onError();
+      }).finally(() => {
+          isSubmitting.value = false;
+      });
     }
 
     const onCancelTicket = async () => {
+      // Restore backup
+      componentCtx.ticket.content = componentCtx.ticketContent;
       componentCtx.ticketEdit = false;
     }
 

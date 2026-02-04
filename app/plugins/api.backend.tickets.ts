@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -14,6 +14,8 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
 
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
+  const ticketsModuleSupportUpdatePut: string = '/tickets/1.0/support';
+
   const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
 
   // Get dynmaic configuration
@@ -220,6 +222,23 @@ export default defineNuxtPlugin(() => {
             const response = await apiCallwithTimeout<PrivTicketCreationResponseItf>(
                 'POST',
                 ticketsModuleFAQCreatePost,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Modify a ticket (support user)
+     */
+    ticketsModulePrivateTicketUpdate: async (body:PrivTicketUpdateBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                ticketsModuleSupportUpdatePut,
                 body,
                 false
             );

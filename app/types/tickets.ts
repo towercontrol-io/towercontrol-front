@@ -126,3 +126,56 @@ export interface PrivTicketUserMessageBody {
     /** Authorization Key for public anonymous response */
     AuthKey?: string;
 }
+
+
+/**
+ * Ticket priority levels
+ */
+export enum PrivTicketPriority {
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH',
+    URGENT = 'URGENT'
+}
+
+/**
+ * Request body to update an existing ticket
+ */
+export interface PrivTicketUpdateBody {
+    /** Ticket Id to be updated */
+    id: number;
+
+    /** Quick update mode only updating content */
+    quickUpdate: boolean;
+
+    // Quick fields
+
+    /** Ticket short title (Markdown allowed) */
+    topic: string;
+
+    /** Ticket content in Markdown */
+    content: string;
+
+    // Other fields
+
+    /** Contextual custom fields used to add metadata to the ticket */
+    context?: CustomField[];
+
+    /** Description intended for LLM knowledge base (Markdown) */
+    llmDescription?: string;
+
+    /** Set ticket priority (LOW, MEDIUM, HIGH, URGENT) */
+    priority?: PrivTicketPriority;
+
+    /** Assign ticket to one specific support manager (login) */
+    assignedTo?: string;
+
+    /** Optional technical context information. Not set by used but collected by frontend or smartphone application. */
+    techContext?: string;
+
+    /** True when ticket can be used to enrich FAQ / Knowledge base. Reserved to support managers. */
+    faqEligible?: boolean;
+
+    /** True when ticket can be made public in FAQ / Knowledge base. Reserved to support managers. */
+    faqPublic?: boolean;
+}
