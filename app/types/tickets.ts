@@ -179,3 +179,23 @@ export interface PrivTicketUpdateBody {
     /** True when ticket can be made public in FAQ / Knowledge base. Reserved to support managers. */
     faqPublic?: boolean;
 }
+
+/**
+ * Body used to update an existing ticket message/response
+ */
+export interface PrivTicketUpdateMessageBody {
+    /** Ticket id */
+    id: number;
+
+    /** Message id */
+    messageId: string;
+
+    /** Response content (Markdown allowed) */
+    content: string;
+
+    /** True when the llmContent field is used */
+    withLlmContent?: boolean;
+
+    /** Specific content reserved to admin, not visible by the user, used for KB usually */
+    llmContent?: string;
+}

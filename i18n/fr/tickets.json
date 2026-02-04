@@ -83,6 +83,8 @@
     "tickets-update-user-is-inactive" : "Le ticket demandé appartient à un utilisateur inactif",
     "tickets-invalid-pagination-params" : "Paramètres de pagination invalides",
     "tickets-faq-invalid-context" : "Paramètres de contexte FAQ invalides, ce n'est pas un ticket FAQ",
+    "tickets-ticket-message-not-found" : "Le message du ticket de support demandé est introuvable",
+    "tickets-ticket-message-update-denied" : "Vous n'avez pas les droits pour mettre à jour ce message de ticket de support",
 
     "last" : "Dernier"
   }

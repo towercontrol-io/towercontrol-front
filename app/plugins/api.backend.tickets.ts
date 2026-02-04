@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -15,6 +15,7 @@ export default defineNuxtPlugin(() => {
 
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
   const ticketsModuleSupportUpdatePut: string = '/tickets/1.0/support';
+  const ticketsModuleSupportMessageUpdatePut: string = '/tickets/1.0/support/message';
 
   const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
 
@@ -248,6 +249,22 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Modify a ticket Message (support user)
+     */
+    ticketsModulePrivateTicketUpdateMessage: async (body:PrivTicketUpdateMessageBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                ticketsModuleSupportMessageUpdatePut,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
 
   };
   return {

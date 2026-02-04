@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 
-    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody } from '~/types';
+    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody } from '~/types';
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
     import { TextAlign } from '@tiptap/extension-text-align'
+import { message } from 'valibot';
 
     const props = defineProps<{
             ticket : PrivTicketAbstractResponseItf;
@@ -25,6 +26,7 @@
 
         ticketEdit: false as boolean,
         messageEdit: [] as boolean[],
+        messageEditBackup: [] as string[],
     });
 
     // --------------------------------------------------------------------
@@ -40,6 +42,7 @@
                 componentCtx.ticketContent = res.success.content;
                 for ( const msg of componentCtx.ticket.responses ) {
                   componentCtx.messageEdit[msg.id as any] = false;
+                  componentCtx.messageEditBackup[msg.id as any] = msg.content;
                 }
                 useNuxtApp().callHook("ticketcontent:open" as any, props.ticket.id);
             } else if (res.error) {
@@ -189,11 +192,6 @@
 
     const onSaveTicket = async () => {
       componentCtx.submitError = null;
-      if (!canSubmit.value && !close) {
-          componentCtx.submitError = t('tickets.contactFormInvalid');
-          onError();
-          return;
-      }
       isSubmitting.value = true;
       const updateBody : PrivTicketUpdateBody = {
         id: componentCtx.ticket.id,
@@ -234,10 +232,47 @@
     };
 
     const onSaveMessage = async (messageId : string) => {
-      componentCtx.messageEdit[messageId as any] = false;
+      isSubmitting.value = true;
+      const updateBody : PrivTicketUpdateMessageBody = {
+        id: componentCtx.ticket.id,
+        messageId: messageId,
+        content : '',
+        withLlmContent : false,
+      };
+      for ( const msg of componentCtx.ticket.responses ) {
+        if ( msg.id == messageId ) {
+          updateBody.content = msg.content
+        }
+      }
+
+      useNuxtApp().$apiBackendTickets.ticketsModulePrivateTicketUpdateMessage(updateBody).then((res) => {
+          if (res.success) {
+              componentCtx.messageEditBackup[messageId as any] = updateBody.content;
+              componentCtx.messageEdit[messageId as any] = false;
+              toast.add({
+                title: t('tickets.ticketUpdateSuccessfully'),
+                description: t('tickets.ticketUpdateSuccessfullyDesc'),
+                icon: 'i-lucide-arrow-big-up-dash',
+              });
+          } else if (res.error) {
+              componentCtx.submitError = t('tickets.'+res.error.message);
+              onError();
+          }
+      }).catch((error) => {
+          componentCtx.submitError = t('common.unknownError');
+          onError();
+      }).finally(() => {
+          isSubmitting.value = false;
+      });
     }
 
     const onCancelMessage = async (messageId : string) => {
+      for ( const msg of componentCtx.ticket.responses ) {
+        // restore backup value
+        if ( msg.id == messageId ) {
+          msg.content = componentCtx.messageEditBackup[messageId as any] as string;
+        }
+      }
       componentCtx.messageEdit[messageId as any] = false;
     }
 </script>
