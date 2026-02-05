@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse } from '~/types';
+  import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse, PrivTicketPendingResponseItf } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
 
@@ -138,7 +138,37 @@
     }
   });
 
-  // ----
+  // ------------------------------------------------------------
+  // Ticket notification management
+
+  const ticketRefreshInterval = ref() as any;
+  const ticketPending = ref({
+      pending: 0,
+      assigned : 0
+    } as PrivTicketPendingResponseItf ) as any;
+
+  onMounted(() => {
+      if ( ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.value?.nonCommunityEdition  ) {
+        ticketRefreshInterval.value = setInterval(() => {
+          useNuxtApp().$apiBackendTickets.ticketsModulePrivatePendingTicket().then((res) => {
+              if (res.success) {
+                ticketPending.value = res.success;
+              }
+          }).catch (error => {
+              // do nothing, will try again in 30s
+          });
+        }, 30000);
+      }
+  });
+
+   
+  onUnmounted(() => {
+    if (ticketRefreshInterval.value) {
+      clearInterval(ticketRefreshInterval.value);
+    }
+  });
+
+  // -----------------------------------------------------
   // Main interface behavior
   const mainData = reactive({
       open : false as boolean,
@@ -428,9 +458,6 @@
     }
   };
 
-  // ------------------------------------------------------------
-  // Ticket notification management
-  const ticketPending = ref(0);
 
 </script>
 
@@ -543,10 +570,10 @@
                 square
                 @click="router.push('/front/private/tickets');"
               >
-                <UChip v-if="ticketPending > 0" color="success" inset>
+                <UChip v-if="ticketPending.pending > 0" color="success" inset>
                   <UIcon name="i-lucide-sticker" class="size-5 shrink-0" />
                 </UChip>
-                <UIcon v-if="ticketPending == 0" name="i-lucide-sticker" class="size-5 shrink-0" />
+                <UIcon v-if="ticketPending.pending == 0" name="i-lucide-sticker" class="size-5 shrink-0" />
               </UButton>
             </UTooltip>
 

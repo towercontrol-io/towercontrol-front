@@ -199,3 +199,15 @@ export interface PrivTicketUpdateMessageBody {
     /** Specific content reserved to admin, not visible by the user, used for KB usually */
     llmContent?: string;
 }
+
+/**
+ * Returns the number of tickets pending for the user, and for admin the number of tickets
+ * personally assigned
+ */
+export interface PrivTicketPendingResponseItf {
+    /** Number of tickets pending for the user */
+    pending: number;
+
+    /** Number of tickets assigned (for managers) */
+    assigned: number;
+}

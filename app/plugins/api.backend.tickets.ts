@@ -1,4 +1,4 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody } from '~/types';
+import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -12,6 +12,8 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleListGet: string = '/tickets/1.0/ticket';
   const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
   const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
+  const ticketsModulePendingGet: string = '/tickets/1.0/ticket';
+
 
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
   const ticketsModuleSupportUpdatePut: string = '/tickets/1.0/support';
@@ -160,7 +162,7 @@ export default defineNuxtPlugin(() => {
     },
 
     /**
-     * Get details of one signe ticket with associated messages
+     * Get details of one single ticket with associated messages
      */
     ticketsModulePrivateOneTicket: async (ticketId:number): Promise<{ success?: PrivTicketUserDetailResponseItf; error?: ActionResult | { message: string } }> => {
         try {
@@ -192,6 +194,24 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+    /**
+     * Get number of pending / assigned tickets for the user
+     */
+    ticketsModulePrivatePendingTicket: async (): Promise<{ success?: PrivTicketPendingResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketPendingResponseItf>(
+                'GET',
+                ticketsModulePendingGet,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
 
     // =========================================================================
     // SUPPORT USER API
