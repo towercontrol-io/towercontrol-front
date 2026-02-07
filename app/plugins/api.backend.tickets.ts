@@ -12,7 +12,7 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleListGet: string = '/tickets/1.0/ticket';
   const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
   const ticketsModuleMessagePut: string = '/tickets/1.0/ticket';
-  const ticketsModulePendingGet: string = '/tickets/1.0/ticket';
+  const ticketsModulePendingGet: string = '/tickets/1.0/ticket/pending';
 
 
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';

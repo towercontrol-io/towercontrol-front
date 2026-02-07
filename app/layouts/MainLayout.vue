@@ -2,6 +2,7 @@
   import type { UserBasicProfileResponse,GroupsHierarchySimplified,UserConfigResponse, PrivTicketPendingResponseItf } from '~/types';
   import type { AvatarProps, NavigationMenuItem } from '@nuxt/ui'
   import type { DropdownMenuItem } from '@nuxt/ui'
+import { is } from 'valibot';
 
   const { t, setLocale } = useI18n();
   const router = useRouter();
@@ -32,17 +33,72 @@
     router.push('/front/public/login');
   }
 
-  // ----
+
+  // -----------------------------------------------------
+  // Main interface behavior
+  const mainData = reactive({
+      open : false as boolean,
+  });
+
+  defineProps<{
+    collapsed?: boolean
+  }>();
+
+
+  // ------------------------------------------------------------
   // Load the profile data (from cache most of the time, but auto-refresh that way)
+
   const { $apiBackendUsers } = useNuxtApp();
-  const { data: userProfile, profileLoadPending, profileLoadError, profileRefresh } = useAsyncData<UserBasicProfileResponse>(
-    () => `user-profile-response`,
-    () => $apiBackendUsers.getUserProfile()
-  );
-  const { data : userConfig, pending, error, refresh } = useAsyncData<UserConfigResponse>(
-    () => `user-config-response`, 
-    () => $apiBackendUsers.getUserModuleConfig()
-  );
+  const userProfile = ref<UserBasicProfileResponse | null>(null);
+  const userConfig = ref<UserConfigResponse | null>(null);  
+
+  // ------------------------------------------------------------
+  // Ticket notification management
+
+  const ticketRefreshInterval = ref() as any;
+  const ticketPending = ref({
+      pending: 0,
+      assigned : 0
+  } as PrivTicketPendingResponseItf ) as any;
+
+  // ------------------------------------------------------------
+  // Page initialisation
+
+  onMounted(() => {
+    const ticketRefreshDelay = (appStore.isSupportAdmin()?5000:60000); // 5s for admin, 60s for regular users
+
+    $apiBackendUsers.getUserProfile().then((res) => {
+        userProfile.value = res;
+        $apiBackendUsers.getUserModuleConfig().then((res) => {
+            userConfig.value = res;
+            if ( ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.value?.nonCommunityEdition  ) {
+              ticketRefreshInterval.value = setInterval(() => {
+                useNuxtApp().$apiBackendTickets.ticketsModulePrivatePendingTicket().then((res) => {
+                    if (res.success) {
+                      ticketPending.value = res.success;
+                    }
+                }).catch (error => {
+                    // do nothing, will try again in next slot
+                });
+              }, ticketRefreshDelay);
+            }
+        }).catch((err) => {
+          // do nothing, will try again later
+        });
+    }).catch((err) => {
+        // do nothing, will try again later
+    });
+
+  });
+
+   
+  onUnmounted(() => {
+    if (ticketRefreshInterval.value) {
+      clearInterval(ticketRefreshInterval.value);
+    }
+  });
+
+
 
   // -----
   // Set the color scheme and appearance
@@ -97,12 +153,6 @@
     }
   }, { immediate: true });
 
-  // --- refresh profile on update
-  nuxtApp.hook('profile:refresh', async value => {
-      const p = await $apiBackendUsers.getUserProfile();
-      userProfile.value = p;
-  });
-
 
   let getName = function () : string {
     let name : string = 'John Doe';
@@ -138,74 +188,12 @@
     }
   });
 
-  // ------------------------------------------------------------
-  // Ticket notification management
+  // ==================================================================================
+  // Right side menus
+  // ==================================================================================
 
-  const ticketRefreshInterval = ref() as any;
-  const ticketPending = ref({
-      pending: 0,
-      assigned : 0
-    } as PrivTicketPendingResponseItf ) as any;
-
-  onMounted(() => {
-      if ( ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.value?.nonCommunityEdition  ) {
-        ticketRefreshInterval.value = setInterval(() => {
-          useNuxtApp().$apiBackendTickets.ticketsModulePrivatePendingTicket().then((res) => {
-              if (res.success) {
-                ticketPending.value = res.success;
-              }
-          }).catch (error => {
-              // do nothing, will try again in 30s
-          });
-        }, 30000);
-      }
-  });
-
-   
-  onUnmounted(() => {
-    if (ticketRefreshInterval.value) {
-      clearInterval(ticketRefreshInterval.value);
-    }
-  });
-
-  // -----------------------------------------------------
-  // Main interface behavior
-  const mainData = reactive({
-      open : false as boolean,
-  });
-
-  defineProps<{
-    collapsed?: boolean
-  }>();
-
-  /**
-   * Menu on the right side of the page, 2 menus, one for the top and one for the bottom.
-   */
-  const dynRightMenu = computed<NavigationMenuItem[]>( () => {
-    const items: NavigationMenuItem[] = [];
-    if ( documentationLink && documentationLink !== '' ) {
-      items.push(
-        { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: documentationLink, target: '_blank' }
-      );
-    }
-    if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
-      items.push(
-        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink },
-      );
-    }
-    if ( ticketsEnabled ) {
-      if ( supportLink && supportLink !== '' ) {
-        // use external support link
-        items.push({ label: `${t('menu.support')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
-      } else {
-        // use internal ticketing system when NCE
-        if ( userConfig.value?.nonCommunityEdition ) {
-          items.push({ label: `${t('menu.support')}`, to: '/front/private/tickets', icon: 'i-lucide-sticker',onSelect: () => {mainData.open = false } } );
-        }
-      }
-    }
-    return items;
-  });
+  // -------------------------------------------------------------------
+  // top right : access to the admin pages
 
   const dynTopRightMenu = computed<NavigationMenuItem[]>( () => {
     const topItems: NavigationMenuItem[] = [];
@@ -214,13 +202,14 @@
       topItems.push({ label: `${t('menu.userAdmin')}`,icon: 'i-lucide-user-round-cog',to: '/front/private/users',onSelect: () => {mainData.open = false}});  
     }
     if ( appStore.isSupportAdmin() && userConfig.value?.nonCommunityEdition) {
-      topItems.push({ label: `${t('menu.supportAdmin')}`,icon: 'i-lucide-headset',to: '/front/private/support',onSelect: () => {mainData.open = false}});  
+      topItems.push({ label: `${t('menu.supportAdmin')}`,icon: 'i-lucide-headset',to: '/front/private/support', badge:ticketPending.value.pending, onSelect: () => {mainData.open = false}});  
     }
     return topItems;
   });
 
+
   // -----------------------------------------------------------------
-  // Manage the right menu with the list of accessible groups
+  // Center right : group menus
 
   const groupsLoadContext = reactive({
     loading : false,
@@ -318,6 +307,40 @@
   nuxtApp.callHook("usermng:groupUpdate" as any);
 
 
+
+  // -------------------------------------------------------------------
+  // bottom right : access to the user links (support, documentation, etc...)
+
+  const dynRightMenu = computed<NavigationMenuItem[]>( () => {
+    const items: NavigationMenuItem[] = [];
+    if ( documentationLink && documentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.documentation')}`, icon: 'i-lucide-book-open-text', to: documentationLink, target: '_blank' }
+      );
+    }
+    if ( apiDocumentationLink && apiDocumentationLink !== '' ) {
+      items.push(
+        { label: `${t('menu.apiDocumentation')}`, icon: 'i-lucide-plug', to: apiDocumentationLink },
+      );
+    }
+    if ( ticketsEnabled ) {
+      if ( supportLink && supportLink !== '' ) {
+        // use external support link
+        items.push({ label: `${t('menu.support')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);
+      } else {
+        // use internal ticketing system when NCE
+        if ( userConfig.value?.nonCommunityEdition ) {
+          items.push({ label: `${t('menu.support')}`, to: '/front/private/tickets', icon: 'i-lucide-sticker',onSelect: () => {mainData.open = false } } );
+        }
+      }
+    }
+    return items;
+  });
+
+
+
+
+
 /*
   const rightMenu = computed<NavigationMenuItem[][]>(() => {
     
@@ -341,10 +364,9 @@
 */
 
 
-  /**
-   * List of links accessible with the search entry.
-   * It's a list of the existing link like in the link id and a list on unlisted link that are accessible via this search.
-   */
+  // ==================================================================================
+  // TOP RIGHT : search menu helper
+  // ==================================================================================
   const groups = computed(() => [
     { id: 'links', label: `${t('menu.searchGoTo')}`, items: groupsLoadContext.dynGroupsMenu.flat() },
     { id: 'code', label: `${t('menu.searchOther')}`,
@@ -354,9 +376,12 @@
     }
   ]);
 
-  /**
-   * User menu items
-   */
+
+
+  // ==================================================================================
+  // BOTTOM RIGHT : user menu with profile, settings, logout, etc...
+  // ==================================================================================
+
   const userMenuItems = computed<DropdownMenuItem[][]>(() => {
     
     let items = [
@@ -436,9 +461,10 @@
   return items;
 });
 
-  /**
-   * Interface color management with persistence
-   */
+  // ==================================================================================
+  // Interface udpdate & Hooks handling
+  // ==================================================================================
+
 
   async function onPrimaryChange (color: string) {
     if ( appStore.getUserLogin() != null) {
@@ -457,6 +483,12 @@
        const res = await $apiBackendUsers.putUserCustomFieldRequest(appStore.getUserLogin() || '', 'basic_uimode', appearance );
     }
   };
+
+  // --- refresh profile on update
+  nuxtApp.hook('profile:refresh' as any, async () => {
+      const p = await $apiBackendUsers.getUserProfile();
+      userProfile.value = p;
+  });
 
 
 </script>
@@ -565,12 +597,25 @@
               v-if="(ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.nonCommunityEdition )" 
               :text="$t('menu.supportTickets')" >
               <UButton
+                v-if="appStore.isSupportAdmin()"
+                color="neutral"
+                variant="ghost"
+                square
+                @click="router.push('/front/private/support');"
+              >
+                <UChip v-if="ticketPending.pending > 0" color="error" size="lg" inset>
+                  <UIcon name="i-lucide-sticker" class="size-5 shrink-0" />
+                </UChip>
+                <UIcon v-if="ticketPending.pending == 0" name="i-lucide-sticker" class="size-5 shrink-0" />
+              </UButton>
+              <UButton
+                v-else
                 color="neutral"
                 variant="ghost"
                 square
                 @click="router.push('/front/private/tickets');"
               >
-                <UChip v-if="ticketPending.pending > 0" color="success" inset>
+                <UChip v-if="ticketPending.pending > 0" color="success" size="lg" inset>
                   <UIcon name="i-lucide-sticker" class="size-5 shrink-0" />
                 </UChip>
                 <UIcon v-if="ticketPending.pending == 0" name="i-lucide-sticker" class="size-5 shrink-0" />
@@ -583,9 +628,7 @@
                 variant="ghost"
                 square
               >
-                <UChip color="error" inset>
-                  <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
-                </UChip>
+                <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
               </UButton>
             </UTooltip>
           </template>
