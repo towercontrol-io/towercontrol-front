@@ -37,6 +37,13 @@
     const context = reactive({
         expanded: {} as Record<string, boolean>,
     });
+    const columnOrder = ref([
+        'id',
+        'topic',
+        'owner',
+        'creationMs',
+        'status',
+    ]);
 
 
     const onRowSelect = (e: Event, row: TableRow<PrivTicketAbstractResponseItf>) => {
@@ -68,6 +75,7 @@
             <UTable
                 ref="table"
                 v-model:column-filters="columnFilters"
+                v-model:column-order="columnOrder"
                 v-model:expanded="context.expanded"
                 v-model:column-visibility="columnVisibility"
                 :loading="props.loading"
@@ -96,6 +104,17 @@
                 </template>
                 <template #topic-cell="{ row }">
                     <MDC :key="row.original.id" :value="row.original.topic" class="[&_*]:!my-0"/>
+                </template>
+
+                <template #owner-header>
+                    <span class="font-bold">{{ t('tickets.ticketOwnerCol') }}</span>
+                </template>
+                <template #owner-cell="{ row }">
+                    <UTooltip :text="row.original.owner">
+                        <span class="truncate block max-w-48">
+                            {{ row.original.owner }}
+                        </span>
+                    </UTooltip>
                 </template>
 
                 <template #creationMs-header>

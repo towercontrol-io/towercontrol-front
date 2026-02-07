@@ -70,6 +70,9 @@ export interface PrivTicketAbstractResponseItf {
 
     /** Number of items matching in database (support manager only) */
     countItems: number;
+
+    /** Ticket owner (login or email), only for admin */
+    owner?: string;
 }
 
 

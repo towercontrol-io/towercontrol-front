@@ -64,6 +64,7 @@
     "editPersonaldata" : "Mark personal data using strikethrough font",
     "ticketUpdateSuccessfully" : "Ticket updated successfully",
     "ticketUpdateSuccessfullyDesc" : "The support ticket has been updated successfully.",
+    "ticketOwnerCol" : "Owner",
 
     "ticket-new-ticket-created" : "Support ticket has been created",
     "ticket-creation-failed" : "Support ticket creation failed",
