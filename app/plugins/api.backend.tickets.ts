@@ -1,4 +1,8 @@
-import type { PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf } from '~/types';
+import type { 
+    PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, 
+    PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketSupportResponseItf,
+    PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf, PrivTicketSupportManagersResponseItf 
+} from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -18,6 +22,8 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleSupportListGet: string = '/tickets/1.0/support';
   const ticketsModuleSupportUpdatePut: string = '/tickets/1.0/support';
   const ticketsModuleSupportMessageUpdatePut: string = '/tickets/1.0/support/message';
+  const ticketsModuleSupportTicketGet: string = '/tickets/1.0/support';
+  const ticketsModuleSupportManagersGet: string = '/tickets/1.0/support/managers';
 
   const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
 
@@ -278,6 +284,40 @@ export default defineNuxtPlugin(() => {
                 'PUT',
                 ticketsModuleSupportMessageUpdatePut,
                 body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Get full details of one single ticket with associated messages
+     */
+    ticketsModuleSupportOneTicket: async (ticketId:string): Promise<{ success?: PrivTicketSupportResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketSupportResponseItf>(
+                'GET',
+                ticketsModuleSupportTicketGet+'/'+ticketId+'/',
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Get list of support managers (login and full name) to assign tickets to
+     */
+    ticketsModuleSupportManagersGet: async (): Promise<{ success?: PrivTicketSupportManagersResponseItf[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketSupportManagersResponseItf[]>(
+                'GET',
+                ticketsModuleSupportManagersGet,
+                undefined,
                 false
             );
             return { success: response }

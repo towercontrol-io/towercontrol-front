@@ -64,6 +64,17 @@ import { is } from 'valibot';
   // ------------------------------------------------------------
   // Page initialisation
 
+  const getPendingTichets = () => {
+    useNuxtApp().$apiBackendTickets.ticketsModulePrivatePendingTicket().then((res) => {
+      if (res.success) {
+        ticketPending.value = res.success;
+      }
+    }).catch (error => {
+      // do nothing, will try again in next slot
+    });
+  };
+
+
   onMounted(() => {
     const ticketRefreshDelay = (appStore.isSupportAdmin()?5000:60000); // 5s for admin, 60s for regular users
 
@@ -71,15 +82,10 @@ import { is } from 'valibot';
         userProfile.value = res;
         $apiBackendUsers.getUserModuleConfig().then((res) => {
             userConfig.value = res;
+            getPendingTichets();
             if ( ticketsEnabled && (!supportLink || supportLink == '') && userConfig && userConfig.value?.nonCommunityEdition  ) {
               ticketRefreshInterval.value = setInterval(() => {
-                useNuxtApp().$apiBackendTickets.ticketsModulePrivatePendingTicket().then((res) => {
-                    if (res.success) {
-                      ticketPending.value = res.success;
-                    }
-                }).catch (error => {
-                    // do nothing, will try again in next slot
-                });
+                getPendingTichets();
               }, ticketRefreshDelay);
             }
         }).catch((err) => {

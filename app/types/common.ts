@@ -1,7 +1,7 @@
 
 export interface CustomField {
     // Define CustomField interface based on your needs
-    key: string;
+    name: string;
     value: string;
 }
 

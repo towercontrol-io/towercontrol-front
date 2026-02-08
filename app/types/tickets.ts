@@ -181,6 +181,9 @@ export interface PrivTicketUpdateBody {
 
     /** True when ticket can be made public in FAQ / Knowledge base. Reserved to support managers. */
     faqPublic?: boolean;
+
+    /** Ticket Status (OPEN, PENDING, CLOSED, CLOSE_KB) */
+    status?: PrivTicketStatus;
 }
 
 /**
@@ -214,3 +217,102 @@ export interface PrivTicketPendingResponseItf {
     /** Number of tickets assigned (for managers) */
     assigned: number;
 }
+
+
+/**
+ * PrivSupportMessageContent - One of the reply message with all admin fields
+ */
+export interface PrivSupportMessageContent {
+    /** Reply id */
+    id: string;
+
+    /** Response date in milliseconds since epoch */
+    creationMs: number;
+
+    /** Ticket message content (Markdown allowed) */
+    content: string;
+
+    /** Responder login */
+    responderLogin: string;
+
+    /** Responder full name when available */
+    responderFullName?: string;
+
+    /** Element for LLM that will replace the content in RAG context (markdown) */
+    llmDescription: string;
+}
+
+
+/**
+ * Ticket status enumeration
+ */
+export enum PrivTicketStatus {
+    OPEN = 'OPEN',
+    CLOSED = 'CLOSED',
+    RESP_PENDING = 'RESP_PENDING',
+    CLOSED_KB = 'CLOSED_KB'
+}
+
+/**
+ * PrivTicketSupportResponseItf - Request body used to list tickets
+ * Get all related ticket details for a given ticket id
+ */
+export interface PrivTicketSupportResponseItf {
+    /** Ticket id */
+    id: number;
+
+    /** Ticket owner (login or email), only for admin */
+    owner?: string;
+
+    /** Moment of creation in milliseconds since epoch */
+    creationMs: number;
+
+    /** Status of the ticket (OPEN | CLOSED | RESP_PENDING | CLOSED_KB) */
+    status: PrivTicketStatus;
+
+    /** Ticket short title (Markdown allowed) */
+    topic: string;
+
+    /** Response content (Markdown allowed), empty when just closing the ticket */
+    content: string;
+
+    /** Specific content reserved for KB and LLM RAG, not visible by the user */
+    llmDescription: string;
+
+    /** Custom field, free to use for any contextual information (e.g., groups, device...) reserved for KB and LLM RAG, not visible by the user */
+    context?: CustomField[];
+
+    /** Ticket priority (LOW, MEDIUM, HIGH, URGENT) */
+    priority: PrivTicketPriority;
+
+    /** Support manager assigned to the ticket (login) only for admin */
+    assignedToLogin: string;
+
+    /** Support manager assigned to the ticket (full name) only for admin */
+    assignedToFullName?: string;
+
+    /** Other element of the tickets context, related to technical context, used for KB */
+    techContext: string;
+
+    /** True when ticket can be used to enrich FAQ / Knowledge base. Reserved to support managers. */
+    faqEligible: boolean;
+
+    /** True when ticket can be made public in FAQ / Knowledge base. Reserved to support managers. */
+    faqPublic: boolean;
+
+    /** List of responses & replies to the ticket */
+    responses: PrivSupportMessageContent[];
+}
+
+
+/**
+ * PrivTicketSupportManagersResponseItf - Returns the list of support managers to assign tickets
+ */
+export interface PrivTicketSupportManagersResponseItf {
+    /** Support manager login */
+    supportManagerLogin: string;
+
+    /** Support manager full name (when available) */
+    supportManagerFullName: string;
+}
+
