@@ -1,7 +1,8 @@
 import type { 
     PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, 
     PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketSupportResponseItf,
-    PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf, PrivTicketSupportManagersResponseItf 
+    PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf, PrivTicketSupportManagersResponseItf, 
+    PrivTicketAiResponseResponseItf
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
@@ -24,8 +25,10 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleSupportMessageUpdatePut: string = '/tickets/1.0/support/message';
   const ticketsModuleSupportTicketGet: string = '/tickets/1.0/support';
   const ticketsModuleSupportManagersGet: string = '/tickets/1.0/support/managers';
+  const ticketsModuleSupportAiResponseGet: string = '/tickets/1.0/support/{ticketId}/ai';
 
   const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
+  
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -325,6 +328,24 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+    /**
+     * Get a proposed response from the AI for a given ticket (for support users)
+     */
+    ticketsModuleSupportAiResponseGet: async (ticketId: string): Promise<{ success?: PrivTicketAiResponseResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketAiResponseResponseItf>(
+                'GET',
+                ticketsModuleSupportAiResponseGet.replace('{ticketId}', ticketId),
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
 
   };
   return {

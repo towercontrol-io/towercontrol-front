@@ -23,6 +23,7 @@ import { message } from 'valibot';
         submitError: null as string | null,
         response: {} as PrivTicketUserMessageBody,
         formState: {} as any,
+        aiLoading: false as boolean,
 
         ticketEdit: false as boolean,
         messageEdit: [] as boolean[],
@@ -130,6 +131,24 @@ import { message } from 'valibot';
 
     const onSubmit = async () => {
       processTicketResponse(false);
+    };
+
+    const onAiResponse = async () => {
+      componentCtx.submitError = null;
+      componentCtx.aiLoading = true;
+      useNuxtApp().$apiBackendTickets.ticketsModuleSupportAiResponseGet(props.ticket.id).then((res) => {
+        if (res.success) {
+          componentCtx.response.content = res.success.response || '';
+        } else if (res.error) {
+          componentCtx.submitError = t('tickets.' + res.error.message);
+          onError();
+        }
+      }).catch(() => {
+        componentCtx.submitError = t('common.unknownError');
+        onError();
+      }).finally(() => {
+        componentCtx.aiLoading = false;
+      });
     };
 
     const onSupportEdit = async () => {
@@ -340,6 +359,18 @@ import { message } from 'valibot';
   <div v-if="ticket.status == 'OPEN' || isAdmin"
        class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1 border-l-sky-200 dark:border-l-sky-800 text-black dark:text-white pl-4">
     <UForm :state="componentCtx.formState" class="w-full" @submit="() => {}">   
+      <div v-if="isAdmin" class="flex justify-end mt-2 mr-2">
+        <UButton
+                    label="AI"
+                    icon="i-lucide-sparkles"
+                    color="neutral"
+                    size="xs"
+                    type="button"
+                    :loading="componentCtx.aiLoading"
+                    :disabled="componentCtx.aiLoading"
+                    @click="onAiResponse"
+        />
+      </div>
       <UFormField
             name="responseContent"
             :label="$t('tickets.responseContentLabel')"
@@ -348,6 +379,9 @@ import { message } from 'valibot';
             required
             class="flex flex-col gap-2 mb-2"
           >
+            <template #label>
+              <span>{{ $t('tickets.responseContentLabel') }}</span>
+            </template>
             <div class="w-full">
               <div
                 class="bg-white dark:bg-gray-800 w-full pr-4"

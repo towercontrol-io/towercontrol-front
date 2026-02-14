@@ -316,3 +316,16 @@ export interface PrivTicketSupportManagersResponseItf {
     supportManagerFullName: string;
 }
 
+/**
+ * AI generated response to ticket
+ */
+export interface PrivTicketAiResponseResponseItf {
+    /** The LLM generated response */
+    response: string;
+
+    /** List of source document identifiers used for the response */
+    sources: string[];
+
+    /** Processing time in milliseconds */
+    processingTimeMs: number;
+}

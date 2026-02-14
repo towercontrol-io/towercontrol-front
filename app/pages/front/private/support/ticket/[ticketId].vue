@@ -32,7 +32,8 @@
         messageEdit: {} as Record<string, boolean>,
         messageBackup: {} as Record<string, { content: string; llmDescription: string }>,
         response: {} as PrivTicketUserMessageBody,
-        responseFormState: {} as any
+        responseFormState: {} as any,
+        aiLoading: false as boolean
     });
 
     const assigneeOptions = ref<{ login: string; fullName?: string }[]>([]);
@@ -356,6 +357,24 @@
     // --------------------------------------------------------------------
     // Add response
     // --------------------------------------------------------------------
+
+    const onAiResponse = async () => {
+        componentCtx.submitError = null;
+        componentCtx.aiLoading = true;
+        nuxtApp.$apiBackendTickets.ticketsModuleSupportAiResponseGet(componentCtx.ticketId).then((res) => {
+            if (res.success) {
+                componentCtx.response.content = res.success.response || '';
+            } else if (res.error) {
+                componentCtx.submitError = t('tickets.' + res.error.message);
+                onError();
+            }
+        }).catch(() => {
+            componentCtx.submitError = t('common.unknownError');
+            onError();
+        }).finally(() => {
+            componentCtx.aiLoading = false;
+        });
+    };
 
     const onSubmitResponse = async () => {
         componentCtx.submitError = null;
@@ -785,7 +804,19 @@
 
             <div class="mt-6 border-t border-accented pt-4">
                 <UForm :state="componentCtx.responseFormState" class="w-full" @submit="() => {}">
-                    <UFormField
+                  <div class="flex justify-end mr-2">
+                    <UButton
+                      label="AI"
+                      icon="i-lucide-sparkles"
+                      color="neutral"
+                      size="xs"
+                      type="button"
+                      :loading="componentCtx.aiLoading"
+                      :disabled="componentCtx.aiLoading"
+                      @click="onAiResponse"
+                    />
+                  </div>
+                  <UFormField
                         name="responseContent"
                         :label="$t('tickets.responseContentLabel')"
                         :description="$t('tickets.responseContentDescription')"
