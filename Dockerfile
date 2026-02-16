@@ -16,17 +16,28 @@ COPY . .
 RUN \
   if [ -f pnpm-lock.yaml ]; then pnpm generate; \
   elif [ -f yarn.lock ]; then yarn generate; \
-  else npm run generate; \
+  else npm run build; \
   fi
 
 
-# ---------- Runtime (no Node) ----------
-FROM nginx:alpine AS runtime
+# Stage 3: Production runtime
+FROM node:22-alpine AS runtime
+WORKDIR /app
 
-# Optionnel: config SPA (fallback sur index.html)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV NODE_ENV=production
 
-# Copier le site statique
-COPY --from=build /app/dist /usr/share/nginx/html
+# Create non-root user
+RUN addgroup --system --gid 1001 nuxt
+RUN adduser --system --uid 1001 nuxt
 
-EXPOSE 80
+# Copy the Nitro output (self-contained server + client assets)
+COPY --from=build --chown=nuxt:nuxt /app/.output ./.output
+
+USER nuxt
+
+EXPOSE 3000
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+# Start the Nitro server
+CMD ["node", ".output/server/index.mjs"]
