@@ -196,7 +196,7 @@
           >
             <div class="w-full">
               <div
-                class="rounded-md bg-white border w-full"
+                class="rounded-md border w-full"
                 :class="topicError
                   ? (topicFocused ? 'border-red-500 ring-1 ring-red-500' : 'border-red-600')
                   : ((topicError === undefined && topicFocused)? 'border-green-500 ring-1 ring-green-500' : 'border-neutral-300' )"
@@ -217,14 +217,14 @@
             class="flex flex-col mb-4"
           >
             <div
-              class="rounded-md bg-white border"
+              class="rounded-md border"
                 :class="contentError
                     ? (contentFocused ? 'border-red-500 ring-1 ring-red-500' : 'border-red-600')
                     : ((contentError === undefined && contentFocused)? 'border-green-500 ring-1 ring-green-500' : 'border-neutral-300' )"
                 @focusin="contentFocused = true"
                 @focusout="contentFocused = false"
               >
-              <UEditor v-model="formState.content" content-type="markdown" class="w-full rounded-md bg-white"
+              <UEditor v-model="formState.content" content-type="markdown" class="w-full rounded-md"
                 ref="contentRef"
                 :extensions="[
                   TextAlign.configure({ types: ['heading', 'paragraph'] }),
@@ -246,14 +246,14 @@
             class="flex flex-col mb-4"
           >
             <div
-              class="rounded-md bg-white border"
+              class="rounded-md border"
                 :class="llmContentError
                     ? (llmContentFocused ? 'border-red-500 ring-1 ring-red-500' : 'border-red-600')
                     : ((llmContentError === undefined && llmContentFocused)? 'border-green-500 ring-1 ring-green-500' : 'border-neutral-300' )"
                 @focusin="llmContentFocused = true"
                 @focusout="llmContentFocused = false"
               >
-              <UEditor v-model="formState.llmContent" content-type="markdown" class="w-full rounded-md bg-white"
+              <UEditor v-model="formState.llmContent" content-type="markdown" class="w-full rounded-md "
                 ref="llmContentRef"
                 :extensions="[
                   TextAlign.configure({ types: ['heading', 'paragraph'] }),

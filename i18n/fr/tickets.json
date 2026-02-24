@@ -116,6 +116,15 @@
     "tickets-ticket-message-update-denied" : "Vous n'avez pas les droits pour mettre à jour ce message de ticket de support",
     "ticket-update-context-invalid-field" : "Champ de contexte invalide, le format attendu est name:value",
 
+    "common-llm-kb-id-required": "L'identifiant de la base de connaissances est requis",
+    "common-llm-query-required": "Le texte de la requête est requis",
+    "common-llm-kb-not-found": "Base de connaissances introuvable ou vide",
+    "common-llm-doc-id-required": "L'identifiant du document est requis",
+    "common-llm-doc-content-required": "Le contenu du document est requis",
+    "common-llm-docs-required": "La liste des documents est requise",
+    "common-llm-provider-not-set" : "Le fournisseur LLM n'est pas configuré",
+    "common-llm-document-id-required" : "L'identifiant du document ou de la base de connaissances est requis",
+
     "last" : "Dernier"
   }
 }
