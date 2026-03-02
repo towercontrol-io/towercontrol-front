@@ -116,6 +116,11 @@
     "tickets-ticket-message-update-denied" : "You don't have the rights to update this support ticket message",
     "ticket-update-context-invalid-field" : "Invalid context field, expected format is name:value",
 
+    "publicFaqTitle" : "Public FAQ",
+    "publicFaqDescription" : "Check out our public FAQ to find answers to frequently asked questions. If you can't find the answer to your question, feel free to contact us.",
+    "privateFaqTitle" : "Find answers to frequently asked questions",
+    "privateFaqDescription" : "Here you can find all frequently asked questions and their answers. If you can't find the answer to your question, feel free to contact support.",
+
     "common-llm-kb-id-required": "Knowledge base ID is required",
     "common-llm-query-required": "Query text is required",
     "common-llm-kb-not-found": "Knowledge base not found or empty",

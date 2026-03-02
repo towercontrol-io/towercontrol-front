@@ -329,3 +329,20 @@ export interface PrivTicketAiResponseResponseItf {
     /** Processing time in milliseconds */
     processingTimeMs: number;
 }
+
+/**
+ * Ticket abstract body (used for the list of FAQ tickets)
+ */
+export interface PrivTicketFaqResponseItf {
+    /** FAQ ID */
+    id: number;
+
+    /** FAQ Title (Markdown) */
+    topic: string;
+
+    /** FAQ Content (Markdown) */
+    content: string;
+
+    /** Total number of FAQ tickets in the system (for pagination) */
+    totalFaq: number;
+}

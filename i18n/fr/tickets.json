@@ -116,6 +116,11 @@
     "tickets-ticket-message-update-denied" : "Vous n'avez pas les droits pour mettre à jour ce message de ticket de support",
     "ticket-update-context-invalid-field" : "Champ de contexte invalide, le format attendu est name:value",
 
+    "publicFaqTitle" : "FAQ publique",
+    "publicFaqDescription" : "Consultez notre FAQ publique pour trouver des réponses aux questions fréquemment posées. Si vous ne trouvez pas la réponse à votre question, n'hésitez pas à nous contacter.",
+    "privateFaqTitle" : "Trouvez les réponses aux questions fréquemment posées",
+    "privateFaqDescription" : "Vous trouvez ici toutes les questions fréquentes et leur réponse. Si vous ne trouvez pas la réponse à votre question, n'hésitez pas à contacter le support.",
+
     "common-llm-kb-id-required": "L'identifiant de la base de connaissances est requis",
     "common-llm-query-required": "Le texte de la requête est requis",
     "common-llm-kb-not-found": "Base de connaissances introuvable ou vide",

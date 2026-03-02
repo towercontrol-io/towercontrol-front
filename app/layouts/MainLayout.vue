@@ -14,6 +14,7 @@ import { is } from 'valibot';
   const billingEnabled : boolean = config.public.ENABLE_BILLING_FEATURES as boolean;
   const ticketsEnabled : boolean = config.public.ENABLE_TICKETING_FEATURES as boolean;
   const supportLink : string = config.public.SUPPORT_LINK as string;
+  const faqLink : string = config.public.FAQ_LINK as string;
   const documentationLink : string = config.public.DOCUMENTATION_LINK as string;
   const apiDocumentationLink : string = config.public.APIDOC_LINK as string;
   const colorMode = useColorMode();
@@ -330,6 +331,16 @@ import { is } from 'valibot';
       );
     }
     if ( ticketsEnabled ) {
+      if ( faqLink && faqLink !== '' ) {
+        // use external FAQ link
+        items.push({ label: `${t('menu.faq')}`, target: "_blank", to: faqLink, icon: 'i-lucide-message-circle-question-mark',onSelect: () => {mainData.open = false } },);
+      } else {
+        // use internal ticketing system when NCE
+        if ( userConfig.value?.nonCommunityEdition ) {
+          items.push({ label: `${t('menu.faq')}`, to: '/front/private/faq', icon: 'i-lucide-message-circle-question-mark',onSelect: () => {mainData.open = false } } );
+        }
+      }
+
       if ( supportLink && supportLink !== '' ) {
         // use external support link
         items.push({ label: `${t('menu.support')}`, target: "_blank", to: supportLink, icon: 'i-lucide-message-circle',onSelect: () => {mainData.open = false } },);

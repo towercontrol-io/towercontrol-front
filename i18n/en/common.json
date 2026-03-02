@@ -184,6 +184,8 @@
     "ticketsUser": "My Support Tickets",
     "supportAdmin" : "Support Management",
     "ticketAdvEdition" : "Advanced Ticket Edition",
+    "faq": "Freq. Asked Questions",
+    "ticketsFaq": "Frequently Asked Questions",
 
     "last" : "Last"
   },

@@ -2,7 +2,7 @@ import type {
     PrivTicketCreationBody, PrivTicketCreationResponseItf, PrivTicketAbstractResponseItf, 
     PrivTicketUserDetailResponseItf, PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketSupportResponseItf,
     PrivTicketUpdateMessageBody, PrivTicketPendingResponseItf, PrivTicketSupportManagersResponseItf, 
-    PrivTicketAiResponseResponseItf
+    PrivTicketAiResponseResponseItf, PrivTicketFaqResponseItf
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
@@ -28,8 +28,9 @@ export default defineNuxtPlugin(() => {
   const ticketsModuleSupportAiResponseGet: string = '/tickets/1.0/support/{ticketId}/ai';
 
   const ticketsModuleFAQCreatePost: string = '/tickets/1.0/faq';
+  const ticketsModuleFAQPublicGet: string = '/tickets/1.0/public/faq';
+  const ticketsModuleFAQPrivateGet: string = '/tickets/1.0/faq';
   
-
   // Get dynmaic configuration
   const config = useRuntimeConfig();
   const appStore = applicationStore();
@@ -346,6 +347,40 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * List public FAQ tickets with pagination
+     */
+    ticketsModuleFAQPublicList: async (pageNumber:number, pageSize:number): Promise<{ success?: PrivTicketFaqResponseItf[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketFaqResponseItf[]>(
+                'GET',
+                ticketsModuleFAQPublicGet+'?page='+pageNumber+'&size='+pageSize,
+                undefined,
+                true
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+
+    /**
+     * List private FAQ tickets with pagination
+     */
+    ticketsModuleFAQPrivateList: async (pageNumber:number, pageSize:number): Promise<{ success?: PrivTicketFaqResponseItf[]; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketFaqResponseItf[]>(
+                'GET',
+                ticketsModuleFAQPrivateGet+'?page='+pageNumber+'&size='+pageSize,
+                undefined,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
 
   };
   return {
