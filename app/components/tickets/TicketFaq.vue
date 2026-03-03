@@ -1,7 +1,6 @@
 <script lang="ts" setup>
     import type { PrivTicketFaqResponseItf } from '~/types';
     import type { TableRow } from '@nuxt/ui';
-import { id } from '@nuxt/ui/runtime/locale/index.js';
 
     const props = defineProps<{
         faqs: PrivTicketFaqResponseItf[];
