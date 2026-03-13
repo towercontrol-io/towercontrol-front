@@ -33,6 +33,33 @@ export interface MandatoryField {
 }
 
 /**
+ * Protocol ID pool definition
+ * Equivalent TypeScript interface for the Java class ProtocolId
+ */
+export interface ProtocolId {
+  /**
+   * Protocol ID type name
+   * There may be multiple protocol ID types for a given protocol
+   */
+  name: string;
+
+  /**
+   * Slug description of the protocol ID definition, used for i18n translation
+   */
+  description: string;
+
+  /**
+   * Short English description (non i18n) for quick understanding
+   */
+  enDescription: string;
+
+  /**
+   * Mandatory fields for this protocol ID
+   */
+  mandatoryFields: MandatoryField[];
+}
+
+/**
  * Capture protocol response
  * Equivalent TypeScript interface for the Java class CaptureProtocolResponseItf
  */
@@ -89,6 +116,11 @@ export interface CaptureProtocolResponseItf {
    * Example: false
    */
   defaultWideOpen: boolean;
+
+  /*
+   * List of protocol ID pool definition related to this protocol definition.
+   */
+  protocolIds: ProtocolId[];
 }
 
 /**
