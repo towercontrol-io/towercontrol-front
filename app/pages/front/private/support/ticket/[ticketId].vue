@@ -389,7 +389,7 @@
         componentCtx.response.closeTicket = false;
         componentCtx.response.closeKb = false;
         componentCtx.response.adminContent = '';
-        componentCtx.response.AuthKey = '';
+        componentCtx.response.authKey = '';
 
         nuxtApp.$apiBackendTickets.ticketsModulePrivateUpdate(componentCtx.response).then((res) => {
             if (res.success) {

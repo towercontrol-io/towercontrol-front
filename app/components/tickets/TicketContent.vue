@@ -3,11 +3,12 @@
     import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody } from '~/types';
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
     import { TextAlign } from '@tiptap/extension-text-align'
-import { message } from 'valibot';
 
     const props = defineProps<{
-            ticket : PrivTicketAbstractResponseItf;
+            ticketId ?: number | undefined;
+            ticket : PrivTicketAbstractResponseItf | undefined;
             isAdmin ?: boolean;
+            authKey ?: string;
     }>();
 
     const { t } = useI18n();
@@ -37,23 +38,46 @@ import { message } from 'valibot';
     const loadTicket = async () => {
         componentCtx.ticketLoading = true;
         componentCtx.ticketLoadingError = null;
-        useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticket.id).then((res) => {
-            if (res.success) {
-                componentCtx.ticket = res.success;
-                componentCtx.ticketContent = res.success.content;
-                for ( const msg of componentCtx.ticket.responses ) {
-                  componentCtx.messageEdit[msg.id as any] = false;
-                  componentCtx.messageEditBackup[msg.id as any] = msg.content;
-                }
-                useNuxtApp().callHook("ticketcontent:open" as any, props.ticket.id);
-            } else if (res.error) {
-                componentCtx.ticketLoadingError = t('tickets.'+res.error.message);
-            }
-        }).catch((error) => {
-            componentCtx.ticketLoadingError = t('common.unknownError');
-        }).finally(() => {
-            componentCtx.ticketLoading = false;
-        });
+        if ( props.ticket ) {
+          useNuxtApp().$apiBackendTickets.ticketsModulePrivateOneTicket(props.ticket.id).then((res) => {
+              if (res.success) {
+                  componentCtx.ticket = res.success;
+                  componentCtx.ticketContent = res.success.content;
+                  for ( const msg of componentCtx.ticket.responses ) {
+                    componentCtx.messageEdit[msg.id as any] = false;
+                    componentCtx.messageEditBackup[msg.id as any] = msg.content;
+                  }
+                  useNuxtApp().callHook("ticketcontent:open" as any, props.ticket!.id);
+              } else if (res.error) {
+                  componentCtx.ticketLoadingError = t('tickets.'+res.error.message);
+              }
+          }).catch((error) => {
+              componentCtx.ticketLoadingError = t('common.unknownError');
+          }).finally(() => {
+              componentCtx.ticketLoading = false;
+          });
+      } else if ( props.ticketId && props.authKey) {
+          useNuxtApp().$apiBackendTickets.ticketsModulePublicOneTicket(props.ticketId, props.authKey).then((res) => {
+              if (res.success) {
+                  componentCtx.ticket = res.success;
+                  componentCtx.ticketContent = res.success.content;
+                  for ( const msg of componentCtx.ticket.responses ) {
+                    componentCtx.messageEdit[msg.id as any] = false;
+                    componentCtx.messageEditBackup[msg.id as any] = msg.content;
+                  }
+                  useNuxtApp().callHook("ticketcontent:open" as any, props.ticketId);
+              } else if (res.error) {
+                  componentCtx.ticketLoadingError = t('tickets.'+res.error.message);
+              }
+          }).catch((error) => {
+              componentCtx.ticketLoadingError = t('common.unknownError');
+          }).finally(() => {
+              componentCtx.ticketLoading = false;
+          });
+      } else {
+        componentCtx.ticketLoadingError = t('tickets.noTicket');
+        componentCtx.ticketLoading = false;
+      }
     };
 
     onMounted(() => {
@@ -90,12 +114,35 @@ import { message } from 'valibot';
       }
       isSubmitting.value = true;
       componentCtx.response.closeTicket = close;
-      componentCtx.response.id = props.ticket.id;
+      componentCtx.response.id = (props.ticket) ? props.ticket.id : Number(props.ticketId);
       componentCtx.response.closeKb = false;
       componentCtx.response.adminContent = '';
-      componentCtx.response.AuthKey = '';
+      componentCtx.response.authKey = (props.authKey) ? props.authKey : '';
 
-      useNuxtApp().$apiBackendTickets.ticketsModulePrivateUpdate(componentCtx.response).then((res) => {
+      if ( props.ticket ) {
+        useNuxtApp().$apiBackendTickets.ticketsModulePrivateUpdate(componentCtx.response).then((res) => {
+            if (res.success) {
+                componentCtx.response = {} as PrivTicketUserMessageBody;
+                loadTicket();
+                if ( close ) useNuxtApp().callHook("ticketcontent:close" as any); 
+                // Handle successful API key deletion
+                toast.add({
+                  title: t('tickets.responseAddedSuccessfully'),
+                  description: t('tickets.responseAddedSuccessfullyDesc'),
+                  icon: 'i-lucide-arrow-big-up-dash',
+                });
+            } else if (res.error) {
+                componentCtx.submitError = t('tickets.'+res.error.message);
+                onError();
+            }
+        }).catch((error) => {
+            componentCtx.submitError = t('common.unknownError');
+            onError();
+        }).finally(() => {
+            isSubmitting.value = false;
+        });
+      } else if ( props.ticketId && props.authKey) {
+        useNuxtApp().$apiBackendTickets.ticketsModulePublicUpdate(componentCtx.response).then((res) => {
           if (res.success) {
               componentCtx.response = {} as PrivTicketUserMessageBody;
               loadTicket();
@@ -110,12 +157,13 @@ import { message } from 'valibot';
               componentCtx.submitError = t('tickets.'+res.error.message);
               onError();
           }
-      }).catch((error) => {
-          componentCtx.submitError = t('common.unknownError');
-          onError();
-      }).finally(() => {
-          isSubmitting.value = false;
-      });
+        }).catch((error) => {
+            componentCtx.submitError = t('common.unknownError');
+            onError();
+        }).finally(() => {
+            isSubmitting.value = false;
+        });
+      }
 
     };
 
@@ -136,7 +184,7 @@ import { message } from 'valibot';
     const onAiResponse = async () => {
       componentCtx.submitError = null;
       componentCtx.aiLoading = true;
-      useNuxtApp().$apiBackendTickets.ticketsModuleSupportAiResponseGet(props.ticket.id).then((res) => {
+      useNuxtApp().$apiBackendTickets.ticketsModuleSupportAiResponseGet(''+props.ticket!.id).then((res) => {
         if (res.success) {
           componentCtx.response.content = res.success.response || '';
         } else if (res.error) {
@@ -152,7 +200,7 @@ import { message } from 'valibot';
     };
 
     const onSupportEdit = async () => {
-      useRouter().push({ path: `/front/private/support/ticket/${props.ticket.id}/` });
+      useRouter().push({ path: `/front/private/support/ticket/${props.ticket!.id}/` });
     };
 
     const isSubmitting = ref(false);
@@ -216,7 +264,7 @@ import { message } from 'valibot';
         id: componentCtx.ticket.id,
         quickUpdate: true,
         content: componentCtx.ticket.content,
-        topic: props.ticket.topic,
+        topic: props.ticket!.topic,
       };
 
       useNuxtApp().$apiBackendTickets.ticketsModulePrivateTicketUpdate(updateBody).then((res) => {
@@ -300,6 +348,9 @@ import { message } from 'valibot';
 <template>
   <div class="flex gap-2 items-start">
     <div class="bg-white dark:bg-gray-800 p-4 rounded-md border border-accented flex-1">
+      <div v-if="componentCtx.ticket.id === undefined" class="text-error">
+        {{ componentCtx.ticketLoadingError }}
+      </div>
       <div v-if="componentCtx.ticket.content">
         <MDC v-if="!componentCtx.ticketEdit" :value="componentCtx.ticket.content" class="[&_*]:!my-0"/>
         <UEditor v-if="componentCtx.ticketEdit" v-model="componentCtx.ticket.content" content-type="markdown" class="w-full bg-white dark:bg-gray-800"
@@ -356,7 +407,7 @@ import { message } from 'valibot';
       <UIcon name="i-lucide-save" class="flex-shrink-0 size-5 cursor-pointer" @click="onSaveMessage(message.id)"/>
     </div>
   </div>
-  <div v-if="ticket.status == 'OPEN' || isAdmin"
+  <div v-if="ticket && ticket.status == 'OPEN' || isAdmin || (ticketId && componentCtx.ticket.id !== undefined)"
        class="mt-4 ml-4 border-l-4 border-accented border-r-1 border-b-1 border-l-sky-200 dark:border-l-sky-800 text-black dark:text-white pl-4">
     <UForm :state="componentCtx.formState" class="w-full" @submit="() => {}">   
       <div v-if="isAdmin" class="flex justify-end mt-2 mr-2">

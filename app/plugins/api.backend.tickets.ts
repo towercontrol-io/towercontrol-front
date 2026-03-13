@@ -6,6 +6,7 @@ import type {
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
+import type { st } from 'vue-router/dist/router-CWoNjPRp.mjs';
 
 export default defineNuxtPlugin(() => {
 
@@ -13,6 +14,9 @@ export default defineNuxtPlugin(() => {
 
   // Set the routes
   const ticketsModulePublicCreationPost: string = '/tickets/1.0/public/create';
+  const ticketsModulePublicAccessGet: string = '/tickets/1.0/public/ticket';
+  const ticketsModulePublicResponsePut: string = '/tickets/1.0/public/ticket';
+
   const ticketsModuleCreatePost: string = '/tickets/1.0/ticket';
   const ticketsModuleListGet: string = '/tickets/1.0/ticket';
   const ticketsModuleTicketGet: string = '/tickets/1.0/ticket';
@@ -136,6 +140,41 @@ export default defineNuxtPlugin(() => {
             return { error };
         }
     },
+
+    /**
+     * Get details of one single public ticket with associated messages
+     */
+    ticketsModulePublicOneTicket: async (ticketId:number, accessKey:string): Promise<{ success?: PrivTicketUserDetailResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<PrivTicketUserDetailResponseItf>(
+                'GET',
+                ticketsModulePublicAccessGet+'?ticketId='+ticketId+'&accessKey='+accessKey,
+                undefined,
+                true
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Add a message to a public ticket or close it (authenticated user)
+     */
+    ticketsModulePublicUpdate: async (body:PrivTicketUserMessageBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'PUT',
+                ticketsModulePublicResponsePut,
+                body,
+                true
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
 
     /**
      * Create a new Ticket (private API)

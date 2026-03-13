@@ -127,7 +127,7 @@ export interface PrivTicketUserMessageBody {
     closeKb: boolean;
 
     /** Authorization Key for public anonymous response */
-    AuthKey?: string;
+    authKey?: string;
 }
 
 
