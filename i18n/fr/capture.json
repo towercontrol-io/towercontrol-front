@@ -110,6 +110,8 @@
     "protocol-lorawan-id-deveu" : "EUI64 de l'appareil",
     "protocol-lorawan-id-joineui" : "Join EUI, format hexadécimal 128 bits",
     "protocol-lorawan-id-appkey" : "App Key, format hexadécimal 128 bits, stocké de manière chiffrée",
+    "protocol-sigfox" : "Sigfox",
+    "protocol-version-sigfox-v2" : "Sigfox v2",
     "protocol-sigfox-v2" : "Sigfox v2",
     "protocol-sigfox-api-endpoint" : "Point de collecte de l'API Sigfox",
     "protocol-sigfox-api-user" : "Nom d'utilisateur de l'API Sigfox",
@@ -117,11 +119,19 @@
     "protocol-sigfox-create-callback" : "Créer le callback sur le backend Sigfox",
     "protocol-sigfox-device-type" : "Nom ou ID du type d'appareil Sigfox",
     "protocol-sigfox-group" : "Nom ou ID du groupe Sigfox",
+    "protocol-sigfox-id-reassignment" : "Stratégie de réaffectation des ID",
     "protocol-sigfox-idpac" : "Identifiants Sigfox ID & PAC",
     "protocol-sigfox-id-id" : "ID Sigfox, format hexadécimal 32 bits",
     "protocol-sigfox-id-pac" : "Sigfox PAC, format hexadécimal 128 bits",
     "protocol-sigfox-id-pac-psk" : "Sigfox ID,PAC avec identifiants PSK",
     "protocol-sigfox-id-psk" : "Sigfox PSK, format hexadécimal 128 bits, stocké de manière chiffrée",
+    "protocol-sigfox-api-endpoint-desc" : "Veuillez entrer l'URL du point de collecte de l'API Sigfox, par exemple : https://api.sigfox.com/v2",
+    "protocol-sigfox-api-user-desc" : "Veuillez entrer le nom d'utilisateur de l'API Sigfox, vous devez créer un utilisateur API dédié avec des droits limités.",
+    "protocol-sigfox-api-password-desc" : "Veuillez entrer le mot de passe associé.",
+    "protocol-sigfox-create-callback-desc" : "Lorsque sélectionné, le callback sera automatiquement créé sur le backend Sigfox pour transférer les données vers le point de collecte. Sinon, vous devrez le créer manuellement et définir l'URL du callback sur l'URL du point de collecte.",
+    "protocol-sigfox-device-type-desc" : "Veuillez entrer le nom ou l'ID du type d'appareil, l'ID est préféré",
+    "protocol-sigfox-group-desc" : "Veuillez entrer le nom ou l'ID du groupe Sigfox, l'ID est préféré.",
+    "protocol-sigfox-id-reassignment-desc" : "Veuillez sélectionner la stratégie de réaffectation des ID. no-reuse rendra l'ID inutilisable après utilisation, reuse-last permettra de réutiliser le même ID pour un autre appareil après utilisation, en sélectionnant le dernier libéré. reuse-first sélectionnera le premier libéré.",
 
     "last" : "Dernier"
   }
