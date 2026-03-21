@@ -68,6 +68,14 @@
     "errorCreatingEndpoint" : "Une erreur est survenue lors de la création du point de collecte",
     "noResults" : "Vous n'avez pas encore de point de collecte.",
 
+    "endpointDetailsTitle" : "Détails du point de collecte",
+    "endpointDetailsDesc" : "Vue en consultation de la configuration du point de collecte et de son type d'identifiant.",
+    "endpointDetailsBack" : "Retour aux points de collecte",
+    "endpointInfoSection" : "Informations du point de collecte",
+    "endpConfigSection" : "Configuration du protocole",
+    "endpIdTypeSection" : "Type d'identifiant",
+    "endpIdTypeMandatoryFields" : "Champs obligatoires pour l'identifiant",
+
     "capture-protocol-not-found" : "Le protocole demandé n'a pas été trouvé parmi les protocoles disponibles",
     "capture-protocol-already-exists" : "Le protocole demandé existe déjà",
     "capture-endpoint-not-found" : "Le point de collecte demandé n'a pas été trouvé parmi les points de collecte disponibles",

@@ -9,6 +9,7 @@ export default defineNuxtPlugin(() => {
   // Set the routes
   const captureModuleProtocolListGet: string = '/capture/1.0/protocol';
   const captureModuleEndpointListGet: string = '/capture/1.0/endpoint';
+  const captureModuleEndpointOneGet: string = '/capture/1.0/endpoint/{id}/';
   const captureModuleEndpointDelete: string = '/capture/1.0/endpoint/{id}/';
   const captureModuleEndpointCreatePost: string = '/capture/1.0/endpoint';
 
@@ -135,6 +136,23 @@ export default defineNuxtPlugin(() => {
         }
     },
 
+    /**
+     * Get one endpoint by Ref
+     */
+    captureModuleGetEndpointByRef : async (endpointId: string): Promise<{ success?: CaptureEndpointResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<CaptureEndpointResponseItf>(
+                'GET',
+                captureModuleEndpointOneGet.replace('{id}', endpointId),
+                undefined,
+                false
+            );
+            return { success: response };
+        } catch (error : any) {
+            return { error };
+        }
+    },
+   
 
     /**
      * Delete the capture endpoint
@@ -153,22 +171,22 @@ export default defineNuxtPlugin(() => {
         }
     },
 
-        /**
-         * Create a new Endpoint
-         */
-        captureModuleEndpointCreation: async (body:CaptureEndpointCreationBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
-            try {
-                const response = await apiCallwithTimeout<ActionResult>(
-                    'POST',
-                    captureModuleEndpointCreatePost,
-                    body,
-                    false
-                );
-                return { success: response }
-            } catch (error : any) {
-                return { error };
-            }
-        },
+    /**
+     * Create a new Endpoint
+     */
+    captureModuleEndpointCreation: async (body:CaptureEndpointCreationBody): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'POST',
+                captureModuleEndpointCreatePost,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
 
 
   };

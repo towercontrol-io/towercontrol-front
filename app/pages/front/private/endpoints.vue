@@ -55,6 +55,7 @@
             'wideOpen',
             'encrypted',
             'creationMs',
+            'telecomIds',
             'deleteAction',
         ] as string[],
         deleteConfirmLayer: false as boolean,
@@ -286,6 +287,7 @@
                 componentCtx.endpointList = res.success as CaptureEndpointResponseItf[];
                 componentCtx.endpointList.forEach( ( endp ) => {
                     endp.deleteAction = '';
+                    endp.telecomIds = '';
                 });
                 componentCtx.apiEndpLoading = false;
             } else if ( res.error ) {
@@ -501,6 +503,24 @@
                                     </span>
                                     </template>
                                 </UTooltip>
+                            </template>
+
+                            <template #telecomIds-header>
+                                <UIcon name="i-lucide-key-round" class="w-4 h-4"/>
+                            </template>
+                            <template #telecomIds-cell="{ row }">
+                                <UIcon
+                                    v-if="row.original.idTypeName"
+                                    name="i-lucide-key-round"
+                                    class="w-4 h-4 text-neutral cursor-pointer"
+                                    @click.stop="router.push('/front/private/endpoint/' + row.original.ref + '/details')"
+                                />
+                                <UIcon
+                                    v-else
+                                    name="i-lucide-info"
+                                    class="w-4 h-4 text-neutral cursor-pointer"
+                                    @click.stop="router.push('/front/private/endpoint/' + row.original.ref + '/details')"
+                                />
                             </template>
 
                             <template #deleteAction-header>

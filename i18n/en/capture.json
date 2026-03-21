@@ -68,6 +68,14 @@
     "errorCreatingEndpoint" : "An error occurred while creating the capture endpoint",
     "noResults" : "You don't have any capture endpoints yet.",
 
+    "endpointDetailsTitle" : "Endpoint Details",
+    "endpointDetailsDesc" : "Read-only view of the capture endpoint configuration and its identifier type.",
+    "endpointDetailsBack" : "Back to endpoints",
+    "endpointInfoSection" : "Endpoint Information",
+    "endpConfigSection" : "Protocol Configuration",
+    "endpIdTypeSection" : "Identifier Type",
+    "endpIdTypeMandatoryFields" : "Required identifier fields",
+
     "capture-protocol-not-found" : "The requested protocol was not found in available protocols",
     "capture-protocol-already-exists" : "The requested protocol already exists",
     "capture-endpoint-not-found" : "The requested endpoint was not found in available endpoints",
