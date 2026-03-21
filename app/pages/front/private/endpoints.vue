@@ -29,12 +29,14 @@
         selectedProtocolType: '' as string,
         selectedProtocolVersion: '' as string,
         selectedProtocol: null as CaptureProtocolResponseItf | null,
+        selectedProtocolIdName: '' as string,
         mandatoryFieldValidity: {} as Record<string, boolean>,
         endpointColumns : {
             id: false,
             customConfig: false,
             description: false,
             owner: false,
+            idTypeName: false,
             totalFramesReceived : false,
             totalFramesAcceptedToPivot : false,
             totalInDriver : false,
@@ -64,6 +66,7 @@
             protocolId: '',
             forceWideOpen: false,
             customConfig: [],
+            idTypeName: '',
         } as CaptureEndpointCreationBody,
     });
 
@@ -138,6 +141,9 @@
         if (!componentCtx.newEndPoint.protocolId) {
             return false;
         }
+        if (protocolIdOptions.value.length && !componentCtx.newEndPoint.idTypeName) {
+            return false;
+        }
 
         return mandatoryFields.value.every((field) => componentCtx.mandatoryFieldValidity[field.name]);
     });
@@ -194,6 +200,16 @@
         }));
     });
 
+    const protocolIdOptions = computed(() => {
+        if (!componentCtx.selectedProtocol?.protocolIds?.length) {
+            return [];
+        }
+        return componentCtx.selectedProtocol.protocolIds.map((pid) => ({
+            label: t(`capture.${pid.description}`),
+            value: pid.name,
+        }));
+    });
+
     watch(
         () => componentCtx.selectedProtocolFamily,
         () => {
@@ -201,6 +217,8 @@
             componentCtx.selectedProtocolVersion = '';
             componentCtx.selectedProtocol = null;
             componentCtx.newEndPoint.protocolId = '';
+            componentCtx.selectedProtocolIdName = '';
+            componentCtx.newEndPoint.idTypeName = '';
         },
     );
 
@@ -210,6 +228,8 @@
             componentCtx.selectedProtocolVersion = '';
             componentCtx.selectedProtocol = null;
             componentCtx.newEndPoint.protocolId = '';
+            componentCtx.selectedProtocolIdName = '';
+            componentCtx.newEndPoint.idTypeName = '';
         },
     );
 
@@ -232,6 +252,8 @@
 
             componentCtx.selectedProtocol = matchedProtocol ?? null;
             componentCtx.newEndPoint.protocolId = matchedProtocol?.id ?? '';
+            componentCtx.selectedProtocolIdName = '';
+            componentCtx.newEndPoint.idTypeName = '';
         },
     );
 
@@ -240,6 +262,13 @@
         () => {
             componentCtx.newEndPoint.customConfig = [];
             componentCtx.mandatoryFieldValidity = {};
+        },
+    );
+
+    watch(
+        () => componentCtx.selectedProtocolIdName,
+        () => {
+            componentCtx.newEndPoint.idTypeName = componentCtx.selectedProtocolIdName;
         },
     );
 
@@ -341,6 +370,7 @@
                 componentCtx.selectedProtocolType = '';
                 componentCtx.selectedProtocolVersion = '';
                 componentCtx.selectedProtocol =  null;
+                componentCtx.selectedProtocolIdName = '';
                 componentCtx.mandatoryFieldValidity =  {} as Record<string, boolean>;
                 componentCtx.newEndPoint = {
                     name: '',
@@ -349,6 +379,7 @@
                     protocolId: '',
                     forceWideOpen: false,
                     customConfig: [],
+                    idTypeName: '',
                 } as CaptureEndpointCreationBody;
                 componentCtx.creationMode = false;
             } else if ( res.error ) {
@@ -682,6 +713,25 @@
                                 class="w-70"
                             />
                         </UFormField>
+
+                        <UFormField
+                            v-if="protocolIdOptions.length"
+                            name="idTypeName"
+                            :label="$t('capture.endpProtocolIdType')"
+                            :description="$t('capture.endpProtocolIdTypeDesc')"
+                            required
+                            class="flex max-sm:flex-col justify-between items-start gap-4 mb-2"
+                        >
+                            <USelectMenu
+                                v-model="componentCtx.selectedProtocolIdName"
+                                :items="protocolIdOptions"
+                                value-key="value"
+                                label-key="label"
+                                :searchable="true"
+                                class="w-70"
+                            />
+                        </UFormField>
+
                         <div v-if="componentCtx.selectedProtocol" class="w-70 ms-auto text-xs text-neutral-500 mb-2">
                             {{ t(`capture.${componentCtx.selectedProtocol.description}`) }}
                         </div>

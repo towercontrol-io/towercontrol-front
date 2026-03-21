@@ -163,6 +163,11 @@ export interface CaptureEndpointCreationBody {
    * List of protocol specific fields to be provided for configuration
    */
   customConfig: CustomField[];
+
+  /**
+   * Type of ID to be used for this endpoint, can be null or empty, see protocol definition to know the types
+   */
+  idTypeName: string;
 }
 
 /**
@@ -229,6 +234,13 @@ export interface CaptureEndpointResponseItf {
    * List of protocol specific fields to be provided for configuration
    */
   customConfig: CustomField[];
+
+  /**
+   * Name of the ID type in that protocol
+   * Example: "lorawan-dynamic-ids"
+   */
+  idTypeName: string;
+
 
   /**
    * Stats - total frame received
