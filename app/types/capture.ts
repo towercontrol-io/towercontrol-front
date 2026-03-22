@@ -298,3 +298,93 @@ export interface CaptureEndpointResponseItf {
 
 }
 
+/**
+ * Possible initial states for IDs to insert
+ */
+export enum IdStateEnum {
+  UNKNOWN = 'UNKNOWN',              
+  NOT_ASSIGNED = 'NOT_ASSIGNED',
+  ASSIGNED = 'ASSIGNED',
+  IN_USE = 'IN_USE',
+}
+
+/**
+ * Body to request creation of new IDs in database
+ * Equivalent TypeScript interface for the Java class CaptureInsertIdsBody
+ */
+export interface CaptureInsertIdsBody {
+  /**
+   * Endpoint reference — refers to the protocol definition and the type of IDs to insert
+   * Example: "1"
+   */
+  captureId: string;
+
+  /**
+   * Expected initial state of the IDs to insert; not all states are possible
+   * Example: IdStateEnum.UNKNOWN
+   */
+  initialState: IdStateEnum;
+
+  /**
+   * List of fields to insert, with the field name and the order, separated by ; or , (csv)
+   * Example: "lorawan-dev;lorawan-join"
+   */
+  headers: string;
+
+  /**
+   * List of IDs, one line per ID, credentials separated by ; or , (csv)
+   * Example: "12313156;1231516111\n12313156;1231516111"
+   */
+  ids: string[];
+}
+
+export enum InsertIDsStatus {
+  INSERTED = 'INSERTED',
+  INVALID_PROTOCOL_ID = 'INVALID_PROTOCOL_ID',
+  INVALID_ENDPOINT_ID = 'INVALID_ENDPOINT_ID',
+  INVALID_TYPE_ID = 'INVALID_TYPE_ID',
+  /** Header name found invalid */
+  INVALID_HEADER = 'INVALID_HEADER',
+  /** Same header found multiple times */
+  DUPLICATED_HEADER = 'DUPLICATED_HEADER',
+  INVALID_STATUS = 'INVALID_STATUS',
+  /** Fields or values missing */
+  MISSING_DATA = 'MISSING_DATA',
+  /** Format is not correct */
+  MALFORMED_DATA = 'MALFORMED_DATA',
+  /** One of the IDs already exists in DB */
+  NOT_UNIQUE = 'NOT_UNIQUE',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}
+
+/**
+ * Response for IDs insertion request
+ * Equivalent TypeScript interface for the Java class CaptureInsertIdsResponseItf
+ */
+export interface CaptureInsertIdsResponseItf {
+  /**
+   * Result of the insertion; in case of error, nothing is inserted
+   */
+  status: InsertIDsStatus;
+
+  /**
+   * Number of IDs inserted in database
+   * Example: 120
+   */
+  inserted: number;
+
+  /**
+   * Line number with the error in case of error, otherwise 0
+   * Example: 0
+   */
+  errorFirstLine: number;
+
+  /**
+   * Number of lines with errors
+   * Example: 0
+   */
+  errorCount: number;
+}
+
+
+

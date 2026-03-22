@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { reactive, computed } from 'vue';
+    import { reactive, ref, computed } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import type { CaptureProtocolResponseItf, CaptureEndpointResponseItf } from '~/types';
 
@@ -18,6 +18,19 @@
         endpoint: null as CaptureEndpointResponseItf | null,
         protocolList: [] as CaptureProtocolResponseItf[],
     });
+
+    const showSingleIdForm = ref(false);
+    const showBulkIdForm = ref(false);
+
+    const toggleSingleIdForm = () => {
+        showSingleIdForm.value = !showSingleIdForm.value;
+        if (showSingleIdForm.value) showBulkIdForm.value = false;
+    };
+
+    const toggleBulkIdForm = () => {
+        showBulkIdForm.value = !showBulkIdForm.value;
+        if (showBulkIdForm.value) showSingleIdForm.value = false;
+    };
 
     const protocol = computed((): CaptureProtocolResponseItf | null => {
         if (!componentCtx.endpoint || !componentCtx.protocolList.length) return null;
@@ -165,8 +178,28 @@
             <!-- ID type info & its mandatory fields -->
             <UCard v-if="selectedProtocolId" class="w-full max-w-4xl mx-auto" variant="subtle">
                 <template #header>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center justify-between w-full">
                         <span class="font-bold">{{ t('capture.endpIdTypeSection') }}</span>
+                        <div class="flex items-center gap-1">
+                            <UTooltip :text="t('capture.insertSingleIdTitle')">
+                                <UButton
+                                    icon="i-lucide-key-round"
+                                    variant="ghost"
+                                    :color="showSingleIdForm ? 'primary' : 'neutral'"
+                                    size="sm"
+                                    @click="toggleSingleIdForm"
+                                />
+                            </UTooltip>
+                            <UTooltip :text="t('capture.insertBulkIdTitle')">
+                                <UButton
+                                    icon="i-lucide-book-key"
+                                    variant="ghost"
+                                    :color="showBulkIdForm ? 'primary' : 'neutral'"
+                                    size="sm"
+                                    @click="toggleBulkIdForm"
+                                />
+                            </UTooltip>
+                        </div>
                     </div>
                 </template>
                 <template #default>
@@ -187,8 +220,8 @@
                                 class="flex justify-between items-center gap-4 px-2 py-1.5 rounded bg-neutral-50/50"
                             >
                                 <div class="flex flex-col">
-                                    <span class="font-medium">{{ t('capture.' + field.description) }}</span>
-                                    <span class="text-xs text-neutral-500">{{ field.enDescription }}</span>
+                                    <span class="font-medium">{{ t('capture.' + field.name) }}</span>
+                                    <span class="text-xs text-neutral-500">{{ t('capture.' + field.description) }}</span>
                                 </div>
                                 <UBadge color="neutral" variant="soft" size="xs">{{ field.valueType }}</UBadge>
                             </div>
@@ -197,6 +230,65 @@
                 </template>
             </UCard>
 
+        </template>
+
+        <!-- ID insertion inline forms -->
+        <template v-if="protocol && componentCtx.endpoint && selectedProtocolId">
+            <Transition
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition-all duration-200 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-2"
+            >
+                <UCard v-if="showSingleIdForm" class="w-full max-w-4xl mx-auto" variant="subtle">
+                    <template #header>
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-2">
+                                <UIcon name="i-lucide-key-round" class="w-4 h-4 text-neutral" />
+                                <span class="font-bold">{{ t('capture.insertSingleIdTitle') }}</span>
+                            </div>
+                            <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="xs" @click="showSingleIdForm = false" />
+                        </div>
+                    </template>
+                    <template #default>
+                        <CaptureSingleIdInsertForm
+                            :protocol="protocol"
+                            :endpoint="componentCtx.endpoint"
+                            @close="showSingleIdForm = false"
+                        />
+                    </template>
+                </UCard>
+            </Transition>
+
+            <Transition
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition-all duration-200 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-2"
+            >
+                <UCard v-if="showBulkIdForm" class="w-full max-w-4xl mx-auto" variant="subtle">
+                    <template #header>
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-2">
+                                <UIcon name="i-lucide-book-key" class="w-4 h-4 text-primary" />
+                                <span class="font-bold">{{ t('capture.insertBulkIdTitle') }}</span>
+                            </div>
+                            <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="xs" @click="showBulkIdForm = false" />
+                        </div>
+                    </template>
+                    <template #default>
+                        <CaptureBulkIdInsertForm
+                            :protocol="protocol"
+                            :endpoint="componentCtx.endpoint"
+                            @close="showBulkIdForm = false"
+                        />
+                    </template>
+                </UCard>
+            </Transition>
         </template>
 
     </div>

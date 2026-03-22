@@ -1,4 +1,5 @@
 import type { CaptureProtocolResponseItf, MandatoryField, CaptureEndpointResponseItf, CaptureEndpointCreationBody } from '~/types';
+import type { CaptureInsertIdsResponseItf,CaptureInsertIdsBody } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
 
@@ -12,6 +13,8 @@ export default defineNuxtPlugin(() => {
   const captureModuleEndpointOneGet: string = '/capture/1.0/endpoint/{id}/';
   const captureModuleEndpointDelete: string = '/capture/1.0/endpoint/{id}/';
   const captureModuleEndpointCreatePost: string = '/capture/1.0/endpoint';
+  const captureModuleInsertIdsPost: string = '/capture/1.0/endpoint/ids';
+
 
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -179,6 +182,23 @@ export default defineNuxtPlugin(() => {
             const response = await apiCallwithTimeout<ActionResult>(
                 'POST',
                 captureModuleEndpointCreatePost,
+                body,
+                false
+            );
+            return { success: response }
+        } catch (error : any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Insert new IDs for a capture endpoint
+     */
+    captureModuleInsertIds: async (body:CaptureInsertIdsBody): Promise<{ success?: CaptureInsertIdsResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<CaptureInsertIdsResponseItf>(
+                'POST',
+                captureModuleInsertIdsPost,
                 body,
                 false
             );

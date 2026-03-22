@@ -78,7 +78,7 @@
                 return props.modelValue === 'true';
             }
             if (parsed.value.kind === 'enum' && parsed.value.multiple) {
-                return props.modelValue ? props.modelValue.split(/[|,]/).filter(Boolean) : [];
+                return props.modelValue ? props.modelValue.split(/[|]/).filter(Boolean) : [];
             }
             return props.modelValue || '';
         },
@@ -88,7 +88,7 @@
                 return;
             }
             if (parsed.value.kind === 'enum' && parsed.value.multiple) {
-                const nextValue = Array.isArray(value) ? value.join(',') : '';
+                const nextValue = Array.isArray(value) ? value.join('|') : '';
                 emit('update:modelValue', nextValue);
                 return;
             }
