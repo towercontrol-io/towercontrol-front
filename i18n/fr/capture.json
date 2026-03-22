@@ -93,6 +93,8 @@
     "insertIdBulkContentDesc" : "Saisissez un identifiant par ligne, les champs séparés par ';' ou ','.",
     "insertIdBulkLineCount" : "{count} ligne(s) saisie(s)",
     "insertIdErrorLine" : "ligne",
+    "insertIdErrorAtLine" : "Première erreur à la ligne {line} :",
+    "insertIdErrorCount" : "{count} ligne(s) en erreur au total",
     "idStateUnknown" : "Inconnu",
     "idStateAssigned" : "Assigné",
     "idStateNotAssigned" : "Non assigné",

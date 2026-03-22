@@ -24,6 +24,8 @@
     const initialState = ref<IdStateEnum>(IdStateEnum.UNKNOWN);
     const submitting = ref(false);
     const errorMessage = ref<string | null>(null);
+    const errorFirstLine = ref(0);
+    const errorCount = ref(0);
 
     const initialStateItems = computed(() => [
         { value: IdStateEnum.UNKNOWN, label: t('capture.idStateUnknown') },
@@ -51,6 +53,8 @@
         if (!selectedProtocolId.value || !canSubmit.value) return;
         submitting.value = true;
         errorMessage.value = null;
+        errorFirstLine.value = 0;
+        errorCount.value = 0;
 
         const headers = selectedProtocolId.value.mandatoryFields.map(f => f.name).join(';');
 
@@ -73,10 +77,9 @@
                     emit('close');
                 } else {
                     const key = 'insert-id-' + res.success.status.toLowerCase().replace(/_/g, '-');
-                    const errLine = res.success.errorFirstLine > 0
-                        ? ` (${t('capture.insertIdErrorLine')} ${res.success.errorFirstLine})`
-                        : '';
-                    errorMessage.value = t('capture.' + key) + errLine;
+                    errorMessage.value = t('capture.' + key);
+                    errorFirstLine.value = res.success.errorFirstLine ?? 0;
+                    errorCount.value = res.success.errorCount ?? 0;
                 }
             } else if (res.error) {
                 const errMsg = (res.error as any).message ?? 'unknownError';
@@ -132,8 +135,20 @@
                 />
             </UFormField>
 
-            <div v-if="errorMessage" class="text-sm text-error">
-                {{ errorMessage }}
+            <div v-if="errorMessage" class="rounded-lg border border-error/40 bg-error/5 p-4 flex flex-col gap-3 text-error">
+                <div class="flex items-center gap-2 font-semibold text-sm">
+                    <UIcon name="i-lucide-alert-circle" class="shrink-0 size-4" />
+                    {{ errorMessage }}
+                </div>
+                <div v-if="errorFirstLine > 0" class="flex flex-col gap-1 text-xs">
+                    <span class="font-medium">{{ t('capture.insertIdErrorAtLine', { line: errorFirstLine }) }}</span>
+                    <code v-if="parsedLines[errorFirstLine - 1]" class="font-mono bg-error/10 rounded px-2 py-1 break-all">
+                        {{ parsedLines[errorFirstLine - 1] }}
+                    </code>
+                </div>
+                <div v-if="errorCount > 0" class="text-xs font-medium">
+                    {{ t('capture.insertIdErrorCount', { count: errorCount }) }}
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">

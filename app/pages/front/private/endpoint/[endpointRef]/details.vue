@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { reactive, ref, computed } from 'vue';
+    import { reactive, ref, computed, nextTick } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import type { CaptureProtocolResponseItf, CaptureEndpointResponseItf } from '~/types';
 
@@ -21,15 +21,25 @@
 
     const showSingleIdForm = ref(false);
     const showBulkIdForm = ref(false);
+    const singleIdFormEl = ref<HTMLElement | null>(null);
+    const bulkIdFormEl = ref<HTMLElement | null>(null);
 
-    const toggleSingleIdForm = () => {
+    const toggleSingleIdForm = async () => {
         showSingleIdForm.value = !showSingleIdForm.value;
-        if (showSingleIdForm.value) showBulkIdForm.value = false;
+        if (showSingleIdForm.value) {
+            showBulkIdForm.value = false;
+            await nextTick();
+            singleIdFormEl.value?.focus();
+        }
     };
 
-    const toggleBulkIdForm = () => {
+    const toggleBulkIdForm = async () => {
         showBulkIdForm.value = !showBulkIdForm.value;
-        if (showBulkIdForm.value) showSingleIdForm.value = false;
+        if (showBulkIdForm.value) {
+            showSingleIdForm.value = false;
+            await nextTick();
+            bulkIdFormEl.value?.focus();
+        }
     };
 
     const protocol = computed((): CaptureProtocolResponseItf | null => {
@@ -242,7 +252,8 @@
                 leave-from-class="opacity-100 translate-y-0"
                 leave-to-class="opacity-0 -translate-y-2"
             >
-                <UCard v-if="showSingleIdForm" class="w-full max-w-4xl mx-auto" variant="subtle">
+                <div v-if="showSingleIdForm" ref="singleIdFormEl" tabindex="-1" class="outline-none">
+                <UCard class="w-full max-w-4xl mx-auto" variant="subtle">
                     <template #header>
                         <div class="flex items-center justify-between w-full">
                             <div class="flex items-center gap-2">
@@ -260,6 +271,7 @@
                         />
                     </template>
                 </UCard>
+                </div>
             </Transition>
 
             <Transition
@@ -270,11 +282,12 @@
                 leave-from-class="opacity-100 translate-y-0"
                 leave-to-class="opacity-0 -translate-y-2"
             >
-                <UCard v-if="showBulkIdForm" class="w-full max-w-4xl mx-auto" variant="subtle">
+                <div v-if="showBulkIdForm" ref="bulkIdFormEl" tabindex="-1" class="outline-none">
+                <UCard class="w-full max-w-4xl mx-auto" variant="subtle">
                     <template #header>
                         <div class="flex items-center justify-between w-full">
                             <div class="flex items-center gap-2">
-                                <UIcon name="i-lucide-book-key" class="w-4 h-4 text-primary" />
+                                <UIcon name="i-lucide-book-key" class="w-4 h-4 text-neutral" />
                                 <span class="font-bold">{{ t('capture.insertBulkIdTitle') }}</span>
                             </div>
                             <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="xs" @click="showBulkIdForm = false" />
@@ -288,6 +301,7 @@
                         />
                     </template>
                 </UCard>
+                </div>
             </Transition>
         </template>
 

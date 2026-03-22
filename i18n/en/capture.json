@@ -93,6 +93,8 @@
     "insertIdBulkContentDesc" : "Enter one identifier per line, fields separated by ';' or ','.",
     "insertIdBulkLineCount" : "{count} line(s) entered",
     "insertIdErrorLine" : "line",
+    "insertIdErrorAtLine" : "First error at line {line}:",
+    "insertIdErrorCount" : "{count} line(s) with errors in total",
     "idStateUnknown" : "Unknown",
     "idStateNotAssigned" : "Not Assigned",
     "idStateAssigned" : "Assigned",
