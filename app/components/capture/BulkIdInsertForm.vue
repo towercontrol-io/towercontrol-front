@@ -27,6 +27,61 @@
     const errorFirstLine = ref(0);
     const errorCount = ref(0);
 
+    const csvFileInput = ref<HTMLInputElement | null>(null);
+
+    const onCsvFileSelected = async (event: Event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file || !selectedProtocolId.value) return;
+
+        errorMessage.value = null;
+        errorFirstLine.value = 0;
+        errorCount.value = 0;
+
+        const text = await file.text();
+        const allLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        if (allLines.length === 0) {
+            if (csvFileInput.value) csvFileInput.value.value = '';
+            return;
+        }
+
+        const firstLine = allLines[0];
+        const separator = firstLine.includes(';') ? ';' : ',';
+        const expectedFields = selectedProtocolId.value.mandatoryFields.map(f => f.name);
+        const firstLineParts = firstLine.split(separator).map(p => p.trim());
+        const hasHeaders = firstLineParts.some(p =>
+            expectedFields.some(f => f.toLowerCase() === p.toLowerCase())
+        );
+
+        let dataLines: string[];
+
+        if (hasHeaders) {
+            const colIndex: Record<string, number> = {};
+            firstLineParts.forEach((h, i) => {
+                const match = expectedFields.find(f => f.toLowerCase() === h.toLowerCase());
+                if (match) colIndex[match] = i;
+            });
+
+            const missingFields = expectedFields.filter(f => colIndex[f] === undefined);
+            if (missingFields.length > 0) {
+                errorMessage.value = t('capture.insertIdCsvMissingColumn', { columns: missingFields.join(', ') });
+                if (csvFileInput.value) csvFileInput.value.value = '';
+                return;
+            }
+
+            dataLines = allLines.slice(1).map(line => {
+                const parts = line.split(separator);
+                return expectedFields.map(f => parts[colIndex[f]] ?? '').join(';');
+            });
+        } else {
+            dataLines = separator === ','
+                ? allLines.map(line => line.split(',').join(';'))
+                : allLines;
+        }
+
+        bulkText.value = dataLines.join('\n');
+        if (csvFileInput.value) csvFileInput.value.value = '';
+    };
+
     const initialStateItems = computed(() => [
         { value: IdStateEnum.UNKNOWN, label: t('capture.idStateUnknown') },
         { value: IdStateEnum.NOT_ASSIGNED, label: t('capture.idStateNotAssigned') },
@@ -151,9 +206,26 @@
                 </div>
             </div>
 
+            <input
+                ref="csvFileInput"
+                type="file"
+                accept=".csv,text/csv"
+                class="hidden"
+                @change="onCsvFileSelected"
+            />
+
             <div class="flex justify-end gap-2">
                 <UButton variant="soft" color="neutral" @click="emit('close')">
                     {{ t('capture.insertIdCancel') }}
+                </UButton>
+                <UButton
+                    variant="soft"
+                    color="primary"
+                    icon="i-lucide-file-spreadsheet"
+                    :disabled="submitting"
+                    @click="csvFileInput?.click()"
+                >
+                    {{ t('capture.insertIdImportCsv') }}
                 </UButton>
                 <UButton
                     :disabled="!canSubmit || submitting"

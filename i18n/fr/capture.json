@@ -84,6 +84,8 @@
     "insertIdCancel" : "Annuler",
     "insertIdSubmit" : "Ajouter",
     "insertBulkIdSubmit" : "Importer",
+    "insertIdImportCsv" : "Importer depuis un CSV",
+    "insertIdCsvMissingColumn" : "Colonnes manquantes dans le CSV : {columns}",
     "insertIdSuccessTitle" : "Identifiant ajouté",
     "insertIdSuccessDesc" : "L'identifiant a été ajouté avec succès.",
     "insertBulkIdSuccessTitle" : "Identifiants importés",
