@@ -175,11 +175,11 @@
                             :key="field.name"
                             class="flex justify-between items-start gap-4"
                         >
-                            <div class="flex flex-col">
-                                <span class="text-sm font-medium">{{ t('capture.' + field.description) }}</span>
-                                <span class="text-xs text-neutral-500">{{ field.enDescription }}</span>
+                            <div class="flex flex-col w-[70%]">
+                                <span class="text-sm font-medium">{{ t('capture.' + field.name) }}</span>
+                                <span class="text-xs text-neutral-500">{{ t('capture.' + field.description) }}</span>
                             </div>
-                            <span class="text-sm font-mono text-right max-w-xs break-all">{{ getCustomConfigValue(field.name) }}</span>
+                            <span class="text-sm font-mono text-right w-[30%]">{{ getCustomConfigValue(field.name) }}</span>
                         </div>
                     </div>
                 </template>
