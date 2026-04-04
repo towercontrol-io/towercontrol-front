@@ -24,7 +24,10 @@
     const { t } = useI18n();
 
     const parseValueType = (valueType: string): ParsedFieldType => {
-        const [rawType, ...rest] = valueType.split(',');
+        const commaIndex = valueType.indexOf(',');
+        const rawType = commaIndex !== -1 ? valueType.slice(0, commaIndex) : valueType;
+        const remainder = commaIndex !== -1 ? valueType.slice(commaIndex + 1) : '';
+        const rest = remainder.split(',');
         if (rawType.startsWith('enum[')) {
             const optionsRaw = rawType.slice(5, -1);
             const options = optionsRaw ? optionsRaw.split('|').map((opt) => opt.trim()).filter(Boolean) : [];
@@ -54,8 +57,8 @@
             return { kind: 'date' };
         }
 
-        if (rawType === 'string' && rest[0]) {
-            return { kind: 'string', pattern: rest[0] };
+        if (rawType === 'string' && remainder) {
+            return { kind: 'string', pattern: remainder };
         }
 
         return { kind: 'string' };
@@ -126,6 +129,8 @@
 
         if (parsed.value.kind === 'string' && parsed.value.pattern) {
             try {
+console.log('Testing pattern', parsed.value.pattern, 'against value', trimmed);
+
                 const matcher = new RegExp(parsed.value.pattern);
                 if (!matcher.test(trimmed)) {
                     return t('capture.mandatoryFieldInvalid');

@@ -289,12 +289,12 @@
     };
 
     const onCancelTicket = async () => {
-        if (!componentCtx.ticketBackup) {
-            return;
+        if (componentCtx.ticketBackup) {
+            componentCtx.ticket = JSON.parse(JSON.stringify(componentCtx.ticketBackup));
+            normalizeTicket();
+            backupTicket();
         }
-        componentCtx.ticket = JSON.parse(JSON.stringify(componentCtx.ticketBackup));
-        normalizeTicket();
-        backupTicket();
+        await navigateTo('/front/private/support');
     };
 
     // --------------------------------------------------------------------
