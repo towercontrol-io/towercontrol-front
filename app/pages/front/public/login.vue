@@ -11,6 +11,7 @@
     const logoImage : string = config.public.LOGO_MAIN as string;
     const serviceName : string = config.public.SERVICE_NAME as string;
     const router = useRouter();
+    const route = useRoute();
 
     const form = reactive({
         username: '',
@@ -68,8 +69,9 @@
                 // Redirect to the password expired page
                 router.push('/front/private/password-expired');
             } else {
-                // Login successful, redirect to the home page
-                router.push('/front/private/home');
+                // Login successful, redirect to the requested page or home
+                const redirect = route.query.redirect as string | undefined;
+                router.push(redirect || '/front/private/home');
             }
 
         } else if (res.error) {

@@ -31,7 +31,7 @@ import { is } from 'valibot';
         route.path.includes('/private/') 
    && ( appStore.getBackendJWT() === null || appStore.isJWTExpired() )
   ) {
-    router.push('/front/public/login');
+    router.push({ path: '/front/public/login', query: { redirect: route.fullPath } });
   }
 
 
