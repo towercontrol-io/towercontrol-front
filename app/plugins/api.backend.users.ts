@@ -5,7 +5,6 @@ import type { UserUpdateBodyRequest, UserUpdateBody, UserUpdateBodyResponse, Use
 import type { GroupsHierarchySimplified } from '~/types';
 import type { ActionResult } from '~/types';
 import { applicationStore } from '~/stores/app'
-import { get } from '@nuxt/ui/runtime/utils/index.js';
 
 const GET_TIMEOUT = 5000; // 5 seconds
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds

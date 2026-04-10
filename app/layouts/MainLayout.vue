@@ -422,6 +422,7 @@ import { is } from 'valibot';
       items[1]!.push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
     }
 
+    items[1]!.push({ label: `${t('menu.files')}`, icon: 'i-lucide-file', to: '/front/private/files' });
     const themeItems = { 
        label: `${t('menu.theme')}`, icon: 'i-lucide-palette', children: 
           [

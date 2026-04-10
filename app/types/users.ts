@@ -1,3 +1,5 @@
+import type { CustomField } from './common';
+
 export interface UserConfigResponse {
  /**
    * Self registration is allowed
@@ -264,23 +266,6 @@ export interface UserAcl {
    * Example: [ "ROLE_DEVICE_READ" ]
    */
   roles: string[];
-};
-
-/**
- * Custom field for user profile
- */
-export interface CustomField {
-  /**
-   * Name of the custom fields
-   * Example: "customField1"
-   */
-  name: string;
-
-  /**
-   * Value of the custom field
-   * Example: "Custom Value"
-   */
-  value: string;
 };
 
 

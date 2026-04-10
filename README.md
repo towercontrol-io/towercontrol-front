@@ -24,6 +24,10 @@ Locally preview production build:
 npm run preview
 ```
 
+## Deploy in docker Hub
+```
+make push TAG=0.0.4
+```
 
 ## Install Nuxt.js
 

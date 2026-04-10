@@ -6,6 +6,7 @@ const fileNames = [
     'common',   // related to user, groups... management
     'capture',  // related to capture endpoints
     'tickets',  // related to ticketing system
+    'files',    // related to file management
 ]
 //i18n helper function
 function getFileList(locale: string) {

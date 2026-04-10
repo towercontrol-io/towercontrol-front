@@ -1,9 +1,17 @@
 
 export interface CustomField {
-    // Define CustomField interface based on your needs
-    name: string;
-    value: string;
-}
+  /**
+   * Name of the custom fields
+   * Example: "customField1"
+   */
+  name: string;
+
+  /**
+   * Value of the custom field
+   * Example: "Custom Value"
+   */
+  value: string;
+};
 
 /**
  * Possible results of an action

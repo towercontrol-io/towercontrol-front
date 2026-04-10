@@ -6,7 +6,6 @@ import type {
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 import { applicationStore } from '~/stores/app'
-import type { st } from 'vue-router/dist/router-CWoNjPRp.mjs';
 
 export default defineNuxtPlugin(() => {
 
