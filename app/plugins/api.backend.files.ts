@@ -1,6 +1,7 @@
 import type { 
     FileUploadResponseItf,
-    FileAccessType
+    FileAccessType,
+    FileUpdateBody
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 
@@ -213,7 +214,8 @@ export default defineNuxtPlugin(() => {
         file: File,
         accessType: FileAccessType,
         description?: string,
-        withShortName?: boolean
+        withShortName?: boolean,
+        withAccessKey?: boolean
     ): Promise<{ success?: FileUploadResponseItf; error?: ActionResult | { message: string } }> => {
         try {
             const formData = new FormData();
@@ -221,10 +223,50 @@ export default defineNuxtPlugin(() => {
             formData.append('accessType', accessType);
             if (description) formData.append('description', description);
             if (withShortName) formData.append('withShortName', 'true');
+            if (withAccessKey) formData.append('withAccessKey', 'true');
 
             const response = await apiCallMultipartWithTimeout<FileUploadResponseItf>(
                 filesModuleUploadPost,
                 formData
+            );
+            return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Update the description and/or access type of a file.
+     */
+    filesModuleUpdate: async (
+        fileRef: string,
+        body: FileUpdateBody
+    ): Promise<{ success?: FileUploadResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<FileUploadResponseItf>(
+                'PUT',
+                `/files/1.0/${fileRef}`,
+                body,
+                false
+            );
+            return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Delete a file and its thumbnail permanently.
+     */
+    filesModuleDelete: async (
+        fileRef: string
+    ): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<ActionResult>(
+                'DELETE',
+                `/files/1.0/${fileRef}`,
+                null,
+                false
             );
             return { success: response };
         } catch (error: any) {

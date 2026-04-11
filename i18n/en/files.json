@@ -50,6 +50,26 @@
     "file-upload-missing-write-role": "You need the ROLE_FILE_WRITE permission to upload public or connected files",
     "file-upload-storage-error": "Server could not prepare the storage directory",
     "file-upload-write-error": "Server could not write the file to disk",
-    "file-upload-signature-error": "Server could not compute the file integrity signature"
+    "file-upload-signature-error": "Server could not compute the file integrity signature",
+    "uploadWithAccessKey": "Generate a share link (access key)",
+    "uploadWithAccessKeyDesc": "Anyone with the link can access this file without logging in",
+    "actionCopyLink": "Copy share link",
+    "linkCopied": "Link copied to clipboard",
+    "noAccessKey": "This file has no access key",
+    "editWithShortName": "Short name",
+    "editWithShortNameDesc": "Generate a compact 6-character alias (use instead of the full unique name in URLs)",
+    "editWithAccessKey": "Access key",
+    "editWithAccessKeyDesc": "Generate a share link key — anyone with the link can access this file without logging in",
+    "editFileName": "File name",
+    "editFileLink": "File link",
+    "editDescription": "Description",
+    "editDescriptionPlaceholder": "Leave empty to clear the description",
+    "editAccessType": "Visibility",
+    "editSave": "Save",
+    "editCancel": "Cancel",
+    "file-update-success": "File updated successfully",
+    "file-update-not-owner": "Only the file owner can update this file",
+    "file-update-invalid-access-type": "Invalid access type",
+    "file-update-missing-write-role": "ROLE_FILE_WRITE permission is required to make this file public or connected"
   }
 }

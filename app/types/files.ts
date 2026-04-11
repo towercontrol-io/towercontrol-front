@@ -85,4 +85,35 @@ export interface FileUploadResponseItf {
      * @example "aB3xYz"
      */
     shortName?: string | null;
+
+    /**
+     * Optional 16-character access key ([a-z0-9]).
+     * Only returned to the file owner or an administrator.
+     * Append as ?key=<value> to any file URL to grant unauthenticated access to CONNECTED/PRIVATE files.
+     */
+    accessKey?: string;
+
+}
+
+/**
+ * Body sent to PUT /files/1.0/{fileRef} to update file metadata.
+ */
+export interface FileUpdateBody {
+    /** New access level — mandatory */
+    accessType: FileAccessType;
+    /** New description — optional, send empty string or omit to clear */
+    description?: string;
+    /**
+     * Short name management:
+     * - true  = generate a short name if none is assigned yet
+     * - false = remove the existing short name
+     * - omit  = leave the short name unchanged
+     */
+    withShortName?: boolean;
+
+    /**
+     * Access key management: true = generate (or regenerate) a 16-character access key,
+     * false = remove the existing access key, null = leave unchanged
+     */
+    withAccessKey?: boolean;
 }

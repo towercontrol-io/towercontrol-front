@@ -50,6 +50,26 @@
     "file-upload-missing-write-role": "Vous avez besoin de la permission ROLE_FILE_WRITE pour téléverser des fichiers publics ou connectés",
     "file-upload-storage-error": "Le serveur n'a pas pu préparer le répertoire de stockage",
     "file-upload-write-error": "Le serveur n'a pas pu écrire le fichier sur le disque",
-    "file-upload-signature-error": "Le serveur n'a pas pu calculer la signature d'intégrité du fichier"
+    "file-upload-signature-error": "Le serveur n'a pas pu calculer la signature d'intégrité du fichier",
+    "uploadWithAccessKey": "Générer un lien de partage (clé d'accès)",
+    "uploadWithAccessKeyDesc": "Toute personne possédant ce lien peut accéder au fichier sans se connecter",
+    "actionCopyLink": "Copier le lien de partage",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "noAccessKey": "Ce fichier ne possède pas de clé d'accès",
+    "editWithShortName": "Nom court",
+    "editWithShortNameDesc": "Générer un alias compact de 6 caractères (utilisable à la place du nom unique dans les URLs)",
+    "editWithAccessKey": "Clé d'accès",
+    "editWithAccessKeyDesc": "Générer une clé de partage — toute personne possédant le lien peut accéder au fichier sans se connecter",
+    "editFileName": "Nom du fichier",
+    "editFileLink": "Lien du fichier",
+    "editDescription": "Description",
+    "editDescriptionPlaceholder": "Laisser vide pour effacer la description",
+    "editAccessType": "Visibilité",
+    "editSave": "Enregistrer",
+    "editCancel": "Annuler",
+    "file-update-success": "Fichier mis à jour avec succès",
+    "file-update-not-owner": "Seul le propriétaire du fichier peut le modifier",
+    "file-update-invalid-access-type": "Type d'accès invalide",
+    "file-update-missing-write-role": "La permission ROLE_FILE_WRITE est requise pour rendre ce fichier public ou connecté"
   }
 }

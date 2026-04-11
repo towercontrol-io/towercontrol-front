@@ -12,6 +12,7 @@
         file: null as File | null,
         description: '' as string,
         accessType: 'PRIVATE' as FileAccessType,
+        withAccessKey: false as boolean,
     });
 
     const isDragOver = ref(false);
@@ -73,12 +74,15 @@
                 formState.file,
                 formState.accessType,
                 formState.description || undefined,
+                undefined,
+                formState.withAccessKey || undefined,
             );
             if (res.success) {
                 nuxtApp.callHook('filemng:uploaded' as any, res.success);
                 clearFile();
                 formState.description = '';
                 formState.accessType = 'PRIVATE';
+                formState.withAccessKey = false;
             } else if (res.error) {
                 uploadError.value = t('files.' + (res.error as any).message);
             }
@@ -93,6 +97,7 @@
         clearFile();
         formState.description = '';
         formState.accessType = 'PRIVATE';
+        formState.withAccessKey = false;
         uploadError.value = null;
         nuxtApp.callHook('filemng:close' as any);
     };
@@ -161,6 +166,11 @@
                 :items="accessTypeOptions"
                 class="w-52"
             />
+        </UFormField>
+
+        <!-- Access key -->
+        <UFormField :label="t('files.uploadWithAccessKey')" :description="t('files.uploadWithAccessKeyDesc')">
+            <USwitch v-model="formState.withAccessKey" />
         </UFormField>
 
         <!-- Error message -->
