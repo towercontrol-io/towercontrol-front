@@ -117,3 +117,27 @@ export interface FileUpdateBody {
      */
     withAccessKey?: boolean;
 }
+
+/**
+ * Sort order for the admin file list endpoint.
+ */
+export type FileAdminSortOrder = 'CREATED' | 'ACCESS';
+
+/**
+ * Paginated response returned by the admin file search endpoint.
+ * Wraps a page of FileUploadResponseItf entries together with pagination metadata.
+ */
+export interface FileAdminListResponseItf {
+    /** Total number of files matching the search criteria (e.g. 142) */
+    total: number;
+
+    /** Current page index, 0-based (e.g. 0) */
+    page: number;
+
+    /** Number of records per page, between 1 and 250 (e.g. 50) */
+    size: number;
+
+    /** Files on this page */
+    files: FileUploadResponseItf[];
+}
+

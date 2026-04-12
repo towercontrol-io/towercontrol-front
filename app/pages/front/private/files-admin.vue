@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import type { TableColumn } from '@nuxt/ui';
-    import type { FileUploadResponseItf, FileAccessType } from '~/types';
+    import type { FileUploadResponseItf, FileAccessType, FileAdminSortOrder } from '~/types';
 
-    definePageMeta({layout: 'main-layout', layoutProps: { title: 'files' }});
+    definePageMeta({ layout: 'main-layout', layoutProps: { title: 'filesAdmin' } });
 
     const { t } = useI18n();
     const nuxtApp = useNuxtApp();
@@ -11,6 +11,12 @@
     const UButton = resolveComponent('UButton');
     const UBadge  = resolveComponent('UBadge');
     const UIcon   = resolveComponent('UIcon');
+
+    // ---- Search / pagination state ----
+    const searchQuery = ref('');
+    const sortOrder   = ref<FileAdminSortOrder>('CREATED');
+    const currentPage = ref(1); // 1-based (UPagination), converted to 0-based for the API
+    const PAGE_SIZE   = 50;
 
     // ---- Inline-edit expansion state ----
     type EditDraft = {
@@ -23,31 +29,35 @@
     const editDrafts   = reactive<Record<string, EditDraft>>({});
     const editSaving   = reactive<Record<string, boolean>>({});
     const editErrors   = reactive<Record<string, string | null>>({});
+
     const accessTypeOptions = computed(() => [
         { label: t('files.accessPrivate'),   value: 'PRIVATE'   as FileAccessType },
         { label: t('files.accessConnected'), value: 'CONNECTED' as FileAccessType },
         { label: t('files.accessPublic'),    value: 'PUBLIC'    as FileAccessType },
     ]);
 
+    const sortOptions = computed(() => [
+        { label: t('files.adminSortCreated'), value: 'CREATED' as FileAdminSortOrder },
+        { label: t('files.adminSortAccess'),  value: 'ACCESS'  as FileAdminSortOrder },
+    ]);
+
     const componentCtx = reactive({
-        filesLoading: false as boolean,
-        filesLoadingError: null as string | null,
+        loading: false as boolean,
+        loadingError: null as string | null,
         files: [] as FileUploadResponseItf[],
-        uploadMode: false as boolean,
+        total: 0 as number,
         deleteConfirmLayer: false as boolean,
         fileToDelete: null as FileUploadResponseItf | null,
     });
 
-    // Cache of authenticated blob URLs keyed by uniqueName
+    // ---- Authenticated thumbnail blob cache ----
     const thumbnailBlobUrls = ref<Map<string, string>>(new Map());
 
-    // Revoke all blob URLs to free memory
     const revokeThumbnails = () => {
         thumbnailBlobUrls.value.forEach(url => URL.revokeObjectURL(url));
         thumbnailBlobUrls.value.clear();
     };
 
-    // Fetch thumbnails with JWT for every IMAGE file that has a thumbnail
     const loadThumbnails = async (files: FileUploadResponseItf[]) => {
         revokeThumbnails();
         const newMap = new Map<string, string>();
@@ -57,62 +67,60 @@
                 .map(async (f) => {
                     const fileRef = f.shortName || f.uniqueName;
                     const blob = await nuxtApp.$apiBackendFiles.filesModuleGetThumbnailBlob(fileRef);
-                    if (blob) {
-                        newMap.set(f.uniqueName, URL.createObjectURL(blob));
-                    }
+                    if (blob) newMap.set(f.uniqueName, URL.createObjectURL(blob));
                 })
         );
         thumbnailBlobUrls.value = newMap;
     };
 
-    // --------------------------------------------------------------------
-    // Load file list
-    // --------------------------------------------------------------------
-
-    const loadFiles = () => {
-        // Close any open inline edit when the list refreshes
+    // -----------------------------------------------------------------------
+    // Load
+    // -----------------------------------------------------------------------
+    const loadFiles = async () => {
         expandedRows.value = {};
-        componentCtx.filesLoading = true;
-        componentCtx.filesLoadingError = null;
-        nuxtApp.$apiBackendFiles.filesModuleListFiles().then((res) => {
-            if (res.success) {
-                componentCtx.files = res.success;
-                loadThumbnails(res.success);
-            } else if (res.error) {
-                componentCtx.filesLoadingError = t('files.' + res.error.message);
-            }
-        }).catch(() => {
-            componentCtx.filesLoadingError = t('common.unknownError');
-        }).finally(() => {
-            componentCtx.filesLoading = false;
+        componentCtx.loading = true;
+        componentCtx.loadingError = null;
+        const res = await nuxtApp.$apiBackendFiles.filesAdminList({
+            page: currentPage.value - 1,
+            size: PAGE_SIZE,
+            sort: sortOrder.value,
+            search: searchQuery.value.trim() || undefined,
         });
+        if (res.success) {
+            componentCtx.files = res.success.files;
+            componentCtx.total = res.success.total;
+            loadThumbnails(res.success.files);
+        } else {
+            componentCtx.loadingError = t('files.' + ((res.error as any)?.message ?? 'unknownError'));
+        }
+        componentCtx.loading = false;
     };
 
-    onMounted(() => {
-        loadFiles();
+    onMounted(loadFiles);
+    onUnmounted(revokeThumbnails);
+
+    // Reload when page changes
+    watch(currentPage, loadFiles);
+
+    // Search: debounced, reset to page 1
+    let searchDebounce: ReturnType<typeof setTimeout>;
+    watch(searchQuery, () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+            if (currentPage.value !== 1) { currentPage.value = 1; } // watch will fire loadFiles
+            else { loadFiles(); }
+        }, 350);
     });
 
-    onUnmounted(() => {
-        revokeThumbnails();
+    // Sort: instant, reset to page 1
+    watch(sortOrder, () => {
+        if (currentPage.value !== 1) { currentPage.value = 1; }
+        else { loadFiles(); }
     });
 
-    // --------------------------------------------------------------------
-    // Handle component signals
-    // --------------------------------------------------------------------
-
-    nuxtApp.hook('filemng:close' as any, () => {
-        componentCtx.uploadMode = false;
-    });
-
-    nuxtApp.hook('filemng:uploaded' as any, () => {
-        componentCtx.uploadMode = false;
-        loadFiles();
-    });
-
-    // --------------------------------------------------------------------
+    // -----------------------------------------------------------------------
     // Helpers
-    // --------------------------------------------------------------------
-
+    // -----------------------------------------------------------------------
     const formatSize = (bytes: number): string => {
         if (bytes < 1024) return `${bytes} B`;
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -120,9 +128,7 @@
         return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
     };
 
-    const formatDate = (ms: number): string => {
-        return new Date(ms).toLocaleDateString();
-    };
+    const formatDate = (ms: number) => new Date(ms).toLocaleDateString();
 
     const mimeCategoryIcon = (category: string): string => {
         switch (category) {
@@ -152,9 +158,7 @@
         return t(`files.access${cap}`);
     };
 
-    const getFileRef = (file: FileUploadResponseItf): string => {
-        return file.shortName || file.uniqueName;
-    };
+    const getFileRef = (file: FileUploadResponseItf) => file.shortName || file.uniqueName;
 
     const getFileUrl = (file: FileUploadResponseItf): string => {
         const base = `${config.public.BACKEND_API_BASE}/files/1.0/${getFileRef(file)}/full`;
@@ -166,23 +170,19 @@
         return thumbnailBlobUrls.value.get(file.uniqueName) ?? null;
     };
 
-    // Returns the draft for a file that is guaranteed to be in edit mode
     const getDraft = (key: string): EditDraft => editDrafts[key] as EditDraft;
 
-    // --------------------------------------------------------------------
-    // Actions (to be implemented)
-    // --------------------------------------------------------------------
-
+    // -----------------------------------------------------------------------
+    // Actions
+    // -----------------------------------------------------------------------
     const onEditFile = (file: FileUploadResponseItf) => {
         const key = file.uniqueName;
         if (expandedRows.value[key]) {
-            // Toggle off — same button clicked again
             expandedRows.value = {};
             delete editDrafts[key];
             delete editErrors[key];
             return;
         }
-        // Close any other open row first
         expandedRows.value = {};
         editDrafts[key] = {
             description: file.description ?? '',
@@ -195,10 +195,9 @@
     };
 
     const onCancelEdit = (file: FileUploadResponseItf) => {
-        const key = file.uniqueName;
         expandedRows.value = {};
-        delete editDrafts[key];
-        delete editErrors[key];
+        delete editDrafts[file.uniqueName];
+        delete editErrors[file.uniqueName];
     };
 
     const onSaveEdit = async (file: FileUploadResponseItf) => {
@@ -207,14 +206,12 @@
         if (!draft) return;
         editSaving[key] = true;
         editErrors[key] = null;
-        const fileRef = file.shortName || file.uniqueName;
-        const body: import('~/types').FileUpdateBody = {
+        const res = await nuxtApp.$apiBackendFiles.filesAdminUpdate(getFileRef(file), {
             accessType: draft.accessType,
             description: draft.description || undefined,
             withShortName: draft.withShortName,
             withAccessKey: draft.withAccessKey,
-        };
-        const res = await nuxtApp.$apiBackendFiles.filesModuleUpdate(fileRef, body);
+        });
         if (res.success) {
             const idx = componentCtx.files.findIndex(f => f.uniqueName === key);
             if (idx !== -1) componentCtx.files[idx] = res.success!;
@@ -235,12 +232,15 @@
     const onConfirmDelete = async () => {
         if (!componentCtx.fileToDelete) return;
         const file = componentCtx.fileToDelete;
-        const fileRef = file.shortName || file.uniqueName;
-        const res = await nuxtApp.$apiBackendFiles.filesModuleDelete(fileRef);
+        const res = await nuxtApp.$apiBackendFiles.filesAdminDelete(getFileRef(file));
         if (res.success) {
             componentCtx.files = componentCtx.files.filter(f => f.uniqueName !== file.uniqueName);
+            componentCtx.total = Math.max(0, componentCtx.total - 1);
+            if (componentCtx.files.length === 0 && currentPage.value > 1) {
+                currentPage.value--; // triggers reload via watcher
+            }
         } else {
-            componentCtx.filesLoadingError = t('files.' + ((res.error as any)?.message ?? 'unknownError'));
+            componentCtx.loadingError = t('files.' + ((res.error as any)?.message ?? 'unknownError'));
         }
         componentCtx.deleteConfirmLayer = false;
         componentCtx.fileToDelete = null;
@@ -252,25 +252,15 @@
     };
 
     const onCopyLink = (file: FileUploadResponseItf) => {
-        const isPublic = file.accessType === 'PUBLIC';
-        if (!file.accessKey && !isPublic) return;
-        const fileRef = file.shortName || file.uniqueName;
-        const base = `${config.public.BACKEND_API_BASE}/files/1.0/${fileRef}/full`;
-        const url = file.accessKey ? `${base}?key=${file.accessKey}` : base;
-        navigator.clipboard.writeText(url);
+        if (!file.accessKey && file.accessType !== 'PUBLIC') return;
+        navigator.clipboard.writeText(getFileUrl(file));
         const toast = useToast();
-        toast.add({
-            title: t('files.linkCopied'),
-            icon: 'i-lucide-clipboard-check',
-            color: 'success',
-            duration: 3000
-        });
+        toast.add({ title: t('files.linkCopied'), icon: 'i-lucide-clipboard-check', color: 'success', duration: 3000 });
     };
 
-    // --------------------------------------------------------------------
-    // Table column definitions
-    // --------------------------------------------------------------------
-
+    // -----------------------------------------------------------------------
+    // Table columns
+    // -----------------------------------------------------------------------
     const tableDef = computed((): TableColumn<FileUploadResponseItf>[] => [
         {
             accessorKey: 'originalName',
@@ -282,14 +272,17 @@
                 const preview = thumb
                     ? h('img', { src: thumb, class: 'w-8 h-8 object-cover rounded shrink-0', alt: file.originalName })
                     : icon;
-                const label = (file.description && file.description.length > 3)
-                    ? file.description
-                    : file.originalName;
+                const label = (file.description && file.description.length > 3) ? file.description : file.originalName;
                 return h('div', { class: 'flex items-center gap-2' }, [
                     preview,
-                    h('span', { class: 'truncate max-w-[14rem]' }, label)
+                    h('span', { class: 'truncate max-w-[12rem]' }, label),
                 ]);
             }
+        },
+        {
+            accessorKey: 'ownerId',
+            header: t('files.colOwner'),
+            cell: ({ row }) => h('span', { class: 'font-mono text-xs text-muted truncate max-w-[10rem] block' }, row.original.ownerId)
         },
         {
             accessorKey: 'mimeCategory',
@@ -314,6 +307,11 @@
                 const access = row.getValue('accessType') as string;
                 return h(UBadge, { label: accessTypeLabel(access), variant: 'subtle', color: accessTypeColor(access) });
             }
+        },
+        {
+            accessorKey: 'accessCount',
+            header: t('files.colAccessCount'),
+            cell: ({ row }) => String(row.getValue('accessCount') as number)
         },
         {
             accessorKey: 'createdAt',
@@ -355,53 +353,44 @@
 </script>
 
 <template>
-    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-4xl mx-auto mb-4">
+    <div class="flex flex-col gap-4 sm:gap-6 lg:gap-8 w-full lg:max-w-6xl mx-auto mb-4">
 
         <UPageCard
-            :title="$t('files.pageTitle')"
-            :description="$t('files.pageDescription')"
+            :title="$t('files.adminPageTitle')"
+            :description="$t('files.adminPageDescription')"
             variant="naked"
             orientation="horizontal"
-            class="mb-4"
-        >
-            <UButton
-                :label="$t('files.uploadButton')"
-                :disabled="componentCtx.uploadMode"
-                icon="i-lucide-upload"
-                color="neutral"
-                class="w-fit lg:ms-auto"
-                @click="componentCtx.uploadMode = true"
+            class="mb-2"
+        />
+
+        <!-- Search / sort toolbar -->
+        <div class="flex flex-wrap gap-3 items-center">
+            <UInput
+                v-model="searchQuery"
+                icon="i-lucide-search"
+                :placeholder="$t('files.adminSearchPlaceholder')"
+                class="flex-1 min-w-[14rem]"
             />
-        </UPageCard>
+            <USelectMenu
+                v-model="sortOrder"
+                value-key="value"
+                :items="sortOptions"
+                class="w-48"
+            />
+        </div>
 
-        <UCard
-            v-if="componentCtx.uploadMode"
-            class="w-full max-w-4xl mx-auto mb-4"
-            variant="subtle"
-        >
-            <template #header>
-                <span class="font-bold">{{ $t('files.uploadFormTitle') }}</span>
-            </template>
-            <template #default>
-                <FilesUploadForm />
-            </template>
-        </UCard>
-
-        <UCard
-            class="w-full max-w-4xl mx-auto"
-            variant="subtle"
-        >
+        <UCard class="w-full max-w-6xl mx-auto" variant="subtle">
             <template #default>
                 <div class="relative">
                     <UTable
                         v-model:expanded="expandedRows"
                         :get-row-id="(row) => row.uniqueName"
-                        :loading="componentCtx.filesLoading"
+                        :loading="componentCtx.loading"
                         loading-color="primary"
                         loading-animation="carousel"
                         :data="componentCtx.files"
                         :columns="tableDef"
-                        :empty="$t('files.listEmpty')"
+                        :empty="$t('files.adminListEmpty')"
                         sticky
                         class="flex-1 text-xs min-h-55"
                     >
@@ -412,11 +401,7 @@
                                 </UFormField>
                                 <UFormField :label="t('files.editFileLink')">
                                     <div class="flex items-center gap-2">
-                                        <UInput
-                                            :model-value="getFileUrl(row.original)"
-                                            disabled
-                                            class="flex-1 font-mono text-xs"
-                                        />
+                                        <UInput :model-value="getFileUrl(row.original)" disabled class="flex-1 font-mono text-xs" />
                                         <UButton
                                             icon="i-lucide-clipboard"
                                             size="xs"
@@ -486,20 +471,28 @@
                         </template>
                     </UTable>
 
-                    <div v-if="componentCtx.filesLoadingError"
+                    <!-- Error overlay -->
+                    <div v-if="componentCtx.loadingError"
                          class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center">
                         <div class="flex flex-col items-center gap-4">
                             <div class="mb-2 text-lg text-center text-red-600 font-bold">
-                                {{ componentCtx.filesLoadingError }}
+                                {{ componentCtx.loadingError }}
                             </div>
+                            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="soft" @click="loadFiles()">
+                                {{ $t('files.deleteCancel') }}
+                            </UButton>
                         </div>
                     </div>
 
+                    <!-- Delete confirmation overlay -->
                     <div v-if="componentCtx.deleteConfirmLayer"
                          class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center">
                         <div class="flex flex-col items-center gap-4">
                             <div class="mb-2 text-sm text-center">
-                                {{ t('files.deleteConfirmDesc') }}
+                                {{ t('files.adminDeleteConfirmDesc') }}
+                            </div>
+                            <div v-if="componentCtx.fileToDelete" class="font-mono text-xs text-muted">
+                                {{ componentCtx.fileToDelete.originalName }}
                             </div>
                             <div class="flex gap-4">
                                 <UButton icon="i-lucide-trash-2" variant="soft" color="error" @click="onConfirmDelete()">
@@ -511,6 +504,20 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </template>
+
+            <template #footer>
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <span class="text-xs text-muted">
+                        {{ t('files.adminPaginationInfo', { total: componentCtx.total }) }}
+                    </span>
+                    <UPagination
+                        v-model:page="currentPage"
+                        :total="componentCtx.total"
+                        :items-per-page="PAGE_SIZE"
+                        size="xs"
+                    />
                 </div>
             </template>
         </UCard>

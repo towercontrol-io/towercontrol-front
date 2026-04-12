@@ -320,6 +320,9 @@ export default defineNuxtPlugin(() => {
             appStore.setSupportAdmin(
                 getJWTRole(response.jwtToken,'ROLE_SUPPORT_MANAGER')
             );
+            appStore.setFilesAdmin(
+                getJWTRole(response.jwtToken,'ROLE_FILES_ADMIN')
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
@@ -367,11 +370,17 @@ export default defineNuxtPlugin(() => {
                 (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
+            appStore.setCaptureEndpointCreator(
+                getJWTRole(response.jwtToken,'ROLE_BACKEND_CAPTURE')
+            );
             appStore.setSupportUser(
                 getJWTRole(response.jwtToken,'ROLE_SUPPORT_USER')
             );
             appStore.setSupportAdmin(
                 getJWTRole(response.jwtToken,'ROLE_SUPPORT_MANAGER')
+            );
+            appStore.setFilesAdmin(
+                getJWTRole(response.jwtToken,'ROLE_FILES_ADMIN')
             );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);

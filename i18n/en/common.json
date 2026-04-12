@@ -188,7 +188,8 @@
     "ticketsFaq": "Frequently Asked Questions",
     "endpointDetails": "Endpoint Details",
     "files": "My Files",
-
+    "filesAdmin": "File Management",
+    
     "last" : "Last"
   },
   "profile": {
@@ -416,6 +417,8 @@
     "role-login-api-desc" : "Request from an API account",
     "role-support-manager-desc" : "Ticket / Support manager",
     "role-support-user-desc" : "Allow a user to create support tickets",
+    "role-files-write-desc" : "Allow a user to create public or connected files",
+    "role-files-admin-desc" : "Allow a user to manage all files",
 
     "last": "Last"
   },

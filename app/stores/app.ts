@@ -18,6 +18,7 @@ export const applicationStore = defineStore('app', {
     captureEndpointCreator: false as boolean,
     supportUser: false as boolean | null,
     supportAdmin: false as boolean | null,
+    filesAdmin: false as boolean | null,
   }),
   actions: {
     clearStore() {
@@ -36,6 +37,7 @@ export const applicationStore = defineStore('app', {
       this.captureEndpointCreator = false;
       this.supportUser = false;
       this.supportAdmin = false;
+      this.filesAdmin = false;
     },
     setCaptureEndpointCreator(isCapture : boolean) {
       this.captureEndpointCreator = isCapture;
@@ -126,6 +128,12 @@ export const applicationStore = defineStore('app', {
     isGroupAdmin(): boolean | null {
       return this.groupAdmin;
     },
+    setFilesAdmin(isAdmin: boolean) {
+      this.filesAdmin = isAdmin;
+    },
+    isFilesAdmin(): boolean | null {
+      return this.filesAdmin;
+    },    
     setApikeyCreator(canCreate: boolean) {
       this.apikeyCreator = canCreate;
     },

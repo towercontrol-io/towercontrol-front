@@ -211,6 +211,9 @@ import { is } from 'valibot';
     if ( appStore.isSupportAdmin() && userConfig.value?.nonCommunityEdition) {
       topItems.push({ label: `${t('menu.supportAdmin')}`,icon: 'i-lucide-headset',to: '/front/private/support', badge:ticketPending.value.pending, onSelect: () => {mainData.open = false}});  
     }
+    if ( appStore.isFilesAdmin() ) {
+      topItems.push({ label: `${t('menu.filesAdmin')}`,icon: 'i-lucide-file',to: '/front/private/files-admin',onSelect: () => {mainData.open = false}});  
+    }
     return topItems;
   });
 

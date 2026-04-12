@@ -1,7 +1,9 @@
 import type { 
     FileUploadResponseItf,
     FileAccessType,
-    FileUpdateBody
+    FileUpdateBody,
+    FileAdminListResponseItf,
+    FileAdminSortOrder
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 
@@ -13,6 +15,10 @@ export default defineNuxtPlugin(() => {
   // Set the routes
   const filesModuleListFilesGet: string  = '/files/1.0/list';
   const filesModuleUploadPost: string    = '/files/1.0/upload';
+  const filesModuleFileDelete: string    = '/files/1.0/{fileRef}';
+  const filesModuleAdminListGet: string  = '/files/1.0/admin/list';
+  const filesModuleAdminUpdate: string   = '/files/1.0/admin/{fileRef}';
+  const filesModuleAdminDelete: string   = '/files/1.0/admin/{fileRef}';
   
   // Get dynmaic configuration
   const config = useRuntimeConfig();
@@ -264,11 +270,83 @@ export default defineNuxtPlugin(() => {
         try {
             const response = await apiCallwithTimeout<ActionResult>(
                 'DELETE',
-                `/files/1.0/${fileRef}`,
+                filesModuleFileDelete.replace('{fileRef}', fileRef),
                 null,
                 false
             );
             return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    // -----------------------------------------------------------------------
+    // Admin endpoints  (requires ROLE_FILES_ADMIN)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Paginated search over all files in the system.
+     */
+    filesAdminList: async (params?: {
+        page?: number;
+        size?: number;
+        sort?: FileAdminSortOrder;
+        search?: string;
+    }): Promise<{ success?: FileAdminListResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const query = new URLSearchParams();
+            if (params?.page !== undefined) query.set('page',   String(params.page));
+            if (params?.size !== undefined) query.set('size',   String(params.size));
+            if (params?.sort)               query.set('sort',   params.sort);
+            if (params?.search?.trim())     query.set('search', params.search.trim());
+            const qs  = query.toString();
+            const url = qs ? `${filesModuleAdminListGet}?${qs}` : filesModuleAdminListGet;
+            const response = await apiCallwithTimeout<FileAdminListResponseItf>(
+                'GET', 
+                url, 
+                null, 
+                false
+            );
+            return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Update any file as admin, bypassing ownership checks.
+     */
+    filesAdminUpdate: async (
+        fileRef: string,
+        body: FileUpdateBody
+    ): Promise<{ success?: FileUploadResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<FileUploadResponseItf>(
+                'PUT',
+                filesModuleAdminUpdate.replace('{fileRef}', fileRef),
+                body,
+                false
+            );
+            return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Delete any file as admin, bypassing ownership checks.
+     */
+    filesAdminDelete: async (
+        fileRef: string
+    ): Promise<{ success?: boolean; error?: ActionResult | { message: string } }> => {
+        try {
+            await apiCallwithTimeout<void>(
+                'DELETE', 
+                filesModuleAdminDelete.replace('{fileRef}', fileRef), 
+                null, 
+                false
+            );
+            return { success: true };
         } catch (error: any) {
             return { error };
         }
