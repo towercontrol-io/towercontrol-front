@@ -3,10 +3,12 @@
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
     import { TextAlign } from '@tiptap/extension-text-align'
     import type { PrivTicketCreationBody, PrivTicketCreationResponseItf } from '~/types';
-    import type { ActionResult } from '~/types';
+    import type { ActionResult, FileUploadResponseItf } from '~/types';
 
     const { t } = useI18n();
     const nuxtApp = useNuxtApp();
+    const config = useRuntimeConfig();
+    const toast = useToast();
 
     const formState = reactive<PrivTicketCreationBody>({
         topic: '',
@@ -60,6 +62,47 @@
       return false;
     });
 
+
+    // --------------------------------------------------------------------
+    // File attachments
+    // --------------------------------------------------------------------
+
+    type AttachTarget = 'content' | 'llmContent';
+    const attachedFiles = ref<FileUploadResponseItf[]>([]);
+    const showAttachModal = ref(false);
+    const attachTargetField = ref<AttachTarget>('content');
+
+    const openAttachModal = (target: AttachTarget) => {
+        attachTargetField.value = target;
+        showAttachModal.value = true;
+    };
+
+    const getAttachmentMarkdownLink = (file: FileUploadResponseItf): string => {
+        const url = `${config.public.BACKEND_API_BASE}/files/1.0/${file.uniqueName}/full?key=${file.accessKey}`;
+        return file.mimeCategory === 'IMAGE'
+            ? `![${file.originalName}](${url})`
+            : `[${file.originalName}](${url})`;
+    };
+
+    const getAttachmentThumbnailUrl = (file: FileUploadResponseItf): string => {
+        return `${config.public.BACKEND_API_BASE}/files/1.0/${file.uniqueName}/thumbnail?key=${file.accessKey}`;
+    };
+
+    const insertIntoField = (target: AttachTarget, file: FileUploadResponseItf) => {
+        const md = getAttachmentMarkdownLink(file);
+        formState[target] = ((formState[target] || '') + '\n' + md).trimStart();
+        toast.add({ title: t('tickets.attachInsertedInMessage'), icon: 'i-lucide-paperclip', color: 'success', duration: 3000 });
+    };
+
+    const onFileAttached = (file: FileUploadResponseItf) => {
+        attachedFiles.value.push(file);
+        insertIntoField(attachTargetField.value, file);
+        showAttachModal.value = false;
+    };
+
+    const onRemoveAttachment = (idx: number) => {
+        attachedFiles.value.splice(idx, 1);
+    };
 
     // ----------------------------------------------------
     // Submission
@@ -237,6 +280,10 @@
                   </UEditorToolbar>
               </UEditor>
             </div>
+            <div class="flex justify-start mt-1">
+              <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                icon="i-lucide-paperclip" @click="openAttachModal('content')" />
+            </div>
           </UFormField>
           <UFormField
             name="llmContent"
@@ -266,7 +313,35 @@
                   </UEditorToolbar>
               </UEditor>
             </div>
+            <div class="flex justify-start mt-1">
+              <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                icon="i-lucide-paperclip" @click="openAttachModal('llmContent')" />
+            </div>
           </UFormField>
+
+          <!-- Attachment list -->
+          <div v-if="attachedFiles.length > 0" class="mb-3 flex flex-col gap-2">
+            <span class="text-xs font-semibold text-muted uppercase tracking-wide">{{ $t('tickets.attachments') }}</span>
+            <div v-for="(file, idx) in attachedFiles" :key="file.uniqueName"
+                 class="flex items-center gap-2 rounded-md border border-accented bg-default px-3 py-2">
+              <img v-if="file.mimeCategory === 'IMAGE' && file.thumbnailUniqueName"
+                   :src="getAttachmentThumbnailUrl(file)"
+                   class="w-8 h-8 object-cover rounded shrink-0" :alt="file.originalName" />
+              <UIcon v-else name="i-lucide-file" class="w-5 h-5 shrink-0 text-muted" />
+              <span class="truncate text-sm flex-1 min-w-0">{{ file.originalName }}</span>
+              <!-- Insert into public response -->
+              <UButton icon="i-lucide-arrow-down-to-line" size="xs" variant="ghost" color="neutral"
+                :title="$t('tickets.faqPubResponse')" :aria-label="$t('tickets.faqPubResponse')"
+                @click="insertIntoField('content', file)" />
+              <!-- Insert into LLM content -->
+              <UButton icon="i-lucide-bot" size="xs" variant="ghost" color="neutral"
+                :title="$t('tickets.faqLlmResponse')" :aria-label="$t('tickets.faqLlmResponse')"
+                @click="insertIntoField('llmContent', file)" />
+              <!-- Remove -->
+              <UButton icon="i-lucide-x" size="xs" variant="ghost" color="error"
+                :aria-label="$t('tickets.attachRemove')" @click="onRemoveAttachment(idx)" />
+            </div>
+          </div>
 
           <div class="flex justify-end mt-2">
               <UButton
@@ -309,6 +384,21 @@
             </div>
           </div>
         </UForm>
+
+        <!-- File attachment modal -->
+        <UModal v-model:open="showAttachModal"
+                :title="$t('tickets.attachModalTitle')"
+                :description="$t('tickets.attachModalDescription')"
+        >
+          <template #body>
+            <FilesUploadForm
+              forced-access-type="PRIVATE"
+              :forced-with-access-key="true"
+              @uploaded="onFileAttached"
+              @cancelled="showAttachModal = false"
+            />
+          </template>
+        </UModal>
     </div>
 </template>
 
