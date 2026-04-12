@@ -74,9 +74,9 @@
     };
 
     const onCopyAttachmentMarkdown = (file: FileUploadResponseItf) => {
-        navigator.clipboard.writeText(getAttachmentMarkdownLink(file));
-        toast.add({ title: t('tickets.attachMarkdownCopied'), icon: 'i-lucide-clipboard-check', color: 'success', duration: 3000 });
+        formState.content = ((formState.content || '') + '\n' + getAttachmentMarkdownLink(file)).trimStart();
     };
+
 
     // ----------------------------------------------------
     // Submission
