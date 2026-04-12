@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody } from '~/types';
+    import type { PrivTicketUserDetailResponseItf, PrivTicketAbstractResponseItf,PrivTicketUserMessageBody, PrivTicketUpdateBody, PrivTicketUpdateMessageBody, FileUploadResponseItf } from '~/types';
     import type { EditorCustomHandlers, EditorToolbarItem } from '@nuxt/ui'
     import { TextAlign } from '@tiptap/extension-text-align'
 
@@ -13,7 +13,9 @@
 
     const { t } = useI18n();
     const { $formatDuration } = useNuxtApp();
+    const nuxtApp = useNuxtApp();
     const toast = useToast();
+    const config = useRuntimeConfig();
 
     const componentCtx = reactive({
         creationMode: false,
@@ -207,8 +209,21 @@
     const canSubmit = computed(() => !topicError.value && !isSubmitting.value);
 
     // --------------------------------------------------------------------
-    // Editor Toolbar
+    // File attachment for responses
     // --------------------------------------------------------------------
+
+    const showResponseAttachModal = ref(false);
+
+    const onFileAttachedToResponse = (file: FileUploadResponseItf) => {
+        const url = `${config.public.BACKEND_API_BASE}/files/1.0/${file.uniqueName}/full?key=${file.accessKey}`;
+        const mdLink = file.mimeCategory === 'IMAGE'
+            ? `![${file.originalName}](${url})`
+            : `[${file.originalName}](${url})`;
+        componentCtx.response.content = ((componentCtx.response.content || '') + '\n' + mdLink).trimStart();
+        showResponseAttachModal.value = false;
+        toast.add({ title: t('tickets.attachInsertedInMessage'), icon: 'i-lucide-paperclip', color: 'success', duration: 3000 });
+    };
+
     const customHandlers = {      
     } satisfies EditorCustomHandlers
 
@@ -453,6 +468,16 @@
             </div>
             <div class="flex justify-end mt-2 mr-1">
               <UButton
+                :label="$t('tickets.attachFile')"
+                color="neutral"
+                variant="soft"
+                type="button"
+                icon="i-lucide-paperclip"
+                size="xs"
+                class="mr-auto"
+                @click="showResponseAttachModal = true"
+              />
+              <UButton
                 :label="$t('tickets.closeOnly')"
                 color="neutral"
                 type="submit"
@@ -500,7 +525,22 @@
           </div>
         </div>
       </div>
-    </UForm>      
+    </UForm>
+
+    <!-- File attachment modal for responses -->
+    <UModal v-model:open="showResponseAttachModal"
+            :title="$t('tickets.attachModalTitle')"
+            :description="$t('tickets.attachModalDescription')"
+    >
+      <template #body>
+        <FilesUploadForm
+          forced-access-type="PRIVATE"
+          :forced-with-access-key="true"
+          @uploaded="onFileAttachedToResponse"
+          @cancelled="showResponseAttachModal = false"
+        />
+      </template>
+    </UModal>
   </div>
 </template>
 

@@ -136,6 +136,16 @@
     "common-llm-provider-not-set" : "LLM provider is not configured",
     "common-llm-document-id-required" : "Document ID or KB ID is required",
 
-    "last" : "Last"
+    "last" : "Last",
+
+    "attachFile" : "Attach a file",
+    "attachments" : "Attachments",
+    "attachRemove" : "Remove",
+    "attachCopyMarkdown" : "Copy Markdown link",
+    "attachMarkdownCopied" : "Markdown link copied",
+    "attachModalTitle" : "Attach a file to the ticket",
+    "attachModalDescription" : "The file will be stored privately with a secure access link",
+    "attachInsertInMessage" : "Insert in message",
+    "attachInsertedInMessage" : "File link inserted in message"
   }
 }

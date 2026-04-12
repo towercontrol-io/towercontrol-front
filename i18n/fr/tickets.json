@@ -136,6 +136,16 @@
     "common-llm-provider-not-set" : "Le fournisseur LLM n'est pas configuré",
     "common-llm-document-id-required" : "L'identifiant du document ou de la base de connaissances est requis",
 
-    "last" : "Dernier"
+    "last" : "Dernier",
+
+    "attachFile" : "Joindre un fichier",
+    "attachments" : "Pièces jointes",
+    "attachRemove" : "Supprimer",
+    "attachCopyMarkdown" : "Copier le lien Markdown",
+    "attachMarkdownCopied" : "Lien Markdown copié",
+    "attachModalTitle" : "Joindre un fichier au ticket",
+    "attachModalDescription" : "Le fichier sera stocké de façon privée avec un lien d'accès sécurisé",
+    "attachInsertInMessage" : "Insérer dans le message",
+    "attachInsertedInMessage" : "Lien du fichier inséré dans le message"
   }
 }

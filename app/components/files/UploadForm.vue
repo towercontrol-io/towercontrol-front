@@ -1,8 +1,23 @@
 <script setup lang="ts">
-    import type { FileAccessType } from '~/types';
+    import type { FileAccessType, FileUploadResponseItf } from '~/types';
+
+    const props = withDefaults(defineProps<{
+        /** When set, locks accessType to this value and hides the selector */
+        forcedAccessType?: FileAccessType;
+        /** When true, locks withAccessKey to true and hides the toggle */
+        forcedWithAccessKey?: boolean;
+    }>(), {});
+
+    const emit = defineEmits<{
+        uploaded: [file: FileUploadResponseItf];
+        cancelled: [];
+    }>();
 
     const { t } = useI18n();
     const nuxtApp = useNuxtApp();
+
+    // Ticket-attachment mode: parent controls access params
+    const isTicketMode = computed(() => props.forcedAccessType !== undefined);
 
     // --------------------------------------------------------------------
     // Form state
@@ -11,8 +26,8 @@
     const formState = reactive({
         file: null as File | null,
         description: '' as string,
-        accessType: 'PRIVATE' as FileAccessType,
-        withAccessKey: false as boolean,
+        accessType: (props.forcedAccessType ?? 'PRIVATE') as FileAccessType,
+        withAccessKey: props.forcedWithAccessKey ?? false,
     });
 
     const isDragOver = ref(false);
@@ -70,19 +85,27 @@
         uploadError.value = null;
         isUploading.value = true;
         try {
+            const accessType = props.forcedAccessType ?? formState.accessType;
+            const withAccessKey = props.forcedWithAccessKey ?? formState.withAccessKey;
             const res = await nuxtApp.$apiBackendFiles.filesModuleUpload(
                 formState.file,
-                formState.accessType,
+                accessType,
                 formState.description || undefined,
                 undefined,
-                formState.withAccessKey || undefined,
+                withAccessKey || undefined,
             );
             if (res.success) {
-                nuxtApp.callHook('filemng:uploaded' as any, res.success);
-                clearFile();
-                formState.description = '';
-                formState.accessType = 'PRIVATE';
-                formState.withAccessKey = false;
+                if (isTicketMode.value) {
+                    emit('uploaded', res.success);
+                    clearFile();
+                    formState.description = '';
+                } else {
+                    nuxtApp.callHook('filemng:uploaded' as any, res.success);
+                    clearFile();
+                    formState.description = '';
+                    formState.accessType = 'PRIVATE';
+                    formState.withAccessKey = false;
+                }
             } else if (res.error) {
                 uploadError.value = t('files.' + (res.error as any).message);
             }
@@ -96,10 +119,14 @@
     const onCancel = () => {
         clearFile();
         formState.description = '';
-        formState.accessType = 'PRIVATE';
-        formState.withAccessKey = false;
         uploadError.value = null;
-        nuxtApp.callHook('filemng:close' as any);
+        if (isTicketMode.value) {
+            emit('cancelled');
+        } else {
+            formState.accessType = 'PRIVATE';
+            formState.withAccessKey = false;
+            nuxtApp.callHook('filemng:close' as any);
+        }
     };
 </script>
 
@@ -158,8 +185,8 @@
             />
         </UFormField>
 
-        <!-- Access type -->
-        <UFormField :label="t('files.uploadAccessType')">
+        <!-- Access type (hidden in ticket-attachment mode) -->
+        <UFormField v-if="!isTicketMode" :label="t('files.uploadAccessType')">
             <USelectMenu
                 v-model="formState.accessType"
                 value-key="value"
@@ -168,8 +195,8 @@
             />
         </UFormField>
 
-        <!-- Access key -->
-        <UFormField :label="t('files.uploadWithAccessKey')" :description="t('files.uploadWithAccessKeyDesc')">
+        <!-- Access key (hidden in ticket-attachment mode) -->
+        <UFormField v-if="!isTicketMode" :label="t('files.uploadWithAccessKey')" :description="t('files.uploadWithAccessKeyDesc')">
             <USwitch v-model="formState.withAccessKey" />
         </UFormField>
 
