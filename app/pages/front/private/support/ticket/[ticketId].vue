@@ -12,12 +12,14 @@
         PrivTicketUpdateMessageBody,
         PrivTicketUserMessageBody
     } from '~/types';
+    import type { FileUploadResponseItf, FileUpdateBody, FileAccessType } from '~/types';
 
     definePageMeta({ layout: 'main-layout', layoutProps: { title: 'ticketAdvEdition' } });
 
     const { t } = useI18n();
     const nuxtApp = useNuxtApp();
     const toast = useToast();
+    const config = useRuntimeConfig();
     const { $formatDuration } = useNuxtApp();
     const route = useRoute();
 
@@ -224,6 +226,7 @@
                 componentCtx.ticket = res.success;
                 normalizeTicket();
                 backupTicket();
+                fetchFileContextDetails();
             } else if (res.error) {
                 componentCtx.ticketLoadingError = t('tickets.' + res.error.message);
             }
@@ -413,7 +416,7 @@
     };
 
     // --------------------------------------------------------------------
-    // Custom fields
+    // Custom fields & file attachments
     // --------------------------------------------------------------------
 
     const addCustomField = () => {
@@ -425,6 +428,140 @@
 
     const removeCustomField = (index: number) => {
         componentCtx.ticket.context?.splice(index, 1);
+    };
+
+    // --- File cache (keyed by uniqueName) ---
+    const fileCache = ref<Record<string, FileUploadResponseItf>>({});
+
+    const fetchFileContextDetails = async () => {
+        if (!componentCtx.ticket.context) return;
+        const uniqueNames = componentCtx.ticket.context
+            .filter(f => f.value.startsWith('file_'))
+            .map(f => f.value.slice(5));
+        await Promise.all(uniqueNames.map(async (un) => {
+            if (fileCache.value[un]) return;
+            const res = await nuxtApp.$apiBackendFiles.filesAdminGetFile(un);
+            if (res.success) fileCache.value[un] = res.success;
+        }));
+    };
+
+    const getMarkdownLink = (file: FileUploadResponseItf): string => {
+        const url = `${config.public.BACKEND_API_BASE}/files/1.0/${file.uniqueName}/full?key=${file.accessKey}`;
+        return file.mimeCategory === 'IMAGE'
+            ? `![${file.originalName}](${url})`
+            : `[${file.originalName}](${url})`;
+    };
+
+    const getThumbnailUrl = (un: string): string => {
+        const file = fileCache.value[un];
+        if (!file) return '';
+        return `${config.public.BACKEND_API_BASE}/files/1.0/${un}/thumbnail?key=${file.accessKey}`;
+    };
+
+    // --- Attach modal ---
+    const showAttachModal = ref(false);
+    const attachCallback = ref<((f: FileUploadResponseItf) => void) | null>(null);
+
+    const notifyInserted = () =>
+        toast.add({ title: t('tickets.attachInsertedInMessage'), icon: 'i-lucide-paperclip', color: 'success', duration: 3000 });
+
+    const openAttachModal = (cb: (f: FileUploadResponseItf) => void) => {
+        attachCallback.value = cb;
+        showAttachModal.value = true;
+    };
+
+    const onFileAttached = (file: FileUploadResponseItf) => {
+        if (!componentCtx.ticket.context) componentCtx.ticket.context = [];
+        componentCtx.ticket.context.push({ name: `${file.mimeCategory.toLowerCase()}_${Date.now()}`, value: `file_${file.uniqueName}` });
+        fileCache.value[file.uniqueName] = file;
+        if (attachCallback.value) {
+            attachCallback.value(file);
+            attachCallback.value = null;
+        }
+        showAttachModal.value = false;
+    };
+
+    // Named helpers for template attach buttons
+    const onAttachToContent = () => openAttachModal((f) => {
+        componentCtx.ticket.content = ((componentCtx.ticket.content || '') + '\n' + getMarkdownLink(f)).trimStart();
+        notifyInserted();
+    });
+    const onAttachToLlmDescription = () => openAttachModal((f) => {
+        componentCtx.ticket.llmDescription = ((componentCtx.ticket.llmDescription || '') + '\n' + getMarkdownLink(f)).trimStart();
+        notifyInserted();
+    });
+    const onAttachToTechContext = () => openAttachModal((f) => {
+        componentCtx.ticket.techContext = ((componentCtx.ticket.techContext || '') + '\n' + getMarkdownLink(f)).trimStart();
+        notifyInserted();
+    });
+    const onAttachToResponse = () => openAttachModal((f) => {
+        componentCtx.response.content = ((componentCtx.response.content || '') + '\n' + getMarkdownLink(f)).trimStart();
+        notifyInserted();
+    });
+    const onAttachToMessage = (message: { content: string }) => openAttachModal((f) => {
+        message.content = ((message.content || '') + '\n' + getMarkdownLink(f)).trimStart();
+        notifyInserted();
+    });
+
+    // Delete context field AND its file from the server
+    const onDeleteContextFile = async (index: number) => {
+        const field = componentCtx.ticket.context?.[index];
+        if (!field || !field.value.startsWith('file_')) return;
+        const un = field.value.slice(5);
+        componentCtx.ticket.context!.splice(index, 1);
+        delete fileCache.value[un];
+        await nuxtApp.$apiBackendFiles.filesAdminDelete(un);
+    };
+
+    const onCopyFileLink = (un: string) => {
+        const file = fileCache.value[un];
+        if (!file) return;
+        navigator.clipboard.writeText(getMarkdownLink(file));
+        toast.add({ title: t('tickets.attachMarkdownCopied'), icon: 'i-lucide-clipboard-check', color: 'success', duration: 3000 });
+    };
+
+    // --- File edit modal ---
+    const fileEditModalOpen = ref(false);
+    const fileEditTarget = ref<FileUploadResponseItf | null>(null);
+    const fileEditDraft = reactive({ description: '', accessType: 'PRIVATE' as FileAccessType, withShortName: false, withAccessKey: false });
+    const fileEditSaving = ref(false);
+    const fileEditError = ref<string | null>(null);
+    const accessTypeOptions = computed(() => [
+        { label: t('files.accessPrivate'),   value: 'PRIVATE'   as FileAccessType },
+        { label: t('files.accessConnected'), value: 'CONNECTED' as FileAccessType },
+        { label: t('files.accessPublic'),    value: 'PUBLIC'    as FileAccessType },
+    ]);
+
+    const openFileEditModal = (un: string) => {
+        const file = fileCache.value[un];
+        if (!file) return;
+        fileEditTarget.value = { ...file };
+        fileEditDraft.description = file.description ?? '';
+        fileEditDraft.accessType = (file.accessType as FileAccessType) ?? 'PRIVATE';
+        fileEditDraft.withShortName = !!file.shortName;
+        fileEditDraft.withAccessKey = !!file.accessKey;
+        fileEditError.value = null;
+        fileEditModalOpen.value = true;
+    };
+
+    const onSaveFileEdit = async () => {
+        if (!fileEditTarget.value) return;
+        fileEditSaving.value = true;
+        fileEditError.value = null;
+        const body: FileUpdateBody = {
+            accessType: fileEditDraft.accessType,
+            description: fileEditDraft.description || undefined,
+            withShortName: fileEditDraft.withShortName,
+            withAccessKey: fileEditDraft.withAccessKey,
+        };
+        const res = await nuxtApp.$apiBackendFiles.filesAdminUpdate(fileEditTarget.value.uniqueName, body);
+        if (res.success) {
+            fileCache.value[fileEditTarget.value.uniqueName] = res.success;
+            fileEditModalOpen.value = false;
+        } else {
+            fileEditError.value = t('files.' + ((res.error as any)?.message ?? 'unknownError'));
+        }
+        fileEditSaving.value = false;
     };
 
     // --------------------------------------------------------------------
@@ -613,6 +750,10 @@
                             class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center"
                         />
                     </UEditor>
+                    <div class="flex justify-start mt-1">
+                        <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                            icon="i-lucide-paperclip" @click="onAttachToContent" />
+                    </div>
                 </UFormField>
 
                 <UFormField
@@ -634,6 +775,10 @@
                             class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center"
                         />
                     </UEditor>
+                    <div class="flex justify-start mt-1">
+                        <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                            icon="i-lucide-paperclip" @click="onAttachToLlmDescription" />
+                    </div>
                 </UFormField>
 
                 <UFormField
@@ -655,6 +800,10 @@
                             class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center"
                         />
                     </UEditor>
+                    <div class="flex justify-start mt-1">
+                        <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                            icon="i-lucide-paperclip" @click="onAttachToTechContext" />
+                    </div>
                 </UFormField>
 
                 <UFormField
@@ -682,25 +831,91 @@
                         <div
                             v-for="(field, index) in componentCtx.ticket.context"
                             :key="`context-${index}`"
-                            class="flex flex-col gap-2 sm:flex-row sm:items-center"
+                            class="grid grid-cols-[1fr_2fr_6rem] items-center gap-2"
                         >
-                            <UInput v-model="field.name" :placeholder="$t('tickets.ticketContextKey')" class="w-full sm:w-1/3" />
-                            <UInput v-model="field.value" :placeholder="$t('tickets.ticketContextValue')" class="w-full sm:w-2/3" />
+                            <!-- Block 1 : icon/thumbnail + editable name -->
+                            <div class="flex items-center gap-2 min-w-0">
+                                <template v-if="field.value.startsWith('file_')">
+                                    <img
+                                        v-if="fileCache[field.value.slice(5)]?.mimeCategory === 'IMAGE' && fileCache[field.value.slice(5)]?.thumbnailUniqueName"
+                                        :src="getThumbnailUrl(field.value.slice(5))"
+                                        class="w-5 h-5 object-cover rounded shrink-0"
+                                        :alt="fileCache[field.value.slice(5)]?.originalName ?? ''"
+                                    />
+                                    <UIcon v-else name="i-lucide-file" class="w-5 h-5 shrink-0 text-muted" />
+                                </template>
+                                <UInput
+                                    v-model="field.name"
+                                    :placeholder="$t('tickets.ticketContextKey')"
+                                    class="flex-1 min-w-0"
+                                />
+                            </div>
+                            <!-- Block 2 : value (editable for regular, readonly for file) -->
+                            <UInput
+                                v-if="field.value.startsWith('file_')"
+                                :model-value="fileCache[field.value.slice(5)]?.originalName ?? field.value.slice(5)"
+                                disabled
+                            />
+                            <UInput
+                                v-else
+                                v-model="field.value"
+                                :placeholder="$t('tickets.ticketContextValue')"
+                            />
+                            <!-- Block 3 : actions -->
+                            <div class="flex items-center justify-end gap-1 w-full">
+                                <template v-if="field.value.startsWith('file_')">
+                                    <UButton
+                                        icon="i-lucide-link"
+                                        size="xs" variant="ghost" color="neutral"
+                                        :disabled="!fileCache[field.value.slice(5)]?.accessKey"
+                                        :aria-label="$t('tickets.attachCopyMarkdown')"
+                                        :title="$t('tickets.attachCopyMarkdown')"
+                                        @click="onCopyFileLink(field.value.slice(5))"
+                                    />
+                                    <UButton
+                                        icon="i-lucide-pencil"
+                                        size="xs" variant="ghost" color="neutral"
+                                        :disabled="!fileCache[field.value.slice(5)]"
+                                        :aria-label="$t('files.actionEdit')"
+                                        :title="$t('files.actionEdit')"
+                                        @click="openFileEditModal(field.value.slice(5))"
+                                    />
+                                    <UButton
+                                        icon="i-lucide-trash-2"
+                                        size="xs" variant="ghost" color="error"
+                                        :aria-label="$t('files.actionDelete')"
+                                        :title="$t('files.actionDelete')"
+                                        @click="onDeleteContextFile(index)"
+                                    />
+                                </template>
+                                <UButton
+                                    v-else
+                                    icon="i-lucide-trash-2"
+                                    size="xs"
+                                    color="neutral"
+                                    variant="ghost"
+                                    @click="removeCustomField(index)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
                             <UButton
-                                icon="i-lucide-trash-2"
+                                :label="$t('tickets.ticketContextAdd')"
+                                icon="i-lucide-plus"
                                 color="neutral"
                                 variant="ghost"
-                                @click="removeCustomField(index)"
+                                class="w-fit"
+                                @click="addCustomField"
+                            />
+                            <UButton
+                                :label="$t('tickets.attachFile')"
+                                icon="i-lucide-paperclip"
+                                color="neutral"
+                                variant="ghost"
+                                class="w-fit"
+                                @click="openAttachModal(() => {})"
                             />
                         </div>
-                        <UButton
-                            :label="$t('tickets.ticketContextAdd')"
-                            icon="i-lucide-plus"
-                            color="neutral"
-                            variant="ghost"
-                            class="w-fit"
-                            @click="addCustomField"
-                        />
                     </div>
                 </UFormField>
             </UForm>
@@ -759,6 +974,10 @@
                                 class="border-b border-muted sticky top-0 inset-x-0 py-2 z-50 bg-gray-100 dark:bg-gray-700 overflow-x-auto rounded-md flex justify-center"
                             />
                         </UEditor>
+                        <div class="flex justify-start -mt-2">
+                            <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                                icon="i-lucide-paperclip" @click="onAttachToMessage(message)" />
+                        </div>
 
                         <div>
                             <div class="text-xs uppercase text-neutral-500 mb-1">
@@ -843,6 +1062,9 @@
                             </div>
                         </div>
                         <div class="flex justify-end mt-2 mr-1">
+                            <UButton :label="$t('tickets.attachFile')" color="neutral" variant="soft" size="xs"
+                                icon="i-lucide-paperclip" class="mr-auto"
+                                @click="onAttachToResponse" />
                             <UButton
                                 :label="$t('tickets.responseAdd')"
                                 :disabled="!canSubmitResponse"
@@ -868,5 +1090,52 @@
         <div v-if="componentCtx.ticketLoadingError" class="text-center text-red-600 font-bold">
             {{ componentCtx.ticketLoadingError }}
         </div>
+
+        <!-- File attach modal -->
+        <UModal v-model:open="showAttachModal"
+                :title="$t('tickets.attachModalTitle')"
+                :description="$t('tickets.attachModalDescription')"
+        >
+            <template #body>
+                <FilesUploadForm
+                    forced-access-type="PRIVATE"
+                    :forced-with-access-key="true"
+                    @uploaded="onFileAttached"
+                    @cancelled="showAttachModal = false"
+                />
+            </template>
+        </UModal>
+
+        <!-- File edit modal -->
+        <UModal v-model:open="fileEditModalOpen" :title="$t('files.actionEdit')">
+            <template #body>
+                <div v-if="fileEditTarget" class="flex flex-col gap-4">
+                    <UFormField :label="$t('files.editFileName')">
+                        <UInput :model-value="fileEditTarget.originalName" readonly class="w-full" />
+                    </UFormField>
+                    <UFormField :label="$t('files.editDescription')">
+                        <UInput v-model="fileEditDraft.description"
+                            :placeholder="$t('files.editDescriptionPlaceholder')" class="w-full" />
+                    </UFormField>
+                    <UFormField :label="$t('files.editAccessType')">
+                        <USelectMenu v-model="fileEditDraft.accessType" value-key="value"
+                            :items="accessTypeOptions" class="w-52" />
+                    </UFormField>
+                    <UFormField :label="$t('files.editWithShortName')" :description="$t('files.editWithShortNameDesc')">
+                        <USwitch v-model="fileEditDraft.withShortName" />
+                    </UFormField>
+                    <UFormField :label="$t('files.editWithAccessKey')" :description="$t('files.editWithAccessKeyDesc')">
+                        <USwitch v-model="fileEditDraft.withAccessKey" />
+                    </UFormField>
+                    <div v-if="fileEditError" class="text-sm text-red-600">{{ fileEditError }}</div>
+                    <div class="flex justify-end gap-2">
+                        <UButton color="neutral" variant="ghost" :label="$t('files.editCancel')"
+                            @click="fileEditModalOpen = false" />
+                        <UButton color="neutral" icon="i-lucide-save" :label="$t('files.editSave')"
+                            :loading="fileEditSaving" @click="onSaveFileEdit" />
+                    </div>
+                </div>
+            </template>
+        </UModal>
     </div>
 </template>

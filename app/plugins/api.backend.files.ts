@@ -16,6 +16,7 @@ export default defineNuxtPlugin(() => {
   const filesModuleListFilesGet: string  = '/files/1.0/list';
   const filesModuleUploadPost: string    = '/files/1.0/upload';
   const filesModuleFileDelete: string    = '/files/1.0/{fileRef}';
+  const filesModuleFileGet: string    = '/files/1.0/{fileRef}/info';
   const filesModuleAdminListGet: string  = '/files/1.0/admin/list';
   const filesModuleAdminUpdate: string   = '/files/1.0/admin/{fileRef}';
   const filesModuleAdminDelete: string   = '/files/1.0/admin/{fileRef}';
@@ -305,6 +306,25 @@ export default defineNuxtPlugin(() => {
                 'GET', 
                 url, 
                 null, 
+                false
+            );
+            return { success: response };
+        } catch (error: any) {
+            return { error };
+        }
+    },
+
+    /**
+     * Get a single file's metadata as admin, bypassing ownership checks.
+     */
+    filesAdminGetFile: async (
+        fileRef: string
+    ): Promise<{ success?: FileUploadResponseItf; error?: ActionResult | { message: string } }> => {
+        try {
+            const response = await apiCallwithTimeout<FileUploadResponseItf>(
+                'GET',
+                filesModuleFileGet.replace('{fileRef}', fileRef),
+                null,
                 false
             );
             return { success: response };
