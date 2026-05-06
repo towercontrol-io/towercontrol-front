@@ -189,7 +189,8 @@
     "endpointDetails": "Endpoint Details",
     "files": "My Files",
     "filesAdmin": "File Management",
-    
+    "auditAdmin": "Audit Logs",
+
     "last" : "Last"
   },
   "profile": {
@@ -419,6 +420,8 @@
     "role-support-user-desc" : "Allow a user to create support tickets",
     "role-files-write-desc" : "Allow a user to create public or connected files",
     "role-files-admin-desc" : "Allow a user to manage all files",
+    "role-audit-read-desc" : "Allow a user to read masked audit logs",
+    "role-audit-read-clear-desc" : "Allow a user to read clear text audit logs",
 
     "last": "Last"
   },
@@ -484,6 +487,30 @@
     "createGroup": "New Group",
     "groups": "Groups",
  
+    "last": "Last"
+  },
+  "audit": {
+    "pageTitle": "Audit Logs",
+    "pageDescription": "Browse and search the platform audit trail.",
+    "searchPlaceholder": "Search by service, action or owner…",
+    "searchButton": "Search",
+    "filterFrom": "From date",
+    "filterTo": "To date",
+    "filterClear": "Clear",
+    "searchInvalidDateRange": "The start date must be before the end date",
+    "nonDatabase": "Audit logs are not stored in a database backend; browsing from the front end is unavailable.",
+    "noResults": "No audit log entries match your search criteria.",
+    "showing": "Showing {from}–{to} of {total} entries",
+    "pageOf": "Page {current} of {total}",
+    "colDatetime": "Date / Time",
+    "colService": "Service",
+    "colAction": "Action",
+    "colOwner": "Owner",
+    "colLog": "Log message",
+    "colLinkChain": "Chain",
+    "audit-search-invalid-date-range": "The start date must be before the end date",
+    "audit-search-invalid-base64-param": "The search filter parameter is not valid Base64 encoded",
+
     "last": "Last"
   }
 }

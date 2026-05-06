@@ -323,6 +323,9 @@ export default defineNuxtPlugin(() => {
             appStore.setFilesAdmin(
                 getJWTRole(response.jwtToken,'ROLE_FILES_ADMIN')
             );
+            appStore.setAuditAdmin(
+                getJWTRole(response.jwtToken,'ROLE_AUDIT_RD') || getJWTRole(response.jwtToken,'ROLE_AUDIT_RD_CLEAR')
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
@@ -381,6 +384,9 @@ export default defineNuxtPlugin(() => {
             );
             appStore.setFilesAdmin(
                 getJWTRole(response.jwtToken,'ROLE_FILES_ADMIN')
+            );
+            appStore.setAuditAdmin(
+                getJWTRole(response.jwtToken,'ROLE_AUDIT_RD') || getJWTRole(response.jwtToken,'ROLE_AUDIT_RD_CLEAR')
             );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);

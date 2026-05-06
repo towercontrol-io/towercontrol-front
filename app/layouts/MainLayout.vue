@@ -214,6 +214,9 @@ import { is } from 'valibot';
     if ( appStore.isFilesAdmin() ) {
       topItems.push({ label: `${t('menu.filesAdmin')}`,icon: 'i-lucide-file',to: '/front/private/files-admin',onSelect: () => {mainData.open = false}});  
     }
+    if ( appStore.isAuditAdmin() ) {
+      topItems.push({ label: `${t('menu.auditAdmin')}`,icon: 'i-lucide-scroll-text',to: '/front/private/audit',onSelect: () => {mainData.open = false}});  
+    }
     return topItems;
   });
 

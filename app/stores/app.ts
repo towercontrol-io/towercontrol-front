@@ -19,6 +19,7 @@ export const applicationStore = defineStore('app', {
     supportUser: false as boolean | null,
     supportAdmin: false as boolean | null,
     filesAdmin: false as boolean | null,
+    auditAdmin: false as boolean | null,
   }),
   actions: {
     clearStore() {
@@ -38,6 +39,7 @@ export const applicationStore = defineStore('app', {
       this.supportUser = false;
       this.supportAdmin = false;
       this.filesAdmin = false;
+      this.auditAdmin = false;
     },
     setCaptureEndpointCreator(isCapture : boolean) {
       this.captureEndpointCreator = isCapture;
@@ -139,6 +141,12 @@ export const applicationStore = defineStore('app', {
     },
     isApikeyCreator(): boolean | null {
       return this.apikeyCreator;
+    },
+    setAuditAdmin(isAdmin: boolean) {
+      this.auditAdmin = isAdmin;
+    },
+    isAuditAdmin(): boolean | null {
+      return this.auditAdmin;
     },
     setSupportUser(isSupportUser: boolean) {
       this.supportUser = isSupportUser;

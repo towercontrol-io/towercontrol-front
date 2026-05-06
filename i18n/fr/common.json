@@ -189,7 +189,8 @@
     "endpointDetails": "Détails du point de collecte",
     "files": "Mes Fichiers",
     "filesAdmin": "Gestion des fichiers",
-    
+    "auditAdmin": "Journaux d'audit",
+
     "last" : "Dernier"
   },
   "profile": {
@@ -419,6 +420,8 @@
     "role-support-user-desc" : "Permet à un utilisateur de créer des tickets de support",
     "role-files-write-desc" : "Permet à un utilisateur de créer des fichiers publics ou connectés",
     "role-files-admin-desc" : "Permet à un utilisateur de gérer tous les fichiers",
+    "role-audit-read-desc" : "Permet à un utilisateur de lire les journaux d'audit (masqués)",
+    "role-audit-read-clear-desc" : "Permet à un utilisateur de lire les journaux d'audit (en clair)",
 
     "last": "Dernier"
   },
@@ -484,6 +487,30 @@
     "createSubGroup": "Nouveau groupe",
     "createGroup": "Nouveau groupe",
     "groups": "Groupes",
+
+    "last": "Dernier"
+  },
+  "audit": {
+    "pageTitle": "Journaux d'audit",
+    "pageDescription": "Consultez et recherchez dans les journaux d'audit de la plateforme.",
+    "searchPlaceholder": "Rechercher par service, action ou propriétaire…",
+    "searchButton": "Rechercher",
+    "filterFrom": "Date de début",
+    "filterTo": "Date de fin",
+    "filterClear": "Effacer",
+    "searchInvalidDateRange": "La date de début doit être antérieure à la date de fin",
+    "nonDatabase": "Les journaux d'audit ne sont pas stockés dans un backend base de données, la consultation depuis le front n'est pas disponible.",
+    "noResults": "Aucune entrée du journal d'audit ne correspond à vos critères de recherche.",
+    "showing": "Affichage de {from}–{to} sur {total} entrées",
+    "pageOf": "Page {current} sur {total}",
+    "colDatetime": "Date / Heure",
+    "colService": "Service",
+    "colAction": "Action",
+    "colOwner": "Propriétaire",
+    "colLog": "Message",
+    "colLinkChain": "Chaîne",
+    "audit-search-invalid-date-range": "La date de début doit être antérieure à la date de fin",
+    "audit-search-invalid-base64-param": "Le paramètre de filtre de recherche n'est pas un encodage Base64 valide",
 
     "last": "Dernier"
   }
