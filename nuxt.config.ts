@@ -47,6 +47,8 @@ export default defineNuxtConfig({
       ENABLE_TICKETING_FEATURES: false,           // If true, the ticketing features will be enabled (pro version)
       ENABLE_DANGER_FEATURES: true,               // If true, the user-danger features will be enabled 
       ENABLE_DANGER_DELETE_ACCOUNT: true,         // If true, the user will be able immediately delete his account
+      CUSTOM_MENU_ITEMS: [],                      // Custom menu to extend the frontend with additional link w/o having to modify the code. Format: [{ label: 'custom_menu.my-first-name', icon: 'i-lucide-link', to: '/custom/mypage' }]
+                                                  // Container may link i18n/en/custom.json, 18n/fr/custom.json, app/types/custom.ts, app/plugins/custom.ts, app/components/custom, app/pages/front/custom/
     }
   },
   i18n: {

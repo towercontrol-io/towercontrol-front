@@ -217,6 +217,18 @@ import { is } from 'valibot';
     if ( appStore.isAuditAdmin() ) {
       topItems.push({ label: `${t('menu.auditAdmin')}`,icon: 'i-lucide-scroll-text',to: '/front/private/audit',onSelect: () => {mainData.open = false}});  
     }
+
+    // Add custom menu items when exists
+    config.public.CUSTOM_MENU_ITEMS.forEach((item: any) => {
+      topItems.push({
+        label: t(item.label),
+        icon: item.icon,
+        to: item.to,
+        target: item.target || '_self',
+        onSelect: () => {mainData.open = false}
+      } as NavigationMenuItem);
+    });
+
     return topItems;
   });
 

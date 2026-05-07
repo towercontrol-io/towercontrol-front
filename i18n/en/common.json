@@ -397,6 +397,32 @@
     "groups-group-creation-refused-billing" : "Group creation rejected due to billing restrictions",
     "last": "Last"
   },
+  "home" : {
+    "welcomeTitle": "Welcome to your IoT Console",
+    "welcomeSubtitle": "Your central platform for IoT device management, monitoring, and administration.",
+    "adaptableTitle": "Fully Adaptable",
+    "adaptableDesc": "This console is designed to be customized and adapted to your specific needs — branding, features, workflows, and integrations.",
+    "devicesTitle": "Device Management",
+    "devicesDesc": "Manage your IoT endpoints, monitor their state, configure groups, and control access rights from a single place.",
+    "securityTitle": "Security First",
+    "securityDesc": "Role-based access control, two-factor authentication, API keys, and full audit logs keep your platform secure.",
+    "supportTitle": "Support & Collaboration",
+    "supportDesc": "Built-in ticketing, FAQ management, and user support tools to assist your teams and end-users effectively.",
+    "quickLinksTitle": "Quick Access",
+    "linkProfile": "My Profile",
+    "linkProfileDesc": "Update your personal information, password, and security settings.",
+    "linkEndpoints": "Endpoints",
+    "linkEndpointsDesc": "View and manage your IoT capture endpoints.",
+    "linkApiKeys": "API Keys",
+    "linkApiKeysDesc": "Create and manage your API keys for external integrations.",
+    "linkGroups": "Groups",
+    "linkGroupsDesc": "Organize your devices and users into logical groups.",
+    "platformTitle": "Platform Status",
+    "platformReady": "Platform Operational",
+    "platformReadyDesc": "All systems are running normally.",
+
+    "last": "Last"
+  },
   "role" : {
     "role-god-admin-desc": "Super administrator",
     "role-user-admin-desc": "User administrator",

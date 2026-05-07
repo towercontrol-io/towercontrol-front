@@ -397,6 +397,32 @@
     "groups-group-creation-refused-billing" : "Création de groupe refusée en raison de restrictions de facturation",
     "last": "Dernier"
   },
+  "home" : {
+    "welcomeTitle": "Bienvenue sur votre Console IoT",
+    "welcomeSubtitle": "Votre plateforme centrale pour la gestion, la supervision et l'administration de vos objets connectés.",
+    "adaptableTitle": "Entièrement Adaptable",
+    "adaptableDesc": "Cette console est conçue pour être personnalisée et adaptée à vos besoins spécifiques — identité visuelle, fonctionnalités, workflows et intégrations.",
+    "devicesTitle": "Gestion des Équipements",
+    "devicesDesc": "Gérez vos points de collecte IoT, supervisez leur état, configurez des groupes et contrôlez les droits d'accès depuis un seul endroit.",
+    "securityTitle": "Sécurité Avant Tout",
+    "securityDesc": "Contrôle d'accès basé sur les rôles, double authentification, clés API et journaux d'audit complets pour sécuriser votre plateforme.",
+    "supportTitle": "Support & Collaboration",
+    "supportDesc": "Tickets intégrés, gestion de FAQ et outils de support utilisateur pour assister efficacement vos équipes et utilisateurs finaux.",
+    "quickLinksTitle": "Accès Rapide",
+    "linkProfile": "Mon Profil",
+    "linkProfileDesc": "Mettez à jour vos informations personnelles, votre mot de passe et vos paramètres de sécurité.",
+    "linkEndpoints": "Points de collecte",
+    "linkEndpointsDesc": "Visualisez et gérez vos points de collecte IoT.",
+    "linkApiKeys": "Clés API",
+    "linkApiKeysDesc": "Créez et gérez vos clés API pour les intégrations externes.",
+    "linkGroups": "Groupes",
+    "linkGroupsDesc": "Organisez vos équipements et utilisateurs en groupes logiques.",
+    "platformTitle": "État de la Plateforme",
+    "platformReady": "Plateforme Opérationnelle",
+    "platformReadyDesc": "Tous les systèmes fonctionnent normalement.",
+
+    "last": "Dernier"
+  },
   "role" : {
     "role-god-admin-desc": "Super administrateur",
     "role-user-admin-desc": "Administrateur des utilisateurs",

@@ -1,0 +1,1 @@
+// To be override by user, this file is not required, just an example of how to extend the types of the runtime config
