@@ -501,7 +501,6 @@
 
     "last": "Dernier"
   },
-
   "common": {
     "backendTimeout": "Le backend n'a pas répondu dans le délai attendu. Veuillez réessayer plus tard.",
     "unknownError": "Une erreur inconnue est survenue. Veuillez réessayer plus tard.",
@@ -537,6 +536,7 @@
     "colLinkChain": "Chaîne",
     "audit-search-invalid-date-range": "La date de début doit être antérieure à la date de fin",
     "audit-search-invalid-base64-param": "Le paramètre de filtre de recherche n'est pas un encodage Base64 valide",
+    "unknownError": "Une erreur inconnue est survenue lors de la recherche dans les journaux d'audit. Veuillez réessayer plus tard.",
 
     "last": "Dernier"
   }

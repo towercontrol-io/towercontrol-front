@@ -536,6 +536,7 @@
     "colLinkChain": "Chain",
     "audit-search-invalid-date-range": "The start date must be before the end date",
     "audit-search-invalid-base64-param": "The search filter parameter is not valid Base64 encoded",
+    "unknownError": "An unknown error occurred while searching the audit logs. Please try again later.",
 
     "last": "Last"
   }
