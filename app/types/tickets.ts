@@ -105,6 +105,9 @@ export interface PrivTicketUserDetailResponseItf {
 
     /** Moment of creation in milliseconds since epoch */
     creationMs: number;
+        
+    /** Ticket status (OPEN or CLOSED) */
+    status: string;
 
     /** List of responses & replies to the ticket */
     responses: PrivMessageContent[];
