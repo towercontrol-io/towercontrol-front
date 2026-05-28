@@ -57,6 +57,16 @@ import { is } from 'valibot';
   // Ticket notification management
 
   const ticketRefreshInterval = ref() as any;
+  const jwtCheckInterval = ref() as any;
+
+  // ------------------------------------------------------------
+  // User activity tracking for session renewal
+  const lastUserActivity = ref<number>(Date.now());
+  const SESSION_INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes
+  const SESSION_RENEW_THRESHOLD = 60 * 1000;       // renew if < 1 minute remaining
+
+  const updateLastActivity = () => { lastUserActivity.value = Date.now(); };
+
   const ticketPending = ref({
       pending: 0,
       assigned : 0
@@ -77,6 +87,33 @@ import { is } from 'valibot';
 
 
   onMounted(() => {
+    if (route.path.includes('/private/')) {
+      // Track user activity to decide whether to renew the session
+      document.addEventListener('mousemove', updateLastActivity, { passive: true });
+      document.addEventListener('click', updateLastActivity, { passive: true });
+      document.addEventListener('keydown', updateLastActivity, { passive: true });
+
+      jwtCheckInterval.value = setInterval(async () => {
+        const jwt = appStore.getBackendJWT();
+        if (jwt === null || appStore.isJWTExpired()) {
+          clearInterval(jwtCheckInterval.value);
+          router.push({ path: '/front/public/login', query: { redirect: route.fullPath } });
+          return;
+        }
+
+        // Check if the JWT expires in less than 1 minute
+        const timeUntilExpiry = appStore.renewJWTbefore - Date.now();
+        if (timeUntilExpiry < SESSION_RENEW_THRESHOLD) {
+          const inactiveDuration = Date.now() - lastUserActivity.value;
+          if (inactiveDuration <= SESSION_INACTIVITY_LIMIT) {
+            // User was active recently: renew the session silently
+            await $apiBackendUsers.getUserSessionUpgrade('').catch(() => {});
+          }
+          // If inactive > 5 min, do nothing: the JWT will expire and be caught on the next tick
+        }
+      }, 10000);
+    }
+
     const ticketRefreshDelay = (appStore.isSupportAdmin()?5000:60000); // 5s for admin, 60s for regular users
 
     $apiBackendUsers.getUserProfile().then((res) => {
@@ -100,6 +137,12 @@ import { is } from 'valibot';
 
    
   onUnmounted(() => {
+    document.removeEventListener('mousemove', updateLastActivity);
+    document.removeEventListener('click', updateLastActivity);
+    document.removeEventListener('keydown', updateLastActivity);
+    if (jwtCheckInterval.value) {
+      clearInterval(jwtCheckInterval.value);
+    }
     if (ticketRefreshInterval.value) {
       clearInterval(ticketRefreshInterval.value);
     }

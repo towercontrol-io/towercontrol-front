@@ -92,8 +92,8 @@ export default defineNuxtPlugin(() => {
         // Convertir exp (secondes) en millisecondes
         const expirationMs = payload.exp * 1000;
 
-        // Soustraire 15 minutes (900000 ms)
-        return expirationMs - 15 * 60 * 1000;
+        // Soustraire 5 minutes (300000 ms)
+        return expirationMs - 5 * 60 * 1000;
     } catch (error) {
         console.error("Invalid JWT:", error);
         return null;
