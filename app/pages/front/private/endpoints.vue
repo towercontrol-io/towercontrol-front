@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, computed, reactive, watch, watchEffect } from 'vue';
+    import { ref, computed, reactive, watch, watchEffect, nextTick } from 'vue';
     import { applicationStore } from '~/stores/app';
     import { useRouter } from 'vue-router';
     import type { TableRow } from '@nuxt/ui';
@@ -14,6 +14,15 @@
     const config = useRuntimeConfig();
     const toast = useToast();
     const { $formatDuration } = useNuxtApp();
+
+    const creationFormRef = ref<HTMLElement | null>(null);
+
+    const openCreationMode = () => {
+        componentCtx.creationMode = true;
+        nextTick(() => {
+            creationFormRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    };
 
     const componentCtx = reactive({
         creationMode: false as boolean,
@@ -114,6 +123,7 @@
     const mandatoryFields = computed(() => componentCtx.selectedProtocol?.mandatoryFields ?? []);
 
     const getCustomConfigValue = (name: string) : string => {
+        console.log('Getting custom config value for', name, componentCtx.newEndPoint.customConfig);
         const existing = componentCtx.newEndPoint.customConfig.find((field) => field.name === name);
         return existing?.value ?? '';
     };
@@ -386,13 +396,20 @@
                 componentCtx.creationMode = false;
             } else if ( res.error ) {
                 componentCtx.apiCreateError = t('capture.' + res.error.message);
-                componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
-                clearErrors();
+                toast.add({
+                    title: t('capture.errorCreatingEndpoint'),
+                    description: componentCtx.apiCreateError,
+                    color: 'error',
+                    icon: 'i-lucide-x-circle',
+                });
             }        
         }).catch((err) => {
             componentCtx.apiCreateError = t('capture.errorCreatingEndpoint');
-            componentCtx.newEndPoint = {} as CaptureEndpointCreationBody;
-            clearErrors();
+            toast.add({
+                title: t('capture.errorCreatingEndpoint'),
+                color: 'error',
+                icon: 'i-lucide-x-circle',
+            });
         })
     };
 
@@ -415,7 +432,7 @@
             color="neutral"
             type="submit"
             class="w-fit lg:ms-auto"
-            @click="componentCtx.creationMode = true"
+            @click="openCreationMode()"
         />
         </UPageCard>
 
@@ -616,23 +633,32 @@
             </div>
         </div>
 
-        <div class="relative"  v-if="componentCtx.creationMode" >
+        <div class="relative" v-if="componentCtx.creationMode" ref="creationFormRef">
             <UCard 
             class="w-full max-w-4xl mx-auto"
             variant="subtle"
             >
                 <template #header>
-                    <div class="flex items-center justify-between w-full">
-                        <span class="font-bold">
-                            {{ t('capture.createEndpoint') }}
-                        </span>
+                    <div class="flex flex-col gap-2 w-full">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="font-bold">
+                                {{ t('capture.createEndpoint') }}
+                            </span>
 
-                        <UButton
-                            :label="$t('capture.createNow')"
-                            :disabled="canCreate === false"
-                            color="neutral"
-                            type="submit"
-                            @click="onNewEndpointCreation()"
+                            <UButton
+                                :label="$t('capture.createNow')"
+                                :disabled="canCreate === false"
+                                color="neutral"
+                                type="submit"
+                                @click="onNewEndpointCreation()"
+                            />
+                        </div>
+                        <UAlert
+                            v-if="componentCtx.apiCreateError"
+                            color="error"
+                            variant="soft"
+                            icon="i-lucide-x-circle"
+                            :description="componentCtx.apiCreateError"
                         />
                     </div>
                 </template>
@@ -769,15 +795,7 @@
                     </UForm>
                 </template>
             </UCard>
-            <div v-if="componentCtx.apiCreateError != null"
-                class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
-            >
-                <div class="flex flex-col items-center gap-4">
-                    <div class="mb-2 text-lg text-center text-red-600 font-bold">
-                        {{ componentCtx.apiCreateError}}
-                    </div>
-                </div>
-            </div>
+
         </div>
 
     </div>

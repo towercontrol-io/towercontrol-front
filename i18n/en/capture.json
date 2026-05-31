@@ -140,6 +140,7 @@
     "protocol-description-invalid-format" : "The protocol description format is invalid",
     "capture-endpoint-id-type-invalid" : "The capture endpoint id type is invalid",
     "capture-endpoint-custom-field-invalid" : "The capture endpoint custom field format is invalid",
+    "capture-endpoint-custom-field-groupid-not-in-user-groups" : "The desired group to receive the new device is not accessible by the user.",
 
     "protocol-lorawan" : "LoRaWAN",
     "protocol-helium" : "Helium",
@@ -193,6 +194,15 @@
     "sigfox-id" : "ID",
     "sigfox-pac" : "PAC",
     "sigfox-psk" : "PSK",
+    "protocol-auto-create" : "Auto-create new devices",
+    "protocol-auto-create-group" : "Default group for auto-created devices",
+    "protocol-lorawan-helium-chirp-v4-auto-create" : "When enabled, if a message is received with an unknown device, the system will automatically create a new device with the provided ID and assign it to the specified group. Make sure to have the right to create devices in that group and that the group exists.",
+    "protocol-lorawan-helium-chirp-v4-auto-create-group" : "Select the default group to assign to auto-created devices. Make sure to have the right to create devices in that group and that the group exists.",
+    "protocol-sigfox-auto-create" : "Auto-create new devices",
+    "protocol-sigfox-auto-create-group" : "Default group for auto-created devices",
+    "protocol-sigfox-auto-create-desc" : "When enabled, if a message is received with an unknown device, the system will automatically create a new device with the provided ID and assign it to the specified group. Make sure to have the right to create devices in that group and that the group exists.",
+    "protocol-sigfox-auto-create-group-desc" : "Select the default group to assign to auto-created devices. Make sure to have the right to create devices in that group and that the group exists.",
+    "groupidNoGroup" : "No group",
 
     "last" : "Last"
   }

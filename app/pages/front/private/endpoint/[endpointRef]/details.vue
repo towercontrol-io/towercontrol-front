@@ -170,17 +170,23 @@
                 </template>
                 <template #default>
                     <div class="flex flex-col gap-3">
+                        <template v-for="field in protocol.mandatoryFields" :key="field.name">
                         <div
-                            v-for="field in protocol.mandatoryFields"
-                            :key="field.name"
+                            v-if="!(field.valueType === 'groupid' && getCustomConfigValue(field.name) === '__none__')"
                             class="flex justify-between items-start gap-4"
                         >
                             <div class="flex flex-col w-[70%]">
                                 <span class="text-sm font-medium">{{ t('capture.' + field.name) }}</span>
                                 <span class="text-xs text-neutral-500">{{ t('capture.' + field.description) }}</span>
                             </div>
-                            <span class="text-sm font-mono text-right w-[30%]">{{ getCustomConfigValue(field.name) }}</span>
+                            <NuxtLink
+                                v-if="field.valueType === 'groupid'"
+                                :to="`/front/private/groups/show/${getCustomConfigValue(field.name)}/`"
+                                class="text-sm font-mono text-right w-[30%] text-primary hover:underline"
+                            >{{ getCustomConfigValue(field.name) }}</NuxtLink>
+                            <span v-else class="text-sm font-mono text-right w-[30%]">{{ getCustomConfigValue(field.name) }}</span>
                         </div>
+                        </template>
                     </div>
                 </template>
             </UCard>

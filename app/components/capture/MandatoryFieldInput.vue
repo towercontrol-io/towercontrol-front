@@ -1,9 +1,10 @@
 <script setup lang="ts">
-    import { computed, watchEffect } from 'vue';
-    import type { MandatoryField } from '~/types';
+    import { computed, watchEffect, ref, onMounted } from 'vue';
+    import type { MandatoryField, GroupsHierarchySimplified } from '~/types';
+    import { applicationStore } from '~/stores/app';
 
     type ParsedFieldType = {
-        kind: 'string' | 'number' | 'decimal' | 'boolean' | 'date' | 'enum';
+        kind: 'string' | 'number' | 'decimal' | 'boolean' | 'date' | 'enum' | 'groupid';
         pattern?: string;
         min?: number;
         max?: number;
@@ -22,6 +23,57 @@
     }>();
 
     const { t } = useI18n();
+    const { $apiBackendUsers } = useNuxtApp();
+    const appStore = applicationStore();
+
+    const groupOptions = ref<{ label: string; value: string }[]>([]);
+    const groupsLoading = ref(false);
+
+    const hasGlobalRole = (role: string): boolean => {
+        const jwt = appStore.getBackendJWT();
+        if (!jwt) return false;
+        try {
+            const payload = JSON.parse(atob((jwt.split('.')[1]) ?? ''));
+            const roles: string[] = payload.roles ?? [];
+            return roles.includes(role);
+        } catch {
+            return false;
+        }
+    };
+
+    const loadGroups = () => {
+        groupsLoading.value = true;
+        $apiBackendUsers.userModuleGetGroupsHierarchy().then((res) => {
+            groupsLoading.value = false;
+            if (res.success) {
+                const options: { label: string; value: string }[] = [
+                    { label: t('capture.groupidNoGroup'), value: '__none__' },
+                ];
+                const globalAdmin = hasGlobalRole('ROLE_DEVICE_ADMIN');
+                const flatten = (groups: GroupsHierarchySimplified[], level: number, parentIncluded: boolean) => {
+                    for (const g of groups) {
+                        const included = parentIncluded || globalAdmin || (g.roles?.includes('ROLE_DEVICE_ADMIN') ?? false);
+                        if (included) {
+                            const prefix = '\u2014 '.repeat(level);
+                            const rawLabel = g.name === 'groups-default-group' ? t('common.groups-default-group') : g.name;
+                            options.push({
+                                label: level > 0 ? `${prefix}${rawLabel}` : rawLabel,
+                                value: g.shortId,
+                            });
+                        }
+                        if (g.children?.length) {
+                            flatten(g.children, level + 1, included);
+                        }
+                    }
+                };
+                flatten(res.success, 0, false);
+                groupOptions.value = options;
+                console.log(options);
+            }
+        }).catch(() => {
+            groupsLoading.value = false;
+        });
+    };
 
     const parseValueType = (valueType: string): ParsedFieldType => {
         const commaIndex = valueType.indexOf(',');
@@ -57,6 +109,10 @@
             return { kind: 'date' };
         }
 
+        if (rawType === 'groupid') {
+            return { kind: 'groupid' };
+        }
+
         if (rawType === 'string' && remainder) {
             return { kind: 'string', pattern: remainder };
         }
@@ -83,6 +139,9 @@
             if (parsed.value.kind === 'enum' && parsed.value.multiple) {
                 return props.modelValue ? props.modelValue.split(/[|]/).filter(Boolean) : [];
             }
+            if (parsed.value.kind === 'groupid') {
+                return props.modelValue || '__none__';
+            }
             return props.modelValue || '';
         },
         set: (value) => {
@@ -93,6 +152,10 @@
             if (parsed.value.kind === 'enum' && parsed.value.multiple) {
                 const nextValue = Array.isArray(value) ? value.join('|') : '';
                 emit('update:modelValue', nextValue);
+                return;
+            }
+            if (parsed.value.kind === 'groupid') {
+                emit('update:modelValue', value === '__none__' ? '__none__' : String(value));
                 return;
             }
             emit('update:modelValue', value ? String(value) : '');
@@ -119,9 +182,19 @@
         return undefined;
     });
 
+    onMounted(() => {
+        if (parsed.value.kind === 'groupid') {
+            loadGroups();
+        }
+    });
+
     const errorMessage = computed(() => {
         const rawValue = props.modelValue ?? '';
         const trimmed = rawValue.toString().trim();
+
+        if (parsed.value.kind === 'groupid') {
+            return null;
+        }
 
         if (parsed.value.kind !== 'boolean' && trimmed.length === 0) {
             return t('capture.mandatoryFieldRequired');
@@ -129,8 +202,6 @@
 
         if (parsed.value.kind === 'string' && parsed.value.pattern) {
             try {
-console.log('Testing pattern', parsed.value.pattern, 'against value', trimmed);
-
                 const matcher = new RegExp(parsed.value.pattern);
                 if (!matcher.test(trimmed)) {
                     return t('capture.mandatoryFieldInvalid');
@@ -206,6 +277,17 @@ console.log('Testing pattern', parsed.value.pattern, 'against value', trimmed);
                 v-model="inputValue"
                 :items="parsed.options || []"
                 :multiple="parsed.multiple"
+                :searchable="true"
+                class="w-70"
+            />
+        </template>
+        <template v-else-if="parsed.kind === 'groupid'">
+            <USelectMenu
+                v-model="inputValue"
+                :items="groupOptions || []"
+                value-key="value"
+                label-key="label"
+                :loading="groupsLoading"
                 :searchable="true"
                 class="w-70"
             />

@@ -140,6 +140,7 @@
     "protocol-description-invalid-format" : "Le format de la description du protocole est invalide",
     "capture-endpoint-id-type-invalid" : "Le type d'identifiant du point de collecte est invalide",
     "capture-endpoint-custom-field-invalid" : "Le format du champ personnalisé du point de collecte est invalide",
+    "capture-endpoint-custom-field-groupid-not-in-user-groups" : "Le groupe souhaité pour recevoir les nouveaux device n'est pas accessible par l'utilisateur.",
 
     "protocol-lorawan" : "LoRaWAN",
     "protocol-helium" : "Helium",
@@ -193,6 +194,15 @@
     "sigfox-id" : "ID",
     "sigfox-pac" : "PAC",
     "sigfox-psk" : "PSK",
+    "protocol-auto-create" : "Créer automatiquement les nouveaux objets",
+    "protocol-auto-create-group" : "Groupe par défaut pour les objets créés automatiquement",
+    "protocol-lorawan-helium-chirp-v4-auto-create" : "Lorsque activé, si un message est reçu avec un objet inconnu, le système créera automatiquement un nouvel objet avec l'ID fourni et l'assignera au groupe spécifié. Assurez-vous d'avoir le droit de créer des objets dans ce groupe et que le groupe existe.",
+    "protocol-lorawan-helium-chirp-v4-auto-create-group" : "Sélectionnez le groupe par défaut à attribuer aux objets créés automatiquement. Assurez-vous d'avoir le droit de créer des objets dans ce groupe et que le groupe existe.",
+    "protocol-sigfox-auto-create" : "Créer automatiquement de nouveaux objets",
+    "protocol-sigfox-auto-create-group" : "Groupe par défaut pour les objets créés automatiquement",
+    "protocol-sigfox-auto-create-desc" : "Lorsque activé, si un message est reçu avec un objet inconnu, le système créera automatiquement un nouvel objet avec l'ID fourni et l'assignera au groupe spécifié. Assurez-vous d'avoir le droit de créer des objets dans ce groupe et que le groupe existe.",
+    "protocol-sigfox-auto-create-group-desc" : "Sélectionnez le groupe par défaut à attribuer aux objets créés automatiquement. Assurez-vous d'avoir le droit de créer des objets dans ce groupe et que le groupe existe.",
+    "groupidNoGroup" : "Aucun groupe",
 
     "last" : "Dernier"
   }
