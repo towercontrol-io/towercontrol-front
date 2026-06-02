@@ -471,7 +471,7 @@ import { is } from 'valibot';
       ]
     ] as DropdownMenuItem[][];
 
-    if ( appStore.isApikeyCreator() ) {
+    if ( true || appStore.isApikeyCreator() /* we can see the previously created keys */) {
       items[1]!.push({ label: `${t('menu.apikeys')}`, icon: 'i-lucide-key-round', to: '/front/private/apikeys' });
     }
 
@@ -586,12 +586,15 @@ import { is } from 'valibot';
     >
       <!-- Top left corner with logo icon -->
       <template #header="{ collapsed }">
+        <div class="flex flex-col items-start gap-0.5">
           <img 
             :src="logoImage" 
             alt="IoT Tower Control Logo" 
             class="h-8 w-auto sm:h-12 md:h-12"
             @click="router.push('/front/private/home')"
           />
+          <span v-if="!collapsed" class="text-[10px] text-dimmed leading-none">v{{ config.public.VERSION }}</span>
+        </div>
       </template>
 
       <!-- Main menu on the right of the page -->

@@ -22,6 +22,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Env Variables, uses NUXT_PUBLIC_ prefix from ENV
+      VERSION: '0.0.9',
       BG_CENTERED: '/front/bg-centered-2.svg',
       LOGO_MAIN: '/front/logo.png',
       LOGO_HOME: '/front/logo.png',

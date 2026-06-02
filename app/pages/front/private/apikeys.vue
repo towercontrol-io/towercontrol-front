@@ -221,16 +221,22 @@
       orientation="horizontal"
       class="mb-4"
     >
-      <UButton
-        form="settings"
-        :label="$t('apiKeys.create')"
-        :disabled="componentCtx.creationMode"
-        icon="i-lucide-plus"
-        color="neutral"
-        type="submit"
-        class="w-fit lg:ms-auto"
-        @click="componentCtx.creationMode = true"
-      />
+      <div class="flex flex-col items-end gap-1 lg:ms-auto">
+        <UButton
+          form="settings"
+          :label="$t('apiKeys.create')"
+          :disabled="componentCtx.creationMode || !appStore.isApikeyCreator()"
+          icon="i-lucide-plus"
+          color="neutral"
+          type="submit"
+          class="w-fit"
+          @click="componentCtx.creationMode = true"
+        />
+        <span v-if="!appStore.isApikeyCreator()" class="text-xs text-amber-500 flex items-center gap-1">
+          <UIcon name="i-lucide-info" class="w-3 h-3 shrink-0" />
+          {{ $t('apiKeys.noRoleToCreate') }}
+        </span>
+      </div>
     </UPageCard>
 
     <div class="relative">
@@ -440,7 +446,7 @@
             </template>
         </UCard>
         <div v-if="componentCtx.apiCreationError"
-            class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-center justify-center"
+            class="absolute inset-0 z-10 bg-white/5 backdrop-blur-sm flex items-start justify-center pt-4"
         >
             <div class="flex flex-col items-center gap-4">
                 <div class="mb-2 text-lg text-center text-red-600 font-bold">

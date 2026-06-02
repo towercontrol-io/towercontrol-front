@@ -482,6 +482,7 @@
     "jwtDesc" : "The JWT Token allows a third-party service to use the platform's APIs according to the rights assigned to it. To use it, this token must be associated with the HTTP 'Authorization' header of your requests",
     "copyToClipboard" : "Copy to clipboard",
     "close" : "Close",
+    "noRoleToCreate" : "You don't have the required role to create API keys.",
 
     "last": "Last"
   },

@@ -308,8 +308,7 @@ export default defineNuxtPlugin(() => {
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
             appStore.setApikeyCreator(
-                (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
-                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+                getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
             );
             appStore.setCaptureEndpointCreator(
                 getJWTRole(response.jwtToken,'ROLE_BACKEND_CAPTURE')
@@ -370,8 +369,7 @@ export default defineNuxtPlugin(() => {
                  ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
             );
             appStore.setApikeyCreator(
-                (    getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
-                 ||  getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN'))
+                getJWTRole(response.jwtToken,'ROLE_USER_APIKEY')
             );
             appStore.setCaptureEndpointCreator(
                 getJWTRole(response.jwtToken,'ROLE_BACKEND_CAPTURE')

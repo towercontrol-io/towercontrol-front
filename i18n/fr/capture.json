@@ -175,7 +175,7 @@
     "protocol-sigfox-id-pac" : "Sigfox PAC, format hexadécimal 128 bits",
     "protocol-sigfox-id-pac-psk" : "Sigfox ID,PAC avec identifiants PSK",
     "protocol-sigfox-id-psk" : "Sigfox PSK, format hexadécimal 128 bits, stocké de manière chiffrée",
-    "protocol-sigfox-api-endpoint-desc" : "Veuillez entrer l'URL du point de collecte de l'API Sigfox, par exemple : https://api.sigfox.com/v2",
+    "protocol-sigfox-api-endpoint-desc" : "Veuillez entrer l'URL du point de collecte de l'API Sigfox, par exemple : https://backend.sigfox.com",
     "protocol-sigfox-api-user-desc" : "Veuillez entrer le nom d'utilisateur de l'API Sigfox, vous devez créer un utilisateur API dédié avec des droits limités.",
     "protocol-sigfox-api-password-desc" : "Veuillez entrer le mot de passe associé.",
     "protocol-sigfox-create-callback-desc" : "Lorsque sélectionné, le callback sera automatiquement créé sur le backend Sigfox pour transférer les données vers le point de collecte. Sinon, vous devrez le créer manuellement et définir l'URL du callback sur l'URL du point de collecte.",

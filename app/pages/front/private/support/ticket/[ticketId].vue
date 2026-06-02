@@ -452,6 +452,40 @@
             : `[${file.originalName}](${url})`;
     };
 
+    const getFileUrl = (un: string): string | null => {
+        const file = fileCache.value[un];
+        if (!file) return null;
+        return `${config.public.BACKEND_API_BASE}/files/1.0/${un}/full?key=${file.accessKey}`;
+    };
+
+    // --- File preview modal ---
+    const filePreviewModalOpen = ref(false);
+    const filePreviewTarget = ref<FileUploadResponseItf | null>(null);
+    const filePreviewText = ref<string | null>(null);
+    const filePreviewLoading = ref(false);
+
+    const openFilePreviewModal = async (un: string) => {
+        const file = fileCache.value[un];
+        if (!file) return;
+        filePreviewTarget.value = file;
+        filePreviewText.value = null;
+        filePreviewModalOpen.value = true;
+        if (file.mimeCategory === 'TEXT') {
+            filePreviewLoading.value = true;
+            try {
+                const url = getFileUrl(un);
+                if (url) {
+                    const res = await fetch(url);
+                    filePreviewText.value = await res.text();
+                }
+            } catch {
+                filePreviewText.value = null;
+            } finally {
+                filePreviewLoading.value = false;
+            }
+        }
+    };
+
     const getThumbnailUrl = (un: string): string => {
         const file = fileCache.value[un];
         if (!file) return '';
@@ -873,6 +907,14 @@
                                         @click="onCopyFileLink(field.value.slice(5))"
                                     />
                                     <UButton
+                                        icon="i-lucide-external-link"
+                                        size="xs" variant="ghost" color="neutral"
+                                        :disabled="!fileCache[field.value.slice(5)]"
+                                        :aria-label="$t('tickets.attachOpenInTab')"
+                                        :title="$t('tickets.attachOpenInTab')"
+                                        @click="openFilePreviewModal(field.value.slice(5))"
+                                    />
+                                    <UButton
                                         icon="i-lucide-pencil"
                                         size="xs" variant="ghost" color="neutral"
                                         :disabled="!fileCache[field.value.slice(5)]"
@@ -1090,6 +1132,39 @@
         <div v-if="componentCtx.ticketLoadingError" class="text-center text-red-600 font-bold">
             {{ componentCtx.ticketLoadingError }}
         </div>
+
+        <!-- File preview modal -->
+        <UModal v-model:open="filePreviewModalOpen"
+                :title="filePreviewTarget?.originalName ?? ''"
+                :ui="{ content: 'max-w-4xl w-full' }"
+        >
+            <template #body>
+                <div v-if="filePreviewTarget" class="flex flex-col items-center justify-center min-h-40">
+                    <!-- Image -->
+                    <img
+                        v-if="filePreviewTarget.mimeCategory === 'IMAGE'"
+                        :src="getFileUrl(filePreviewTarget.uniqueName) ?? ''"
+                        :alt="filePreviewTarget.originalName"
+                        class="max-w-full max-h-[70vh] object-contain rounded"
+                    />
+                    <!-- PDF -->
+                    <iframe
+                        v-else-if="filePreviewTarget.mimeCategory === 'PDF'"
+                        :src="getFileUrl(filePreviewTarget.uniqueName) ?? ''"
+                        class="w-full h-[75vh] border-0 rounded"
+                        type="application/pdf"
+                    />
+                    <!-- Text (CSV, TXT, JSON…) -->
+                    <template v-else-if="filePreviewTarget.mimeCategory === 'TEXT'">
+                        <UIcon v-if="filePreviewLoading" name="i-lucide-loader-circle" class="w-8 h-8 animate-spin text-muted" />
+                        <pre v-else-if="filePreviewText !== null" class="w-full max-h-[70vh] overflow-auto text-sm bg-muted rounded p-4 whitespace-pre-wrap break-all">{{ filePreviewText }}</pre>
+                        <span v-else class="text-sm text-muted">{{ $t('tickets.previewUnavailable') }}</span>
+                    </template>
+                    <!-- Other -->
+                    <span v-else class="text-sm text-muted">{{ $t('tickets.previewUnavailable') }}</span>
+                </div>
+            </template>
+        </UModal>
 
         <!-- File attach modal -->
         <UModal v-model:open="showAttachModal"

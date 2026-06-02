@@ -143,6 +143,8 @@
     "attachRemove" : "Remove",
     "attachCopyMarkdown" : "Copy Markdown link",
     "attachMarkdownCopied" : "Markdown link copied",
+    "attachOpenInTab" : "Preview file",
+    "previewUnavailable" : "Preview not available for this file type.",
     "attachModalTitle" : "Attach a file to the ticket",
     "attachModalDescription" : "The file will be stored privately with a secure access link",
     "attachInsertInMessage" : "Insert in message",

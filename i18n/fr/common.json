@@ -482,6 +482,7 @@
     "jwtDesc" : "Le Jeton JWT permet à un service tiers d'utiliser les APIs de la plateforme selon les droits qui lui sont attribués. Pour l'utiliser, ce jeton doit être associé au header HTTP 'Authorization' de vos requêtes",
     "copyToClipboard" : "Copier dans le presse-papiers",
     "close" : "Fermer",
+    "noRoleToCreate" : "Vous n'avez pas le rôle requis pour créer des clés API.",
 
     "last": "Dernier"
   },
