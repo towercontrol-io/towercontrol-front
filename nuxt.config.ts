@@ -7,6 +7,7 @@ const fileNames = [
     'capture',  // related to capture endpoints
     'tickets',  // related to ticketing system
     'files',    // related to file management
+    'alerts',   // related to alert templates
 ]
 //i18n helper function
 function getFileList(locale: string) {

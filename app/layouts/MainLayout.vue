@@ -255,11 +255,15 @@ import { is } from 'valibot';
       topItems.push({ label: `${t('menu.supportAdmin')}`,icon: 'i-lucide-headset',to: '/front/private/support', badge:ticketPending.value.pending, onSelect: () => {mainData.open = false}});  
     }
     if ( appStore.isFilesAdmin() ) {
-      topItems.push({ label: `${t('menu.filesAdmin')}`,icon: 'i-lucide-file',to: '/front/private/files-admin',onSelect: () => {mainData.open = false}});  
+      topItems.push({ label: `${t('menu.filesAdmin')}`,icon: 'i-lucide-folder-bookmark',to: '/front/private/files-admin',onSelect: () => {mainData.open = false}});  
     }
     if ( appStore.isAuditAdmin() ) {
       topItems.push({ label: `${t('menu.auditAdmin')}`,icon: 'i-lucide-scroll-text',to: '/front/private/audit',onSelect: () => {mainData.open = false}});  
     }
+    if ( appStore.isAlertTemplate() ) {
+      topItems.push({ label: `${t('menu.alertTemplates')}`,icon: 'i-lucide-file-exclamation-point',to: '/front/private/alerts-template',onSelect: () => {mainData.open = false}});  
+    }
+
 
     // Add custom menu items when exists
     config.public.CUSTOM_MENU_ITEMS.forEach((item: any) => {
@@ -483,7 +487,8 @@ import { is } from 'valibot';
       items[1]!.push({ label: `${t('menu.billing')}`, icon: 'i-lucide-credit-card', to: '/front/private/billing' });
     }
 
-    items[1]!.push({ label: `${t('menu.files')}`, icon: 'i-lucide-file', to: '/front/private/files' });
+    items[1]!.push({ label: `${t('menu.files')}`, icon: 'i-lucide-folder-bookmark', to: '/front/private/files' });
+
     const themeItems = { 
        label: `${t('menu.theme')}`, icon: 'i-lucide-palette', children: 
           [

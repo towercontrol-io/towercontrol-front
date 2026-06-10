@@ -190,6 +190,7 @@
     "files": "Mes Fichiers",
     "filesAdmin": "Gestion des fichiers",
     "auditAdmin": "Journaux d'audit",
+    "alertTemplates": "Modèles d'alerte",
 
     "last" : "Dernier"
   },
@@ -448,6 +449,8 @@
     "role-files-admin-desc" : "Permet à un utilisateur de gérer tous les fichiers",
     "role-audit-read-desc" : "Permet à un utilisateur de lire les journaux d'audit (masqués)",
     "role-audit-read-clear-desc" : "Permet à un utilisateur de lire les journaux d'audit (en clair)",
+    "role-alerts-admin-desc" : "Permet de créer des modèles d'alertes globaux",
+    "role-alerts-template-desc" : "Permet de créer des modèles d'alertes personnels",
 
     "last": "Dernier"
   },
