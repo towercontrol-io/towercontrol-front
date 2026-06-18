@@ -11,7 +11,7 @@ export default defineNuxtPlugin(() => {
 
   // Routes
   const alertsTemplatePost: string   = '/alerts/1.0/template';
-  const alertsTemplateDelete: string = '/alerts/1.0/template/{id}';
+  const alertsTemplateDelete: string = '/alerts/1.0/template/{shortId}';
   const alertsTemplateList: string   = '/alerts/1.0/template';
 
   const config = useRuntimeConfig();
@@ -81,7 +81,7 @@ export default defineNuxtPlugin(() => {
   const apiBackendAlerts = {
 
     /**
-     * Create a new alert template (POST without id) or update an existing one (POST with id).
+     * Create a new alert template (POST without shortId) or update an existing one (POST with shortId).
      * Returns 201 on creation, 200 on update.
      */
     alertTemplateSave: async (
@@ -100,16 +100,16 @@ export default defineNuxtPlugin(() => {
     },
 
     /**
-     * Delete an alert template by id.
+     * Delete an alert template by shortId.
      * Requires ROLE_ALERTS_ADMIN (any template) or ROLE_ALERTS_TEMPLATE (own templates only).
      */
     alertTemplateDelete: async (
-      id: string
+      shortId: string
     ): Promise<{ success?: boolean; error?: ActionResult | { message: string } }> => {
       try {
         await apiCallwithTimeout<void>(
           'DELETE',
-          alertsTemplateDelete.replace('{id}', id),
+          alertsTemplateDelete.replace('{shortId}', shortId),
           null
         );
         return { success: true };

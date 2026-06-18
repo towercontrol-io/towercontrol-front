@@ -85,10 +85,10 @@ const onDeleteTemplate = (tpl: AlertTemplateItf) => {
 };
 
 const onConfirmDelete = async () => {
-    if (!componentCtx.templateToDelete?.id) return;
-    const res = await nuxtApp.$apiBackendAlerts.alertTemplateDelete(componentCtx.templateToDelete.id);
+    if (!componentCtx.templateToDelete?.shortId) return;
+    const res = await nuxtApp.$apiBackendAlerts.alertTemplateDelete(componentCtx.templateToDelete.shortId);
     if (res.success) {
-        componentCtx.templates = componentCtx.templates.filter(t => t.id !== componentCtx.templateToDelete!.id);
+        componentCtx.templates = componentCtx.templates.filter(t => t.shortId !== componentCtx.templateToDelete!.shortId);
         componentCtx.deleteConfirmLayer = false;
         componentCtx.templateToDelete = null;
         useToast().add({ title: t('alertsTemplate.deleteSuccess'), icon: 'i-lucide-trash-2', color: 'success', duration: 3000 });
@@ -131,6 +131,11 @@ const canDelete = (tpl: AlertTemplateItf): boolean => {
 
 // ---- Table columns ----
 const tableDef = computed((): TableColumn<AlertTemplateItf>[] => [
+    {
+        accessorKey: 'shortId',
+        header: t('alertsTemplate.colId'),
+        cell: ({ row }) => h('span', { class: 'font-mono text-xs text-muted' }, row.getValue('shortId') as string)
+    },
     {
         accessorKey: 'name',
         header: t('alertsTemplate.colName'),
@@ -179,7 +184,7 @@ const tableDef = computed((): TableColumn<AlertTemplateItf>[] => [
                     variant: 'ghost',
                     color: 'neutral',
                     'aria-label': t('alertsTemplate.actionEdit'),
-                    onClick: () => router.push(`/front/private/alerts-template/${tpl.id}`)
+                    onClick: () => router.push(`/front/private/alerts-template/${tpl.shortId}`)
                 }),
                 h(UButton, {
                     icon: 'i-lucide-trash-2',

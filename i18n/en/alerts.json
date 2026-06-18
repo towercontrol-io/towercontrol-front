@@ -9,6 +9,7 @@
     "searchPlaceholder": "Search by name…",
     "refresh": "Refresh",
     "retry": "Retry",
+    "colId": "Id",
     "colName": "Name",
     "colBehavior": "Behavior",
     "colGlobal": "Global",

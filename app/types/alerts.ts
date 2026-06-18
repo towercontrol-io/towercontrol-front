@@ -60,7 +60,7 @@ export interface AlertLocaleMessagesItf {
  */
 export interface AlertTemplateItf {
     /** MongoDB ObjectId, absent on creation request */
-    id?: string;
+    shortId?: string;
     /** Human-readable name (max 100 chars) */
     name: string;
     /** Optional description (max 500 chars) */
@@ -84,11 +84,11 @@ export interface AlertTemplateItf {
 
 /**
  * Body for POST /alerts/1.0/template.
- * Include `id` to update an existing template; omit to create a new one.
+ * Include `shortId` to update an existing template; omit to create a new one.
  */
 export interface AlertTemplateBodyItf {
     /** Omit to create, include to update */
-    id?: string;
+    shortId?: string;
     name: string;
     description?: string;
     global?: boolean;

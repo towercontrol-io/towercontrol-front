@@ -147,7 +147,7 @@ onMounted(async () => {
         const res = await nuxtApp.$apiBackendAlerts.alertTemplateList();
         pageState.loading = false;
         if (res.success) {
-            const found = res.success.templates.find(t => t.id === templateId.value);
+            const found = res.success.templates.find(t => t.shortId === templateId.value);
             if (found) {
                 populateForm(found);
             } else {
