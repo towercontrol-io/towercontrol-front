@@ -8,7 +8,7 @@ export type AlertBehavior = 'FIRE_FORGET' | 'FIRE_TO_END' | 'FIRE_UNTIL' | 'SILE
  * Individual mediums (EMAIL, SMS, PUSH, WHATSAPP) are delivered per user.
  * Collective mediums (WEBHOOK, TOPIC) use group-level settings.
  */
-export type AlertMedium = 'EMAIL' | 'SMS' | 'PUSH' | 'WHATSAPP' | 'WEBHOOK' | 'TOPIC' | 'DEFAULT';
+export type AlertMedium = 'DEFAULT' | 'EMAIL' | 'SMS' | 'PUSH' | 'WHATSAPP' | 'WEBHOOK' | 'TOPIC' | 'POPUP';
 
 /**
  * Dynamic parameter types that can be injected into message templates as {1}, {2}, …

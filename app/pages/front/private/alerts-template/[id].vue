@@ -78,7 +78,7 @@ const behaviorOptions = computed(() => [
 ]);
 
 const mediumOptions = computed(() => ([
-    'EMAIL', 'SMS', 'PUSH', 'WHATSAPP', 'WEBHOOK', 'TOPIC', 'DEFAULT'
+    'DEFAULT', 'EMAIL', 'SMS', 'PUSH', 'WHATSAPP', 'WEBHOOK', 'TOPIC', 'POPUP'
 ] as AlertMedium[]).map(m => ({ label: m, value: m })));
 
 const paramTypeOptions = computed(() => ([
