@@ -18,6 +18,12 @@ export interface GroupsHierarchySimplified {
     description: string;
 
     /**
+     * True when this group is suitable for alerting
+     * @example true
+     */
+    alertGroup: boolean;
+
+    /**
      * Special rights associated to that group for the user, only applicable to ACLs
      * @example ["ROLE_GROUP_LADMIN", "ROLE_DEVICE_READ"]
      */
@@ -47,6 +53,12 @@ export interface GroupCreationBody {
      * ShortId of the parent group
      * @example "abC12Dfy"
      */
-    parenId?: string;
+    parentId?: string;
+
+    /**
+     * True when this group is suitable for alerting
+     * @example true
+     */
+    alertGroup: boolean;
 }
 

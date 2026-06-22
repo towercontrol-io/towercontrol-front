@@ -1,8 +1,5 @@
 <script setup lang="ts">
-   import { ref, computed } from 'vue';
    import * as v from 'valibot'
-   import type { FormSubmitEvent } from '@nuxt/ui'
-import { error } from '#build/ui';
 
    type Schema = v.InferOutput<typeof schema>
 
@@ -17,6 +14,7 @@ import { error } from '#build/ui';
    const group = reactive({
       name: '' as string,
       description: '' as string,
+      alertGroup: false as boolean,
       parentId: (props.parentId != '') ? props.parentId : null as string | null,
       disableCreation: false as boolean,
       successString: null as string | null,
@@ -26,6 +24,7 @@ import { error } from '#build/ui';
     const schema = v.object({
         name: v.pipe(v.string(), v.minLength(2, 'Too short'), v.maxLength(100, 'Too long')),
         description: v.pipe(v.string(), v.minLength(8, 'Too short'), v.maxLength(256, 'Too long')),
+        alertGroup: v.boolean(),
     });
 
    const onGroupsCreate = () => {
@@ -35,13 +34,14 @@ import { error } from '#build/ui';
       group.disableCreation = true;
       group.errorString = null;
       group.successString = null;
-      $apiBackendGroups.groupModulePostGroupsCreation(group.name, group.description, group.parentId).then((res) => {
+      $apiBackendGroups.groupModulePostGroupsCreation(group.name, group.description, group.parentId, group.alertGroup).then((res) => {
          if (res.success) {
             // refresh the group list
             nuxtApp.callHook("usermng:groupUpdate" as any);
             group.name = '';
             group.description = '';
             group.disableCreation = false;
+            group.alertGroup = false;
             group.successString = t('groups.createSuccess');
             setTimeout(() => {
                 group.successString = null;
@@ -95,6 +95,17 @@ import { error } from '#build/ui';
                         v-model="group.description"
                         type="text"
                         class="w-90"
+                    />
+                </UFormField>
+                <UFormField
+                    name="alertGroup"
+                    :label="$t('groups.alertGroup')"
+                    :description="$t('groups.alertGroupDesc')"
+                    class="flex max-sm:flex-col justify-between items-start gap-4"
+                >
+                    <USwitch
+                        v-model="group.alertGroup"
+                        color="neutral"
                     />
                 </UFormField>
                 <UButton

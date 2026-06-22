@@ -101,11 +101,12 @@ export default defineNuxtPlugin(() => {
     /**
      * Create a new group (can be a sub-group if parentId is set)
      */
-    groupModulePostGroupsCreation: async (name: string, description: string, parentId: string | null): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
+    groupModulePostGroupsCreation: async (name: string, description: string, parentId: string | null, alertGroup: boolean): Promise<{ success?: ActionResult; error?: ActionResult | { message: string } }> => {
         const body = {
             name: name,
             description: description,
-            parentId : (parentId) ? parentId : ""
+            parentId : (parentId) ? parentId : "",
+            alertGroup: alertGroup
         } as GroupCreationBody;
         try {
             const response = await apiCallwithTimeout<ActionResult>(

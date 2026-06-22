@@ -381,6 +381,8 @@
     "nameDesc" : "The name of the group is free and will be visible when the group is shared, it can be changed during delegation with restricted rights.",
     "description" : "Description associated with the group",
     "descriptionDesc" : "The description provides additional information about the group, it will be visible when the group is shared.",
+    "alertGroup" : "Alert group",
+    "alertGroupDesc" : "When enabled, the users of this group will be available as recipients when an alert is triggered by a device belonging to this group.",
     "createAction" : "Create the group",
     "createSuccess" : "Group created successfully",
     "gen_createError" : "An error occurred while creating the group",
