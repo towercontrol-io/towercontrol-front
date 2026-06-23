@@ -130,11 +130,11 @@ const populateForm = (tpl: AlertTemplateItf) => {
     form.parameters  = tpl.parameters.map(p => ({ ...p }));
     form.open        = tpl.open.map(l => ({
         locale: l.locale,
-        mediums: l.mediums.map(m => ({ ...m }))
+        mediums: l.mediums.map(m => ({ ...m, title: m.title ?? '' }))
     }));
     form.close       = tpl.close.map(l => ({
         locale: l.locale,
-        mediums: l.mediums.map(m => ({ ...m }))
+        mediums: l.mediums.map(m => ({ ...m, title: m.title ?? '' }))
     }));
     activeOpenLocale.value  = form.open[0]?.locale  ?? '';
     activeCloseLocale.value = form.close[0]?.locale ?? '';
@@ -193,7 +193,7 @@ const addOpenLocale = () => {
     const source = form.open[0];
     form.open.push({
         locale: newOpenLocale.value,
-        mediums: source ? source.mediums.map(m => ({ medium: m.medium, message: '' })) : [],
+        mediums: source ? source.mediums.map(m => ({ medium: m.medium, message: '', title: '' })) : [],
     });
     activeOpenLocale.value = newOpenLocale.value;
     const next = availableOpenLocales.value[0];
@@ -215,7 +215,7 @@ const addCloseLocale = () => {
     const source = form.close[0];
     form.close.push({
         locale: newCloseLocale.value,
-        mediums: source ? source.mediums.map(m => ({ medium: m.medium, message: '' })) : [],
+        mediums: source ? source.mediums.map(m => ({ medium: m.medium, message: '', title: '' })) : [],
     });
     activeCloseLocale.value = newCloseLocale.value;
     const next = availableCloseLocales.value[0];
@@ -233,11 +233,14 @@ const removeCloseLocale = (idx: number) => {
 };
 
 // ---- Medium management ----
+const mediumRequiresTitle = (medium: AlertMedium) =>
+    medium === 'EMAIL' || medium === 'PUSH' || medium === 'DEFAULT';
+
 const addMediumToLocale = (locales: AlertLocaleMessagesItf[], localeIdx: number, medium: AlertMedium) => {
     const locale = locales[localeIdx];
     if (!locale) return;
     if (locale.mediums.some(m => m.medium === medium)) return;
-    locale.mediums.push({ medium, message: '' });
+    locale.mediums.push({ medium, message: '', title: '' });
 };
 const removeMediumFromLocale = (locales: AlertLocaleMessagesItf[], localeIdx: number, mediumIdx: number) => {
     locales[localeIdx]?.mediums.splice(mediumIdx, 1);
@@ -264,11 +267,12 @@ const saveMediumCursor = (key: string, event: Event) => {
     mediumCursor.value[key] = { start: ta.selectionStart ?? 0, end: ta.selectionEnd ?? 0 };
 };
 
-const insertParam = (mediums: { message: string }[], mIdx: number, key: string, token: string) => {
+const insertParam = (mediums: AlertMediumMessageItf[], mIdx: number, key: string, token: string, field: 'message' | 'title' = 'message') => {
     const med = mediums[mIdx];
     if (!med) return;
-    const pos = mediumCursor.value[key] ?? { start: med.message.length, end: med.message.length };
-    med.message = med.message.slice(0, pos.start) + token + med.message.slice(pos.end);
+    const current = med[field] ?? '';
+    const pos = mediumCursor.value[key] ?? { start: current.length, end: current.length };
+    med[field] = current.slice(0, pos.start) + token + current.slice(pos.end);
     mediumCursor.value[key] = { start: pos.start + token.length, end: pos.start + token.length };
 };
 
@@ -305,6 +309,7 @@ const validate = (): string | null => {
         if (locale.mediums.length === 0) return t('alertsTemplate.alerts-template-medium-required');
         for (const m of locale.mediums) {
             if (!m.message.trim()) return t('alertsTemplate.alerts-template-message-required');
+            if (mediumRequiresTitle(m.medium) && !(m.title ?? '').trim()) return t('alertsTemplate.alerts-template-title-required');
         }
     }
     return null;
@@ -576,9 +581,10 @@ const onCancel = () => {
                                 :key="med.medium"
                                 class="flex flex-col gap-1.5 p-3 rounded-md bg-elevated/30"
                             >
+                                <!-- header: badge + params (message only, no title) + delete -->
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <UBadge :label="med.medium" variant="subtle" color="info" />
-                                    <template v-if="form.parameters.length > 0">
+                                    <template v-if="form.parameters.length > 0 && !mediumRequiresTitle(med.medium)">
                                         <UButton
                                             v-for="(_, pIdx) in form.parameters"
                                             :key="pIdx"
@@ -593,6 +599,45 @@ const onCancel = () => {
                                         @click="removeMediumFromLocale(form.open, activeOpenLocaleIdx, mIdx)"
                                     />
                                 </div>
+                                <!-- title field (EMAIL, PUSH, DEFAULT only) -->
+                                <template v-if="mediumRequiresTitle(med.medium)">
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="text-xs text-muted font-semibold shrink-0">{{ $t('alertsTemplate.fieldTitle') }} *</span>
+                                        <template v-if="form.parameters.length > 0">
+                                            <UButton
+                                                v-for="(_, pIdx) in form.parameters"
+                                                :key="pIdx"
+                                                size="xs"
+                                                variant="soft"
+                                                color="neutral"
+                                                class="font-mono"
+                                                @click="insertParam(activeOpenLocaleData.mediums, mIdx, 'open_' + activeOpenLocale + '_' + med.medium + '_title', '{' + (pIdx + 1) + '}', 'title')"
+                                            >{{ '{' + (pIdx + 1) + '}' }}</UButton>
+                                        </template>
+                                    </div>
+                                    <UInput
+                                        v-model="med.title"
+                                        :placeholder="$t('alertsTemplate.mediumTitlePlaceholder')"
+                                        class="w-full font-mono text-xs"
+                                        @mouseup="saveMediumCursor('open_' + activeOpenLocale + '_' + med.medium + '_title', $event)"
+                                        @keyup="saveMediumCursor('open_' + activeOpenLocale + '_' + med.medium + '_title', $event)"
+                                        @blur="saveMediumCursor('open_' + activeOpenLocale + '_' + med.medium + '_title', $event)"
+                                    />
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="text-xs text-muted font-semibold shrink-0">{{ $t('alertsTemplate.fieldMessage') }} *</span>
+                                        <template v-if="form.parameters.length > 0">
+                                            <UButton
+                                                v-for="(_, pIdx) in form.parameters"
+                                                :key="pIdx"
+                                                size="xs"
+                                                variant="soft"
+                                                color="neutral"
+                                                class="font-mono"
+                                                @click="insertParam(activeOpenLocaleData.mediums, mIdx, 'open_' + activeOpenLocale + '_' + med.medium, '{' + (pIdx + 1) + '}')"
+                                            >{{ '{' + (pIdx + 1) + '}' }}</UButton>
+                                        </template>
+                                    </div>
+                                </template>
                                 <UTextarea
                                     v-model="med.message"
                                     :placeholder="$t('alertsTemplate.mediumMessagePlaceholder')"
@@ -672,9 +717,10 @@ const onCancel = () => {
                                 :key="med.medium"
                                 class="flex flex-col gap-1.5 p-3 rounded-md bg-elevated/30"
                             >
+                                <!-- header: badge + params (message only, no title) + delete -->
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <UBadge :label="med.medium" variant="subtle" color="warning" />
-                                    <template v-if="form.parameters.length > 0">
+                                    <template v-if="form.parameters.length > 0 && !mediumRequiresTitle(med.medium)">
                                         <UButton
                                             v-for="(_, pIdx) in form.parameters"
                                             :key="pIdx"
@@ -689,6 +735,45 @@ const onCancel = () => {
                                         @click="removeMediumFromLocale(form.close, activeCloseLocaleIdx, mIdx)"
                                     />
                                 </div>
+                                <!-- title field (EMAIL, PUSH, DEFAULT only) -->
+                                <template v-if="mediumRequiresTitle(med.medium)">
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="text-xs text-muted font-semibold shrink-0">{{ $t('alertsTemplate.fieldTitle') }} *</span>
+                                        <template v-if="form.parameters.length > 0">
+                                            <UButton
+                                                v-for="(_, pIdx) in form.parameters"
+                                                :key="pIdx"
+                                                size="xs"
+                                                variant="soft"
+                                                color="neutral"
+                                                class="font-mono"
+                                                @click="insertParam(activeCloseLocaleData.mediums, mIdx, 'close_' + activeCloseLocale + '_' + med.medium + '_title', '{' + (pIdx + 1) + '}', 'title')"
+                                            >{{ '{' + (pIdx + 1) + '}' }}</UButton>
+                                        </template>
+                                    </div>
+                                    <UInput
+                                        v-model="med.title"
+                                        :placeholder="$t('alertsTemplate.mediumTitlePlaceholder')"
+                                        class="w-full font-mono text-xs"
+                                        @mouseup="saveMediumCursor('close_' + activeCloseLocale + '_' + med.medium + '_title', $event)"
+                                        @keyup="saveMediumCursor('close_' + activeCloseLocale + '_' + med.medium + '_title', $event)"
+                                        @blur="saveMediumCursor('close_' + activeCloseLocale + '_' + med.medium + '_title', $event)"
+                                    />
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="text-xs text-muted font-semibold shrink-0">{{ $t('alertsTemplate.fieldMessage') }} *</span>
+                                        <template v-if="form.parameters.length > 0">
+                                            <UButton
+                                                v-for="(_, pIdx) in form.parameters"
+                                                :key="pIdx"
+                                                size="xs"
+                                                variant="soft"
+                                                color="neutral"
+                                                class="font-mono"
+                                                @click="insertParam(activeCloseLocaleData.mediums, mIdx, 'close_' + activeCloseLocale + '_' + med.medium, '{' + (pIdx + 1) + '}')"
+                                            >{{ '{' + (pIdx + 1) + '}' }}</UButton>
+                                        </template>
+                                    </div>
+                                </template>
                                 <UTextarea
                                     v-model="med.message"
                                     :placeholder="$t('alertsTemplate.mediumMessagePlaceholder')"

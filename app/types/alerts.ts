@@ -5,7 +5,7 @@ export type AlertBehavior = 'FIRE_FORGET' | 'FIRE_TO_END' | 'FIRE_UNTIL' | 'SILE
 
 /**
  * Notification channels available for alert messages.
- * Individual mediums (EMAIL, SMS, PUSH, WHATSAPP) are delivered per user.
+ * Individual mediums (EMAIL, SMS, PUSH, WHATSAPP, POPUP) are delivered per user.
  * Collective mediums (WEBHOOK, TOPIC) use group-level settings.
  */
 export type AlertMedium = 'DEFAULT' | 'EMAIL' | 'SMS' | 'PUSH' | 'WHATSAPP' | 'WEBHOOK' | 'TOPIC' | 'POPUP';
@@ -44,6 +44,8 @@ export interface AlertMediumMessageItf {
     medium: AlertMedium;
     /** Message body; supports Markdown. Use {1}, {2}, … to reference parameters. */
     message: string;
+    /** Message title; supports Markdown. Use {1}, {2}, … to reference parameters. required for SMS, PUSH, DEFAULT */
+    title: string;
 }
 
 /**
