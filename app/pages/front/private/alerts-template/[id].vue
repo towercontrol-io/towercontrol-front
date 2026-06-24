@@ -3,6 +3,7 @@ import type {
     AlertTemplateItf,
     AlertTemplateBodyItf,
     AlertBehavior,
+    AlertCriticality,
     AlertMedium,
     AlertParameterType,
     AlertParameterItf,
@@ -50,6 +51,7 @@ interface FormState {
     description: string;
     global: boolean;
     behavior: AlertBehavior;
+    criticality: AlertCriticality;
     durationMin: number;
     preferred: AlertMedium[];
     parameters: AlertParameterItf[];
@@ -62,6 +64,7 @@ const form = reactive<FormState>({
     description: '',
     global: false,
     behavior: 'FIRE_FORGET',
+    criticality: 'DEFAULT',
     durationMin: 0,
     preferred: [],
     parameters: [],
@@ -80,6 +83,13 @@ const behaviorOptions = computed(() => [
 const mediumOptions = computed(() => ([
     'DEFAULT', 'EMAIL', 'SMS', 'PUSH', 'WHATSAPP', 'WEBHOOK', 'TOPIC', 'POPUP'
 ] as AlertMedium[]).map(m => ({ label: m, value: m })));
+
+const criticalityOptions = computed(() => [
+    { label: t('alertsTemplate.criticalityDefault'), value: 'DEFAULT' as AlertCriticality, color: 'neutral'  as const },
+    { label: t('alertsTemplate.criticalityInfo'),    value: 'INFO'    as AlertCriticality, color: 'info'     as const },
+    { label: t('alertsTemplate.criticalityWarning'), value: 'WARNING' as AlertCriticality, color: 'warning'  as const },
+    { label: t('alertsTemplate.criticalityDanger'),  value: 'DANGER'  as AlertCriticality, color: 'error'    as const },
+]);
 
 const paramTypeOptions = computed(() => ([
     'DEVICE_ID', 'DEVICE_NAME', 'GROUP_NAME', 'USER_FIRSTNAME', 'USER_LASTNAME',
@@ -125,6 +135,7 @@ const populateForm = (tpl: AlertTemplateItf) => {
     form.description = tpl.description ?? '';
     form.global      = tpl.global;
     form.behavior    = tpl.behavior;
+    form.criticality = tpl.criticality ?? 'DEFAULT';
     form.durationMin = Math.round(tpl.durationMs / 60000);
     form.preferred   = [...tpl.preferred];
     form.parameters  = tpl.parameters.map(p => ({ ...p }));
@@ -322,11 +333,12 @@ const onSave = async () => {
     if (err) { pageState.saveError = err; return; }
 
     const body: AlertTemplateBodyItf = {
-        ...(isCreateMode.value ? {} : { id: templateId.value }),
+        ...(isCreateMode.value ? {} : { shortId: templateId.value }),
         name:        form.name.trim(),
         description: form.description.trim() || undefined,
         global:      form.global,
         behavior:    form.behavior,
+        criticality: form.criticality,
         durationMs:  showDuration.value ? form.durationMin * 60000 : 0,
         preferred:   [...form.preferred],
         parameters:  form.parameters.map(p => ({
@@ -422,6 +434,21 @@ const onCancel = () => {
                             </UInput>
                         </UFormField>
                     </div>
+
+                    <UFormField :label="$t('alertsTemplate.fieldCriticality')" :description="$t('alertsTemplate.fieldCriticalityDesc')">
+                        <div class="flex flex-wrap gap-2">
+                            <UButton
+                                v-for="opt in criticalityOptions"
+                                :key="opt.value"
+                                size="sm"
+                                :variant="form.criticality === opt.value ? 'solid' : 'outline'"
+                                :color="opt.color"
+                                @click="form.criticality = opt.value"
+                            >
+                                {{ opt.label }}
+                            </UButton>
+                        </div>
+                    </UFormField>
 
                     <UFormField :label="$t('alertsTemplate.fieldPreferred')" :description="$t('alertsTemplate.fieldPreferredDesc')">
                         <div class="flex flex-col sm:flex-row gap-4 w-full">

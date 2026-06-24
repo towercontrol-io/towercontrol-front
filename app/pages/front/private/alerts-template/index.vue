@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { AlertTemplateItf, AlertBehavior } from '~/types';
+import type { AlertTemplateItf, AlertBehavior, AlertCriticality } from '~/types';
 
 definePageMeta({ layout: 'main-layout', layoutProps: { title: 'alertTemplates' } });
 
@@ -124,6 +124,20 @@ const behaviorColor = (b: AlertBehavior): string => {
     return map[b] ?? 'neutral';
 };
 
+const criticalityLabel = (c: AlertCriticality): string => ({
+    DEFAULT: t('alertsTemplate.criticalityDefault'),
+    INFO:    t('alertsTemplate.criticalityInfo'),
+    WARNING: t('alertsTemplate.criticalityWarning'),
+    DANGER:  t('alertsTemplate.criticalityDanger'),
+} as Record<AlertCriticality, string>)[c] ?? c;
+
+const criticalityColor = (c: AlertCriticality): string => ({
+    DEFAULT: 'neutral',
+    INFO:    'info',
+    WARNING: 'warning',
+    DANGER:  'error',
+} as Record<AlertCriticality, string>)[c] ?? 'neutral';
+
 const canDelete = (tpl: AlertTemplateItf): boolean => {
     if (isAlertAdmin()) return true;
     return tpl.owner === getOwnerLogin();
@@ -154,6 +168,14 @@ const tableDef = computed((): TableColumn<AlertTemplateItf>[] => [
         cell: ({ row }) => {
             const b = row.getValue('behavior') as AlertBehavior;
             return h(UBadge, { label: behaviorLabel(b), variant: 'subtle', color: behaviorColor(b) });
+        }
+    },
+    {
+        accessorKey: 'criticality',
+        header: t('alertsTemplate.colCriticality'),
+        cell: ({ row }) => {
+            const c = (row.getValue('criticality') ?? 'DEFAULT') as AlertCriticality;
+            return h(UBadge, { label: criticalityLabel(c), variant: 'subtle', color: criticalityColor(c) });
         }
     },
     {

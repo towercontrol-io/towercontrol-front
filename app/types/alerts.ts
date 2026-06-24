@@ -28,6 +28,11 @@ export type AlertParameterType =
     | 'ALERT_LINK';
 
 /**
+ * Criticality levels for alerts, used to color-code messages and icons.
+ */
+export type AlertCriticality = 'INFO' | 'WARNING' | 'DANGER' | 'DEFAULT';
+
+/**
  * A single parameter entry in the template's parameters array.
  * The `param` field is only meaningful for CUSTOM_PARAM (parameter name) and ALERT_LINK (URL template).
  */
@@ -82,6 +87,8 @@ export interface AlertTemplateItf {
     preferred: AlertMedium[];
     /** Active duration in ms — only used when behavior is FIRE_UNTIL */
     durationMs: number;
+    /** Criticality level of the alert */
+    criticality: AlertCriticality;
 }
 
 /**
@@ -100,6 +107,7 @@ export interface AlertTemplateBodyItf {
     behavior: AlertBehavior;
     preferred: AlertMedium[];
     durationMs: number;
+    criticality: AlertCriticality;
 }
 
 /**
