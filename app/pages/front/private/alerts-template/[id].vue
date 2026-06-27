@@ -53,6 +53,8 @@ interface FormState {
     behavior: AlertBehavior;
     criticality: AlertCriticality;
     durationMin: number;
+    retryTimes: number;
+    retryMin: number;
     preferred: AlertMedium[];
     parameters: AlertParameterItf[];
     open: AlertLocaleMessagesItf[];
@@ -66,6 +68,8 @@ const form = reactive<FormState>({
     behavior: 'FIRE_FORGET',
     criticality: 'DEFAULT',
     durationMin: 0,
+    retryTimes: 0,
+    retryMin: 0,
     preferred: [],
     parameters: [],
     open: [],
@@ -117,7 +121,8 @@ const localeOptions = [
 ];
 
 const showDuration = computed(() => form.behavior === 'FIRE_TO_END' || form.behavior === 'FIRE_UNTIL');
-const showClose    = computed(() => form.behavior === 'FIRE_TO_END' );
+const showRetry    = computed(() => form.behavior === 'FIRE_TO_END');
+const showClose    = computed(() => form.behavior === 'FIRE_TO_END');
 
 // ---- Active locale tabs ----
 const activeOpenLocale  = ref('');
@@ -141,6 +146,8 @@ const populateForm = (tpl: AlertTemplateItf) => {
     form.behavior    = tpl.behavior;
     form.criticality = tpl.criticality ?? 'DEFAULT';
     form.durationMin = Math.round(tpl.durationMs / 60000);
+    form.retryTimes  = tpl.retryTimes ?? 0;
+    form.retryMin    = Math.round((tpl.retryMs ?? 0) / 60000);
     form.preferred   = [...tpl.preferred];
     form.parameters  = tpl.parameters.map(p => ({ ...p }));
     form.open        = tpl.open.map(l => ({
@@ -344,6 +351,8 @@ const onSave = async () => {
         behavior:    form.behavior,
         criticality: form.criticality,
         durationMs:  showDuration.value ? form.durationMin * 60000 : 0,
+        retryTimes:  showRetry.value ? form.retryTimes : 0,
+        retryMs:     showRetry.value ? form.retryMin * 60000 : 0,
         preferred:   [...form.preferred],
         parameters:  form.parameters.map(p => ({
             type: p.type,
@@ -432,6 +441,24 @@ const onCancel = () => {
 
                         <UFormField v-if="showDuration" :label="$t('alertsTemplate.fieldDurationMin')" class="w-44">
                             <UInput v-model.number="form.durationMin" type="number" min="0" class="w-full">
+                                <template #trailing>
+                                    <span class="text-xs text-muted">min</span>
+                                </template>
+                            </UInput>
+                        </UFormField>
+                    </div>
+
+                    <div v-if="showRetry" class="flex gap-4 flex-wrap items-end">
+                        <UFormField :label="$t('alertsTemplate.fieldRetryTimes')" :description="$t('alertsTemplate.fieldRetryTimesDesc')" class="flex-1 min-w-[12rem]">
+                            <UInput v-model.number="form.retryTimes" type="number" min="0" class="w-full">
+                                <template #trailing>
+                                    <span class="text-xs text-muted">×</span>
+                                </template>
+                            </UInput>
+                        </UFormField>
+
+                        <UFormField :label="$t('alertsTemplate.fieldRetryMin')" :description="$t('alertsTemplate.fieldRetryMinDesc')" class="w-44">
+                            <UInput v-model.number="form.retryMin" type="number" min="0" class="w-full">
                                 <template #trailing>
                                     <span class="text-xs text-muted">min</span>
                                 </template>

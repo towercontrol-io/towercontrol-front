@@ -89,6 +89,10 @@ export interface AlertTemplateItf {
     durationMs: number;
     /** Criticality level of the alert */
     criticality: AlertCriticality;
+    /** After a number of fire, a second message is sent on a different medium (not implemented) (mode FIRE_TO_END) (disabled on 0) */
+    retryTimes : number;
+    /** Duration for the retry period in Ms, after this duration a reminder will be sent on a different medium (mode FIRE_TO_END) (disabled on 0) */
+    retryMs : number;
 }
 
 /**
@@ -108,6 +112,8 @@ export interface AlertTemplateBodyItf {
     preferred: AlertMedium[];
     durationMs: number;
     criticality: AlertCriticality;
+    retryTimes : number;
+    retryMs : number;
 }
 
 /**
