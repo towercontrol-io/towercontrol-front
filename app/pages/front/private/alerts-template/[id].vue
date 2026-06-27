@@ -108,12 +108,16 @@ const localeOptions = [
     { label: '🇵🇱 pl', value: 'pl' },
     { label: '🇯🇵 ja', value: 'ja' },
     { label: '🇨🇳 zh', value: 'zh' },
-    { label: '🇧🇷 pt-BR', value: 'pt-BR' },
-    { label: '🇦🇷 es-AR', value: 'es-AR' },
+    { label: '🇰🇷 ko', value: 'ko' },
+    { label: '🇸🇪 sv', value: 'sv' },
+    { label: '🇹🇷 tr', value: 'tr' },
+    { label: '🇮🇩 id', value: 'id' },
+    { label: '🇻🇳 vi', value: 'vi' },
+    { label: '🇹🇭 th', value: 'th' },
 ];
 
 const showDuration = computed(() => form.behavior === 'FIRE_TO_END' || form.behavior === 'FIRE_UNTIL');
-const showClose    = computed(() => form.behavior === 'FIRE_TO_END' || form.behavior === 'FIRE_UNTIL');
+const showClose    = computed(() => form.behavior === 'FIRE_TO_END' );
 
 // ---- Active locale tabs ----
 const activeOpenLocale  = ref('');
