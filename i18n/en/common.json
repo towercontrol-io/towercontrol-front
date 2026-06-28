@@ -191,6 +191,7 @@
     "filesAdmin": "File Management",
     "auditAdmin": "Audit Logs",
     "alertTemplates": "Alert Templates",
+    "alertHistory": "Alert History",
 
     "last" : "Last"
   },

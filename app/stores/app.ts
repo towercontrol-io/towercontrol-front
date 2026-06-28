@@ -21,6 +21,7 @@ export const applicationStore = defineStore('app', {
     filesAdmin: false as boolean | null,
     auditAdmin: false as boolean | null,
     alertTemplate: false as boolean | null,
+    alertingUser: false as boolean | null,
   }),
   actions: {
     clearStore() {
@@ -42,6 +43,7 @@ export const applicationStore = defineStore('app', {
       this.filesAdmin = false;
       this.auditAdmin = false;
       this.alertTemplate = false;
+      this.alertingUser = false;
     },
     setCaptureEndpointCreator(isCapture : boolean) {
       this.captureEndpointCreator = isCapture;
@@ -167,6 +169,12 @@ export const applicationStore = defineStore('app', {
     },
     isAlertTemplate(): boolean | null {
       return this.alertTemplate;
+    },
+    setAlertingUser(isAlertingUser: boolean) {
+      this.alertingUser = isAlertingUser;
+    },
+    isAlertingUser(): boolean | null {
+      return this.alertingUser;
     },
   },
  });

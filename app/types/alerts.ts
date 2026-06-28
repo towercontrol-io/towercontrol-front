@@ -124,3 +124,47 @@ export interface AlertTemplateListResponseItf {
     templates: AlertTemplateItf[];
     total: number;
 }
+
+// ── Alert history ──────────────────────────────────────────────────────────────
+
+/** Lifecycle state of a fired alert. */
+export type AlertState = 'PENDING' | 'PENDING_QUEUE' | 'RUNNING' | 'ENDING' | 'ENDING_QUEUE' | 'ENDED';
+
+/** Delivery record for one medium within a user's sent entry. */
+export interface AlertMediumStateItf {
+    medium: AlertMedium;
+    sent: boolean;
+    sentMs: number;
+    ack: boolean;
+    ackMs: number;
+    error: string;
+}
+
+/** Delivery record for one user (one or more mediums). */
+export interface AlertSentEntryItf {
+    userLogin: string;
+    state: AlertMediumStateItf[];
+}
+
+/** One alert event as returned by GET /alerts/1.0/history. */
+export interface AlertHistoryEntryItf {
+    alertId: string;
+    alertDefRef: string;
+    alertTemplateId: string;
+    deviceId: string;
+    state: AlertState;
+    requestMs: number;
+    fireMs: number;
+    expirationMs: number;
+    error: string;
+    targetedGroups: string[];
+    sent: AlertSentEntryItf[];
+}
+
+/** Paginated response from GET /alerts/1.0/history. */
+export interface AlertHistoryResponseItf {
+    total: number;
+    page: number;
+    size: number;
+    alerts: AlertHistoryEntryItf[];
+}

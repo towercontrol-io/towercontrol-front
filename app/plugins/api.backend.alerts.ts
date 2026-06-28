@@ -2,6 +2,7 @@ import type {
     AlertTemplateItf,
     AlertTemplateBodyItf,
     AlertTemplateListResponseItf,
+    AlertHistoryResponseItf,
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 
@@ -13,6 +14,7 @@ export default defineNuxtPlugin(() => {
   const alertsTemplatePost: string   = '/alerts/1.0/template';
   const alertsTemplateDelete: string = '/alerts/1.0/template/{shortId}';
   const alertsTemplateList: string   = '/alerts/1.0/template';
+  const alertsHistoryList: string    = '/alerts/1.0/history';
 
   const config = useRuntimeConfig();
   const appStore = applicationStore();
@@ -182,6 +184,46 @@ export default defineNuxtPlugin(() => {
             message: 'unknownError'
           } as ActionResult
         };
+      }
+    },
+
+    /**
+     * Paginated alert history. Scope (own vs all) resolved server-side from JWT role.
+     */
+    alertHistoryList: async (params: {
+      page: number;
+      size: number;
+      templateIds?: string[];
+    }): Promise<{ success?: AlertHistoryResponseItf; error?: ActionResult | { message: string } }> => {
+      try {
+        const query = new URLSearchParams();
+        query.set('page', String(params.page));
+        query.set('size', String(params.size));
+        (params.templateIds ?? []).forEach(id => query.append('templateId', id));
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT);
+
+        const raw = await $fetch.raw<AlertHistoryResponseItf>(
+          config.public.BACKEND_API_BASE + alertsHistoryList + '?' + query.toString(),
+          { method: 'GET', signal: controller.signal, headers: apiSessionHeaders() }
+        );
+        clearTimeout(timeout);
+        appStore.setBackendUp();
+
+        return { success: raw._data ?? { total: 0, page: 0, size: params.size, alerts: [] } };
+      } catch (error: any) {
+        if (error.cause?.name === 'AbortError') {
+          appStore.setBackendDown();
+          return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'backendTimeout' } as ActionResult };
+        }
+        if (error?.response?._data) {
+          const actionResult = error.response._data as ActionResult;
+          return actionResult.status != null
+            ? { error: actionResult }
+            : { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
+        }
+        return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
       }
     },
 

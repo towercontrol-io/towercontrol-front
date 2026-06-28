@@ -261,7 +261,10 @@ import { is } from 'valibot';
       topItems.push({ label: `${t('menu.auditAdmin')}`,icon: 'i-lucide-scroll-text',to: '/front/private/audit',onSelect: () => {mainData.open = false}});  
     }
     if ( appStore.isAlertTemplate() ) {
-      topItems.push({ label: `${t('menu.alertTemplates')}`,icon: 'i-lucide-file-exclamation-point',to: '/front/private/alerts-template',onSelect: () => {mainData.open = false}});  
+      topItems.push({ label: `${t('menu.alertTemplates')}`,icon: 'i-lucide-book-alert',to: '/front/private/alerts-template',onSelect: () => {mainData.open = false}});
+    }
+    if ( appStore.isAlertingUser() ) {
+      topItems.push({ label: `${t('menu.alertHistory')}`,icon: 'i-lucide-bell-dot',to: '/front/private/alerts',onSelect: () => {mainData.open = false}});
     }
 
 

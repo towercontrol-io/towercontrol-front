@@ -191,6 +191,7 @@
     "filesAdmin": "Gestion des fichiers",
     "auditAdmin": "Journaux d'audit",
     "alertTemplates": "Modèles d'alerte",
+    "alertHistory": "Historique des alertes",
 
     "last" : "Dernier"
   },

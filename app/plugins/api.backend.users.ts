@@ -328,6 +328,9 @@ export default defineNuxtPlugin(() => {
             appStore.setAlertTemplate(
                 getJWTRole(response.jwtToken,'ROLE_ALERTS_TEMPLATE') || getJWTRole(response.jwtToken,'ROLE_ALERTS_ADMIN')
             );
+            appStore.setAlertingUser(
+                getJWTRole(response.jwtToken,'ROLE_DEVICE_ALERTING') || getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN')
+            );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
             appStore.setUser2faSize(response.twoFASize || 0);
@@ -391,6 +394,9 @@ export default defineNuxtPlugin(() => {
             );
             appStore.setAlertTemplate(
                 getJWTRole(response.jwtToken,'ROLE_ALERTS_TEMPLATE') || getJWTRole(response.jwtToken,'ROLE_ALERTS_ADMIN')
+            );
+            appStore.setAlertingUser(
+                getJWTRole(response.jwtToken,'ROLE_DEVICE_ALERTING') || getJWTRole(response.jwtToken,'ROLE_GOD_ADMIN')
             );
             appStore.setUserEmail(response.email || null);
             appStore.setUserLogin(response.login || null);
