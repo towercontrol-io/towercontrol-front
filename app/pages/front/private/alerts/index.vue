@@ -198,6 +198,14 @@ const tableDef = computed((): TableColumn<AlertDisplayEntry>[] => {
             }),
         },
         {
+            accessorKey: 'alertId',
+            header: t('alertsHistory.colAlertId'),
+            cell: ({ row }) => h('span', {
+                class: 'font-mono text-xs text-muted truncate block max-w-[8rem]',
+                title: row.original.alertId,
+            }, row.original.alertId || '—'),
+        },
+        {
             accessorKey: 'alertDefRef',
             header: t('alertsHistory.colSource'),
             cell: ({ row }) => h('span', {

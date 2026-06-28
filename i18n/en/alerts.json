@@ -111,6 +111,7 @@
     "filterTemplatePlaceholder": "Template ID…",
     "filterAdd": "Add",
     "pageSizeLabel": "Per page",
+    "colAlertId": "Alert ID",
     "colSource": "Source",
     "colTemplate": "Template",
     "colDevice": "Device",

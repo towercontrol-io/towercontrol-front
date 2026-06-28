@@ -111,6 +111,7 @@
     "filterTemplatePlaceholder": "Identifiant…",
     "filterAdd": "Ajouter",
     "pageSizeLabel": "Par page",
+    "colAlertId": "ID alerte",
     "colSource": "Source",
     "colTemplate": "Modèle",
     "colDevice": "Appareil",
