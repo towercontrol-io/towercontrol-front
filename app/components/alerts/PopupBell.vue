@@ -3,6 +3,7 @@ import type { AlertPopupItf } from '~/types';
 
 const { t, locale } = useI18n();
 const nuxtApp = useNuxtApp();
+const toast   = useToast();
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -11,14 +12,24 @@ const unreadCount = ref(0);
 const overlayOpen = ref(false);
 const popups      = ref<AlertPopupItf[]>([]);
 
-let badgeIntervalId = 0 as any;
+// Toaster circuit: tracks the highest timeMs seen so far.
+// Initialised to Date.now() so only notifications arriving after page load are shown.
+const since = ref(Date.now());
+
+let badgeIntervalId   = 0 as any;
+let toasterIntervalId = 0 as any;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-function criticalityColor(c: string): 'error' | 'warning' | 'info' | 'neutral' {
+function criticalityColor(c: string): 'error' | 'warning' | 'info' {
     if (c === 'DANGER')  return 'error';
     if (c === 'WARNING') return 'warning';
-    if (c === 'INFO')    return 'info';
-    return 'neutral';
+    return 'info'; // INFO and DEFAULT → blue
+}
+
+function criticalityIcon(c: string): string {
+    if (c === 'DANGER')  return 'i-lucide-circle-alert';
+    if (c === 'WARNING') return 'i-lucide-triangle-alert';
+    return 'i-lucide-info'; // INFO and DEFAULT
 }
 
 function criticalityLabel(c: string): string {
@@ -41,10 +52,28 @@ function relativeTime(ms: number): string {
     return rtf.format(-Math.floor(diffSec / 86400), 'day');
 }
 
-// ── Badge polling (no side effects) ──────────────────────────────────────────
+// ── Circuit 1 — Badge (safe, no side effects) ─────────────────────────────────
 async function refreshBadge() {
     const res = await nuxtApp.$apiBackendAlerts.alertPopupCount();
     if (res.success) unreadCount.value = res.success.unreadCount;
+}
+
+// ── Circuit 2 — Toaster (safe, no side effects) ───────────────────────────────
+async function pollNewAlerts() {
+    const res = await nuxtApp.$apiBackendAlerts.alertPopupNew(since.value);
+    if (!res.success || res.success.length === 0) return;
+
+    const entries = res.success;
+    // Advance the pointer to avoid showing the same entries again
+    since.value = Math.max(...entries.map(e => e.timeMs));
+    // Show one toast for the most recent entry
+    const latest = entries[entries.length - 1]!;
+    toast.add({
+        title:       criticalityLabel(latest.criticality),
+        description: latest.message,
+        color:       criticalityColor(latest.criticality),
+        icon:        criticalityIcon(latest.criticality),
+    });
 }
 
 // ── Bell click ────────────────────────────────────────────────────────────────
@@ -52,18 +81,20 @@ async function openOverlay() {
     overlayOpen.value = true;
     const res = await nuxtApp.$apiBackendAlerts.alertPopupList();
     if (res.success) popups.value = res.success;
-    nuxtApp.$apiBackendAlerts.alertPopupMarkViewed(); // fire-and-forget — server marks all as viewed
+    nuxtApp.$apiBackendAlerts.alertPopupMarkViewed(); // fire-and-forget
     unreadCount.value = 0; // optimistic local clear
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 onMounted(() => {
     refreshBadge();
-    badgeIntervalId = setInterval(refreshBadge, POLL_INTERVAL_MS);
+    badgeIntervalId   = setInterval(refreshBadge,    POLL_INTERVAL_MS);
+    toasterIntervalId = setInterval(pollNewAlerts,   POLL_INTERVAL_MS);
 });
 
 onUnmounted(() => {
     clearInterval(badgeIntervalId);
+    clearInterval(toasterIntervalId);
 });
 </script>
 
