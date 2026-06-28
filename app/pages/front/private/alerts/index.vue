@@ -423,7 +423,6 @@ const tableDef = computed((): TableColumn<AlertDisplayEntry>[] => {
 
         <!-- Pagination -->
         <div v-if="total > 0" class="flex items-center justify-between gap-4 px-1">
-            <span class="text-xs text-muted">{{ total }} alert{{ total > 1 ? 's' : '' }}</span>
             <UPagination
                 :show-controls="true"
                 :sibling-count="1"

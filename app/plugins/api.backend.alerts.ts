@@ -3,6 +3,8 @@ import type {
     AlertTemplateBodyItf,
     AlertTemplateListResponseItf,
     AlertHistoryResponseItf,
+    AlertPopupItf,
+    AlertPopupCountItf,
 } from '~/types';
 import type { ActionResult, ACTION_RESULT } from '~/types';
 
@@ -15,6 +17,10 @@ export default defineNuxtPlugin(() => {
   const alertsTemplateDelete: string = '/alerts/1.0/template/{shortId}';
   const alertsTemplateList: string   = '/alerts/1.0/template';
   const alertsHistoryList: string    = '/alerts/1.0/history';
+  const alertsPopupList: string      = '/alerts/1.0/popup';
+  const alertsPopupCount: string     = '/alerts/1.0/popup/count';
+  const alertsPopupViewed: string    = '/alerts/1.0/popup/viewed';
+  const alertsPopupNew: string       = '/alerts/1.0/popup/new';
 
   const config = useRuntimeConfig();
   const appStore = applicationStore();
@@ -223,6 +229,78 @@ export default defineNuxtPlugin(() => {
             ? { error: actionResult }
             : { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
         }
+        return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
+      }
+    },
+
+    /** In-app popup notification history (bell overlay). */
+    alertPopupList: async (): Promise<{ success?: AlertPopupItf[]; error?: ActionResult }> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT);
+        const raw = await $fetch.raw<AlertPopupItf[]>(
+          config.public.BACKEND_API_BASE + alertsPopupList,
+          { method: 'GET', signal: controller.signal, headers: apiSessionHeaders() }
+        );
+        clearTimeout(timeout);
+        appStore.setBackendUp();
+        return { success: raw._data ?? [] };
+      } catch (error: any) {
+        if (error.cause?.name === 'AbortError') { appStore.setBackendDown(); return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'backendTimeout' } as ActionResult }; }
+        return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
+      }
+    },
+
+    /** Unread popup notification count (badge). */
+    alertPopupCount: async (): Promise<{ success?: AlertPopupCountItf; error?: ActionResult }> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT);
+        const raw = await $fetch.raw<AlertPopupCountItf>(
+          config.public.BACKEND_API_BASE + alertsPopupCount,
+          { method: 'GET', signal: controller.signal, headers: apiSessionHeaders() }
+        );
+        clearTimeout(timeout);
+        appStore.setBackendUp();
+        return { success: raw._data ?? { unreadCount: 0 } };
+      } catch (error: any) {
+        if (error.cause?.name === 'AbortError') { appStore.setBackendDown(); return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'backendTimeout' } as ActionResult }; }
+        return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
+      }
+    },
+
+    /** Mark all popup notifications as viewed. Call immediately on overlay open. */
+    alertPopupMarkViewed: async (): Promise<{ success?: boolean; error?: ActionResult }> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT);
+        await $fetch.raw(
+          config.public.BACKEND_API_BASE + alertsPopupViewed,
+          { method: 'PUT', signal: controller.signal, headers: apiSessionHeaders() }
+        );
+        clearTimeout(timeout);
+        appStore.setBackendUp();
+        return { success: true };
+      } catch (error: any) {
+        if (error.cause?.name === 'AbortError') { appStore.setBackendDown(); return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'backendTimeout' } as ActionResult }; }
+        return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
+      }
+    },
+
+    /** Live popup notifications since a client-managed timestamp (toaster circuit). No server state modified. */
+    alertPopupNew: async (since: number): Promise<{ success?: AlertPopupItf[]; error?: ActionResult }> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), GET_TIMEOUT);
+        const raw = await $fetch.raw<AlertPopupItf[]>(
+          config.public.BACKEND_API_BASE + alertsPopupNew + '?since=' + since,
+          { method: 'GET', signal: controller.signal, headers: apiSessionHeaders() }
+        );
+        clearTimeout(timeout);
+        appStore.setBackendUp();
+        return { success: raw._data ?? [] };
+      } catch (error: any) {
+        if (error.cause?.name === 'AbortError') { appStore.setBackendDown(); return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'backendTimeout' } as ActionResult }; }
         return { error: { status: 'UNKNOWN' as ACTION_RESULT, status_code: 0, message: 'unknownError' } as ActionResult };
       }
     },

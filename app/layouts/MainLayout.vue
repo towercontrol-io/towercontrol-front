@@ -712,15 +712,7 @@ import { is } from 'valibot';
               </UButton>
             </UTooltip>
 
-            <UTooltip :text="$t('menu.alarmsNotifications')" :shortcuts="['N']">
-              <UButton
-                color="neutral"
-                variant="ghost"
-                square
-              >
-                <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
-              </UButton>
-            </UTooltip>
+            <AlertsPopupBell />
           </template>
         </UDashboardNavbar>
       </template>

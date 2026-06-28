@@ -168,3 +168,18 @@ export interface AlertHistoryResponseItf {
     size: number;
     alerts: AlertHistoryEntryItf[];
 }
+
+// ── Alert popup notifications ──────────────────────────────────────────────────
+
+/** A single in-app popup notification entry. */
+export interface AlertPopupItf {
+    alertId: string;
+    message: string;
+    criticality: AlertCriticality;
+    timeMs: number;
+}
+
+/** Response from GET /alerts/1.0/popup/count. */
+export interface AlertPopupCountItf {
+    unreadCount: number;
+}

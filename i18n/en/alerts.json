@@ -91,6 +91,16 @@
     "last": "Last"
   },
 
+  "alertsPopup": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "justNow": "Just now",
+    "criticalityInfo": "Info",
+    "criticalityWarning": "Warning",
+    "criticalityDanger": "Danger",
+    "criticalityDefault": "Notification"
+  },
+
   "alertsHistory": {
     "pageTitle": "Alert History",
     "pageTitleAdmin": "All Alerts",
